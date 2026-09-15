@@ -1,0 +1,65 @@
+{
+  "status": "code_complete_ready_for_parent_rebuild_and_native_tests",
+  "completedDate": "2026-09-15",
+  "filesChanged": [
+    "Source\\DublinFlight\\Visuals\\DublinAircraftVisual.cpp",
+    "Source\\DublinFlight\\Visuals\\DublinAircraftVisualTests.cpp",
+    "Saved\\Automation\\aircraft-normals-repair-handoff.json"
+  ],
+  "observedNativeResultFromParent": "41 of 42 pass; AirframeGeometry fails clockwise normals, unit normals, UV handedness and outward canopy assertions.",
+  "rootCause": {
+    "location": "DublinAircraftVisual.cpp, Sample",
+    "explanation": "DU and DV were raw centered finite-difference displacements, not derivatives. Their cross product is scaled by 0.002 * 0.00002, so FVector::GetSafeNormal's squared-length tolerance of 1e-8 zeroed valid surface normals. Zero normals prevent AddTriangle from selecting winding, produce zero bitangents regardless of flip, and make canopy outward tests fail.",
+    "specificExamples": {
+      "firstFuselageVertex": "Finish 0 vertex 0: raw cross squared length approximately 1.73595754e-13, below 1e-8 despite a nondegenerate surface.",
+      "mainWingTipTrailingEdge": "At U=1, V=0.5, raw DV squared length approximately 4.37740248e-9; even normalizing raw DU and DV separately leaves this direction zero."
+    },
+    "rejectedPartialFix": "Normalizing raw displacement directions before crossing still leaves 62 zero normals and 93 failing triangle UV corners, including mirrored wing/tail trailing tips and propeller blades.",
+    "originalHandednessAndWinding": "Existing Side > 0 reversal and Unreal clockwise Cross(C-A,B-A) are correct. The failure is scale-dependent zero normals, not a sign convention requiring guesses or global winding reversal."
+  },
+  "fix": [
+    "Divide both centered finite differences by their full sampling intervals to form DU/DV derivatives.",
+    "Normalize derivative directions before Cross(VDirection,Tangent), then normalize the cross and retain the existing mirrored-side reversal.",
+    "Derive bFlipTangentY from Dot(Cross(Normal,Tangent),VDirection), preserving UV direction alignment on both cambered wings, caps, fin, canopy and rotor.",
+    "Retain all native assertions and thresholds. Add bounded per-section diagnostics for vertex normal length, triangle indices/area/winding dot, UV determinant, and triangle-corner tangent dots/flip.",
+    "Strengthen coverage with separate left/right upper-wing assertions and all upper canopy normals facing outward.",
+    "Preserve the parent's qualified DublinAircraftVisual::FGeometry declaration."
+  ],
+  "preserved": {
+    "triangles": 4864,
+    "vertices": 9272,
+    "trianglesBySection": [1136, 1984, 584, 280, 304, 576],
+    "meshSections": 6,
+    "sharedFinishes": 5,
+    "maximumVertexRadiusCm": 445.0011235940871,
+    "collisionEnvelopeRadiusCm": 470,
+    "boundsCm": {"min": [-435, -420, -117.11920087683924], "max": [445, 420, 173]},
+    "positionsAndUVs": "Identical before/after in full portable mirror; only direction vectors, handedness and dependent winding can change.",
+    "untouched": "DublinAircraftVisual.h, material definitions, all modeled profile/loft parameters, pawn, flight, weapons, project/config/build files and existing aircraft-visual-handoff.json."
+  },
+  "validation": {
+    "nativeTests": "NOT run by this agent; parent owns rebuild and native automation.",
+    "nativeCompilation": "NOT run by this agent; ready for parent rebuild.",
+    "portableFormulaChecks": "PASS: dependency-free local Python mathematical mirror of all surfaces, caps and triangles with UE-compatible safe-normal squared tolerance 1e-8; this is not C++ execution.",
+    "baselineReproduction": {"zeroNormals": 3738, "failingClockwiseTriangles": 1754, "failingUVCorners": 5607, "upperCanopyOutward": false},
+    "fixedAudit": {
+      "nonfiniteValues": 0,
+      "invalidIndices": 0,
+      "degenerateTriangles": 0,
+      "nonunitNormals": 0,
+      "failingClockwiseTriangles": 0,
+      "failingUVCorners": 0,
+      "minimumFaceCornerNormalDot": 0.22725319465841795,
+      "minimumUVTangentDot": 0.9897834253380219,
+      "minimumClockwiseCrossSquaredLength": 0.03806023374435633,
+      "maximumNormalSquaredLengthError": 4.440892098500626e-16,
+      "maximumAbsNormalTangentDot": 1.5612511283791264e-16,
+      "leftAndRightUpperWingOutward": true,
+      "allUpperCanopyNormalsOutward": true,
+      "wingModeledVerticalRangeCm": 17.755973668722884
+    },
+    "mirroredSurfaceUVCornersChecked": {"mainWingLeft": 2112, "mainWingRight": 2112, "tailLeft": 1008, "tailRight": 1008},
+    "staticChecks": "Modified C++ files preserve UTF-8 without BOM and CRLF. All original assertions retained; normal tolerance remains 0.0001. No package installations, builds, editor calls, launches, remote execution or delegation."
+  },
+  "parentNextAction": "Rebuild existing DublinFlight target and rerun DublinFlight.Visuals.AirframeGeometry plus the existing 42-test native suite. Inspect actual in-game front-face lighting, canopy and mirrored wing shading. No native or visual results are claimed here."
+}

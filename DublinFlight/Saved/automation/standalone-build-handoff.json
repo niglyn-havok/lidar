@@ -1,0 +1,15 @@
+{
+  "date": "2026-09-15",
+  "target": "DublinFlight Win64 Development",
+  "status": "build_succeeded_runtime_unverified",
+  "exitCode": 0,
+  "buildSeconds": 79.49,
+  "binary": "Binaries\\Win64\\DublinFlight.exe",
+  "compiledAndLinked": true,
+  "launched": false,
+  "cooked": false,
+  "packaged": false,
+  "warnings": ["Deprecated StructUtils dependencies in MetaHumanGenerator and DublinFlight"],
+  "source": "Completed standalone-build agent report; compiler log preserved separately.",
+  "nextGate": "Finish fracture asset preparation, then cook/package and exercise the actual standalone game."
+}

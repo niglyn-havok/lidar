@@ -1,0 +1,22 @@
+{
+	"tests": [
+		{
+			"name": "DublinFlight.Weapons.PIE.ActualCannonBombInputs",
+			"state": "Fail",
+			"duration": 8.3706378936767578,
+			"errors": [
+				"LogDublinDestruction: DublinCityWorld_0: Impact includes a source building without current valid fracture data: bridge/osm/way/43319604/0",
+				"LogDublinDestruction: DublinCityWorld_0: Impact includes a source building without current valid fracture data: bridge/osm/way/43319604/0",
+				"Expected 'Real cannon payload accepted by city' to be true."
+			],
+			"warnings": [
+				"LogDublinWeapons: City rejected impact: destruction/fracture data not ready or target unsupported. No impact FX emitted."
+			]
+		}
+	],
+	"passed": 0,
+	"failed": 1,
+	"skipped": 0,
+	"total": 1,
+	"duration": 8.3706378936767578
+}

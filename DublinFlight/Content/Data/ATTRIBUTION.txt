@@ -1,0 +1,26 @@
+DUBLIN FLIGHT - DATA ATTRIBUTION AND LIMITATIONS
+
+2015 Aerial Laser and Photogrammetry Survey of Dublin City
+Debra F. Laefer, Saleh Abuwarda, Anh-Vu Vo, Linh Truong-Hong, Hamid Gharibi.
+Survey capture: March 26, 2015.
+Distributed by New York University under Creative Commons Attribution 4.0.
+Source records, original file checksums and processing details are retained in
+dublin-ortho-georeference.json and the generated-data provenance.
+License: https://creativecommons.org/licenses/by/4.0/
+
+Building footprints, river and bridge geometry:
+(c) OpenStreetMap contributors.
+OpenStreetMap data is available under the Open Database License.
+Copyright and license: https://www.openstreetmap.org/copyright
+
+Changes for this game: projected local coordinates, footprint normalization,
+LiDAR-derived coarse heights/roof estimates, terrain separation/interpolation,
+closed building reconstruction, bridge approximation, source-image cropping,
+resampling to 18.75 cm per output pixel, and material assignment.
+
+Generic facade patterns are not measured facade photographs. Survey imagery
+has incomplete coverage; the validity mask selects generic neutral material
+where no usable photograph is available. Water elevation is an artistic
+constant, not a measured tide. Excluded or uncertain structures and temporal
+differences between 2015 survey data and 2026 OpenStreetMap are documented in
+the accompanying provenance. This game is not a surveying or navigation product.

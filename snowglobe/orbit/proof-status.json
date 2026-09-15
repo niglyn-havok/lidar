@@ -1,0 +1,25 @@
+{
+  "state": "complete",
+  "mode": "proof",
+  "frame": 1,
+  "frames_written": [
+    {
+      "frame": 1,
+      "seconds": 2.81
+    },
+    {
+      "frame": 73,
+      "seconds": 1.53
+    },
+    {
+      "frame": 145,
+      "seconds": 1.52
+    },
+    {
+      "frame": 217,
+      "seconds": 1.58
+    }
+  ],
+  "elapsed_seconds": 7.51,
+  "updated_unix": 1788873039.527081
+}

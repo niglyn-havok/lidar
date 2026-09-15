@@ -1,0 +1,184 @@
+{
+  "status": "complete",
+  "completionScope": "Authorized 30-FPS metrics/target iteration implemented and statically reviewed. Parent's preceding 22-unit-test plus actual PIE-input milestone passed. The new Performance source and three new helper tests are NOT built or run; ready for parent integration.",
+  "component": "DublinFlight native performance capture",
+  "scope": "New Source\\DublinFlight\\Performance\\DublinFlightPerformance*.h/.cpp and tests in the same folder only; this handoff is the sole non-source output.",
+  "architecture": "Runtime world subsystem with shared unsmoothed engine-frame wall-clock boundaries; explicit console start only.",
+  "files": [
+    "Source\\DublinFlight\\Performance\\DublinFlightPerformanceMetrics.h",
+    "Source\\DublinFlight\\Performance\\DublinFlightPerformanceMetrics.cpp",
+    "Source\\DublinFlight\\Performance\\DublinFlightPerformanceSubsystem.h",
+    "Source\\DublinFlight\\Performance\\DublinFlightPerformanceSubsystem.cpp",
+    "Source\\DublinFlight\\Performance\\DublinFlightPerformanceTests.cpp"
+  ],
+  "parentBuildDependencies": {
+    "existingCoreModulesRequired": ["Core", "CoreUObject", "Engine"],
+    "additionalPrivateModulesToEnsure": ["Json", "RHI", "RenderCore", "SlateCore", "ApplicationCore", "InputCore"],
+    "notUsed": ["JsonUtilities", "UnrealEd"]
+  },
+  "plannedCommands": [
+    "DublinFlight.Profile.Start [label] [durationSeconds] [warmupSeconds] [minFPS=60]",
+    "DublinFlight.Profile.Stop"
+  ],
+  "commandContract": {
+    "implemented": true,
+    "startDefaults": { "label": "capture", "durationSeconds": 30, "warmupSeconds": 5, "minFPS": 60 },
+    "durationSecondsInclusiveRange": [1, 300],
+    "warmupSecondsInclusiveRange": [0, 60],
+    "minFPSAllowedValues": [30, 60],
+    "minFPSSyntax": "Fourth argument must be exactly ASCII 30 or 60; reject decimals, whitespace, signs, exponents, embedded NUL and other values. More than four arguments returns usage.",
+    "examples": ["DublinFlight.Profile.Start normal_flight 30 5", "DublinFlight.Profile.Start max_destruction 30 5 30", "DublinFlight.Profile.Stop"],
+    "labelPolicy": "1..64 ASCII letters/digits/_/-, starting alphanumeric; Windows reserved device names rejected.",
+    "numericSyntax": "Unsigned decimal only; no exponent, signs, whitespace, non-finite values or trailing text.",
+    "worldPolicy": "Explicit begun-play PIE/game world on the game thread; no editor-world fallback or automatic capture.",
+    "stopPolicy": "No arguments. Finalizes at the next engine-frame boundary; stop before the first boundary can yield noSamples."
+  },
+  "nativeInterfaces": [
+    "UDublinFlightPerformanceSubsystem::StartCapture(const DublinFlight::Performance::FOptions&) -> bool",
+    "UDublinFlightPerformanceSubsystem::StopCapture() -> bool",
+    "UDublinFlightPerformanceSubsystem::IsCapturing() const -> bool",
+    "FMetrics::MeetsTargetMinimumFPS(int32) const -> bool; selects a frame predicate, rejects unsupported targets and empty metrics"
+  ],
+  "staticReview": {
+    "complete": true,
+    "reviewedSourceAndTestFiles": 5,
+    "definiteIssuesFixed": [
+      "Added the explicit UnrealClient.h include for FViewport member calls instead of relying on transitive or unity-build includes.",
+      "Read each metadata CVar once, then finite-check and serialize that same value; removed the second unchecked read.",
+      "Replaced the AppendChar-based embedded-NUL test fixture with direct indexed mutation of allocated FString storage and explicit length/NUL/suffix checks. The original rejection assertion and production validation remain intact."
+    ],
+    "verifiedByInspection": [
+      "Shared FPlatformTime::Seconds timestamp per GFrameCounter at OnBeginFrame; strictly contiguous engine frames, not smoothed/world delta time.",
+      "First boundary primes the clock; whole intervals starting before the separately bounded warmup deadline are excluded, including the crossing frame.",
+      "Measured duration is the compensated sum of complete post-warmup intervals; the final interval is not clipped and hitches are not filtered.",
+      "Average FPS is count/sum(seconds); minimum FPS is 1/max(seconds). The all-frames-60 predicate uses worst-frame budget comparisons, never average FPS.",
+      "Strict over-budget count and separately disclosed 0.000001 ms numerical tolerance; sorted type-7 p50/p95/p99 do not reorder the raw trace.",
+      "Non-positive, non-finite or unrepresentable samples and invalid/non-advancing boundaries fail explicitly; 120000 measured-frame cap never silently drops samples.",
+      "JSON contains raw frame times, metrics/status/error, timing policy, warmup, label, world, viewport size/mode/focus, quality/timing CVars, GPU name and engine-version metadata.",
+      "Scenario/settings are read-only start/end snapshots; GPU bottleneck and presentation-cadence claims are explicitly not made.",
+      "No user/machine identity, command line, window title, engine branch or absolute project/asset path is collected in reports.",
+      "Only explicit Start arms capture; teardown reports interruption and excludes the unfinished final interval.",
+      "30-FPS strict and tolerance counts use the exact 1/30-second budget independently of unchanged 60-FPS comparisons.",
+      "scenarioTargetMet selects the 30/60 per-frame predicate, never average FPS; failed/no-sample metric fields and verdict are null.",
+      "r.DontLimitOnBattery is added only to the read-only, finite-checked start/end CVar snapshots."
+    ],
+    "remainingDefiniteIssues": []
+  },
+  "reportContract": {
+    "directory": "Saved\\Profiling\\DublinFlight",
+    "filename": "<label>-<UTC timestamp>-<UTC ticks>.json",
+    "publication": "UTF-8 JSON written to a sibling capture-ID-suffixed staging file, fully flushed, then moved to the final filename; existing files are not overwritten.",
+    "statuses": ["completed", "stopped", "interrupted", "noSamples", "failed"],
+    "failurePolicy": "Failed captures retain the accepted raw trace but publish null metrics rather than a misleading successful prefix."
+  },
+  "helperAutomationTests": [
+    "DublinFlight.Performance.Metrics.QuantilesAndOrder",
+    "DublinFlight.Performance.Metrics.SpikeDespiteGoodAverage",
+    "DublinFlight.Performance.Metrics.RejectInvalidSamples",
+    "DublinFlight.Performance.Metrics.Exact60FPSThreshold",
+    "DublinFlight.Performance.Input.LabelsAndDurations",
+    "DublinFlight.Performance.Window.WarmupAndFullFrames",
+    "DublinFlight.Performance.Window.RejectInvalidClock",
+    "DublinFlight.Performance.Metrics.MemoryCap",
+    "DublinFlight.Performance.Metrics.Exact30FPSThreshold",
+    "DublinFlight.Performance.Metrics.ScenarioTargetsAndSpike",
+    "DublinFlight.Performance.Input.ScenarioTargetMinimumFPS"
+  ],
+  "operationLogScope": "Actions by this Performance agent only; parent integration results are recorded separately.",
+  "prohibitedOperationsNotPerformed": [
+    "Flight-agent file reads or writes",
+    "Build.cs, config or asset writes",
+    "Builds or automation test execution",
+    "Editor launches or editor/runtime interaction",
+    "PythonRemoteExecution, GitHub/issues or delegation"
+  ],
+  "parentReportedBaseline": {
+    "reportedAt": "2026-09-08T18:41:52.985+01:00",
+    "integrationBuild": "SUCCEEDED",
+    "automationRunner": "EditorMCP native automation",
+    "total": 21,
+    "passed": 20,
+    "failed": 1,
+    "components": {
+      "Performance": { "passed": 7, "failed": 1 },
+      "City": { "passed": 5, "failed": 0 },
+      "Flight": { "passed": 8, "failed": 0 }
+    },
+    "failedTest": "DublinFlight.Performance.Input.LabelsAndDurations",
+    "failure": "Expected 'Embedded NUL rejected' to be false."
+  },
+  "postBaselineFix": {
+    "status": "validated_by_parent",
+    "file": "Source\\DublinFlight\\Performance\\DublinFlightPerformanceTests.cpp",
+    "rootCause": "The fixture relied on AppendChar(0) to retain an embedded NUL without checking its storage. That did not establish the intended malformed label; the assertion exercised an accepted input rather than a verified embedded-NUL input.",
+    "repair": "Create a three-character a_b FString, replace character 1 with NUL directly, and assert Len()==3, character 1 is NUL, and character 2 is b before retaining the original ValidateLabel rejection assertion. Also assert the rejection supplies an error.",
+    "productionValidationChanged": false,
+    "compiled": true,
+    "buildEvidence": "Parent reported the fixture-fix build completed on 2026-09-08T19:06:06.465+01:00.",
+    "automationTestsRun": true,
+    "validationEvidence": "Parent reported all revised 22 unit tests passed, including the NUL fixture repair, and full actual PIE-input testing passed on 2026-09-08T19:08:43.896+01:00."
+  },
+  "latestParentValidatedMilestone": {
+    "reportedAt": "2026-09-08T19:08:43.896+01:00",
+    "scope": "Before this 30-FPS implementation",
+    "unitTestsPassed": 22,
+    "unitTestsFailed": 0,
+    "actualPIEInputTest": "PASS",
+    "duplicateGeometryCorrection": "Parent reports PIE duplicate-geometry correction verified (280 actual); no world/geometry files inspected by this agent.",
+    "performanceBaseline": "New performance baseline deferred until all source integration is complete."
+  },
+  "validation": {
+    "scope": "Current source after the authorized 30-FPS metrics/target implementation; parent-validated preceding milestones are recorded above.",
+    "staticReviewComplete": true,
+    "staticChecks": "Passed: handoff JSON parsing, eleven-test inventory, unchanged 60-FPS constants/predicate, new populated/null JSON branches, target defaults/validation paths, read-only diagnostic and original UTF-8/CRLF encoding. These checks do not execute C++.",
+    "compiled": false,
+    "automationTestsRun": false,
+    "pieCaptureExercised": false,
+    "testsStatus": "NOT RUN for this iteration. Eleven Performance helper tests are present: eight retained plus three new. The preceding 22-unit-test milestone passed before these changes.",
+    "remainingValidation": "Parent must build and run DublinFlight.Performance.* and verify default/explicit-target JSON publication. No builds/editor actions were performed here. Actual GPU timing and presentation cadence remain unverified."
+  },
+  "nextPerformanceIterationProposal": {
+    "status": "authorized_implemented_awaiting_parent_build_and_tests",
+    "goals": "Normal flight/light actions: >=60 FPS. Major destruction: sub-60 dips acceptable, prefer >=30 FPS even at maximal load; 30 is a target, not a demonstrated guarantee.",
+    "simplestInterface": "DublinFlight.Profile.Start [label] [durationSeconds] [warmupSeconds] [minFPS=60]",
+    "targetValidation": "Fourth positional argument is exactly 30 or 60; default 60. Native options use an integer with the same validation. Stop stays unchanged.",
+    "compatibility": "All existing 0..3-argument Start invocations and 60-FPS fields retain their meaning. Target selection changes report interpretation only, never sampling, gameplay, CVars or FPS caps. No target inference from labels.",
+    "additiveJsonFields": {
+      "scenarioTargetMinimumFPS": "Integer 60 by default, explicitly 30 for heavy-destruction captures.",
+      "frameBudget30Milliseconds": "1000.0/30.0 (33.333333... ms), NOT a rounded 33.333 ms comparison threshold.",
+      "framesOver30FPSBudget": "Strict count of accepted raw frameSeconds > 1.0/30.0.",
+      "framesOver30FPSBudgetWithTolerance": "Count of raw frameSeconds > 1/30 + 0.000001/1000 seconds; no sample rounding or replacement.",
+      "allFramesAtLeast30": "Independent of average FPS and the chosen target; true only when the tolerant 30-FPS count is zero and metrics exist.",
+      "scenarioTargetMet": "Selects allFramesAtLeast30 for target 30 or allFramesAtLeast60 for target 60; null when metrics unavailable. Applies only to captured frames, not completed-duration or future-workload guarantees.",
+      "scenarioTargetPolicy": "Explicitly describes target selection, numerical tolerance, measured-frame scope and no gameplay/timing mutation."
+    },
+    "schemaCompatibility": "schemaVersion stays 1; additive fields only. Existing 60-FPS fields and metric formulas retain their meaning.",
+    "diagnosticCVarAdded": "r.DontLimitOnBattery in qualityAndTimingCVars at start/end; read only, null if absent/non-finite.",
+    "unchangedFields": "Keep frameBudgetMilliseconds=1000/60 and allFramesAtLeast60 unchanged, including its existing tolerance. Derive both thresholds from the same complete post-warmup trace. New metric fields are null for failed/no-sample captures, matching current policy.",
+    "simplification": "One integer option, fixed 30-FPS comparisons, and a small shared target-verdict helper used by JSON/logging/tests. No profile registry, threshold framework, new console command or scenario auto-detection.",
+    "addedHelperTestsCoverage": [
+      "Old command defaults/0..3 arguments unchanged; explicit targets 30/60 accepted and all other fourth arguments rejected.",
+      "A 25 ms frame passes 30 but fails 60; a rare 50 ms hitch fails both despite a good average.",
+      "Exact 1/30, one-ULP overshoot and beyond-tolerance overshoot; target selection cannot alter existing 60-FPS results.",
+      "Empty metrics cannot pass; native invalid targets and embedded-NUL target strings rejected. JSON branches statically checked; report serialization is not covered by these pure helper tests."
+    ],
+    "measurementPlan": "After the duplicate-geometry fix and current milestone, repeat matched flight, light-action and heavy-destruction scenarios with fixed viewport/settings/cap metadata and explicit targets 60, 60 and 30. Maximal FX must actually exist and be exercised before claiming that workload.",
+    "unrealOptimizationOrder": [
+      "Keep native JSON as unsmoothed engine-frame cadence evidence, not isolated CPU execution, GPU timings or presentation. Use Unreal Insights CPU/GPU tracks in separate diagnostic runs to attribute bottlenecks before changing systems.",
+      "If repeated-mesh submission dominates, consider Unreal ISM batching only for genuinely repeated compatible geometry; do not treat unique buildings as identical instances.",
+      "When destruction FX exists, consider Niagara Effect Type distance/instance budgets for cosmetic FX while preserving damage/destruction gameplay and visual readability; no generic gameplay-disabling flags."
+    ],
+    "reportedBaselineCaveat": "The user-reported static god-view run with cap 120, average 92.56 FPS and minimum 43.16 FPS predates the duplicate-geometry fix. It is not evidence for 60-FPS normal flight or maximal-FX/30-FPS destruction; GPU/presentation attribution remains unknown.",
+    "officialReferences": [
+      "https://dev.epicgames.com/documentation/en-us/unreal-engine/unreal-insights-in-unreal-engine",
+      "https://dev.epicgames.com/documentation/en-us/unreal-engine/instanced-static-mesh-component-in-unreal-engine",
+      "https://dev.epicgames.com/documentation/en-us/unreal-engine/performance-budgeting-using-effect-types-in-niagara-for-unreal-engine"
+    ],
+    "currentActions": "Edited Performance Metrics.h/.cpp, Subsystem.cpp and Tests.cpp plus this handoff only. Subsystem.h unchanged. No builds, editor/runtime actions, config/world/flight/FX changes or peer broadcasts."
+  },
+  "parentNextSteps": [
+    "No dependency changes: Json, RHI, RenderCore, SlateCore, ApplicationCore, InputCore alongside existing Core, CoreUObject, Engine; JsonUtilities and UnrealEd are not used.",
+    "Build the integrated source, run DublinFlight.Performance.* (eleven helper tests, including three new), and record results.",
+    "Verify default 60 and explicit 30 Start/Stop reports, strict/tolerant counts, target verdicts and null-metric paths; obtain the new baseline only after all source integration."
+  ]
+}

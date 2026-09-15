@@ -1,0 +1,22 @@
+{
+  "recorded_frames": 28,
+  "distinct_frames": 7,
+  "capture_interval_seconds": 30,
+  "animation_size": [
+    1280,
+    960
+  ],
+  "recording_gaps": [
+    {
+      "from_utc": "2026-09-08T11:18:35.731876+00:00",
+      "to_utc": "2026-09-08T11:22:52.967633+00:00",
+      "gap_seconds": 257.24
+    },
+    {
+      "from_utc": "2026-09-08T11:27:52.993720+00:00",
+      "to_utc": "2026-09-08T11:33:51.526798+00:00",
+      "gap_seconds": 358.53
+    }
+  ],
+  "notes": "Frames are snapshots of the saved working image, not screen recordings. Identical snapshots are condensed in the animation. Crash-related gaps have not been fabricated or backfilled."
+}

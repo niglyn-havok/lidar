@@ -1,0 +1,178 @@
+Log started at 09/15/2026 11:09:34 (2026-09-15T10:09:34Z)
+No project argument provided while trying to parse Project File. Attempting fallback parsing to attempt to find a Project File.
+Resolved project argument C:\Code\tmp\messing\dublin-lidar\DublinFlight\DublinFlight.uproject to C:\Code\tmp\messing\dublin-lidar\DublinFlight\DublinFlight.uproject
+No config file at C:\ProgramData\Unreal Engine\UnrealBuildTool\BuildConfiguration.xml
+No config file at C:\Users\niglyn\AppData\Local\Unreal Engine\UnrealBuildTool\BuildConfiguration.xml
+No config file at C:\Users\niglyn\OneDrive - Microsoft\Documents\Unreal Engine\UnrealBuildTool\BuildConfiguration.xml
+Configuration will be read from:
+  C:\Users\niglyn\AppData\Roaming\Unreal Engine\UnrealBuildTool\BuildConfiguration.xml
+Reading configuration file from cache (C:\Code\tmp\messing\dublin-lidar\DublinFlight\Intermediate\Build\XmlConfigCache.bin): C:\Users\niglyn\AppData\Roaming\Unreal Engine\UnrealBuildTool\BuildConfiguration.xml
+Reading configuration file from cache (C:\Code\tmp\messing\dublin-lidar\DublinFlight\Intermediate\Build\XmlConfigCache.bin): C:\Code\tmp\messing\dublin-lidar\DublinFlight\Saved\UnrealBuildTool\BuildConfiguration.xml
+Reading configuration file from cache (C:\Code\tmp\messing\dublin-lidar\DublinFlight\Intermediate\Build\XmlConfigCache.bin): C:\Users\niglyn\AppData\Local\UnrealEngine\Intermediate\Build\UnrealBuildTool.Env.BuildConfiguration.xml
+Setting temp directory to 'C:\Users\niglyn\AppData\Local\Temp\UnrealBuildTool\eb6d2d82'
+    Registering build platform: UnrealBuildTool.AndroidPlatformFactory
+    Registering build platform: UnrealBuildTool.IOSPlatformFactory
+    Registering build platform: UnrealBuildTool.LinuxPlatformFactory
+    Registering build platform: UnrealBuildTool.MacPlatformFactory
+    Registering build platform: UnrealBuildTool.TVOSPlatformFactory
+    Registering build platform: UnrealBuildTool.WindowsPlatformFactory
+Found Windows 10 SDK root at C:\Program Files (x86)\Windows Kits\10 (1)
+Found Windows 10 SDK root at C:\Program Files (x86)\Windows Kits\10 (2)
+Found Windows 10 SDK version 10.0.19041.0 at C:\Program Files (x86)\Windows Kits\10
+Found Universal CRT version 10.0.19041.0 at C:\Program Files (x86)\Windows Kits\10
+Found Windows 10 SDK version 10.0.22621.0 at C:\Program Files (x86)\Windows Kits\10
+Found Universal CRT version 10.0.22621.0 at C:\Program Files (x86)\Windows Kits\10
+Found Windows 10 SDK version 10.0.26100.0 at C:\Program Files (x86)\Windows Kits\10
+Found Universal CRT version 10.0.26100.0 at C:\Program Files (x86)\Windows Kits\10
+Win64 Installed SDK(s): MinVersion_Sdk=10.0.19041.0, MaxVersion_Sdk=10.9.99999.0, CurrentVersion_Sdk=10.0.22621.0, Version_AutoSdk=10.0.22621.0, CurrentVersion_AutoSdk=
+        Registering build platform: Win64 - buildable: True
+    Registering build platform: UnrealBuildTool.VisionOSPlatformFactory
+Command line: "C:\Program Files\Epic Games\UE_5.8\Engine\Binaries\DotNET\UnrealBuildTool\UnrealBuildTool.dll" DublinFlight Win64 Development C:\Code\tmp\messing\dublin-lidar\DublinFlight\DublinFlight.uproject -WaitMutex -NoHotReloadFromIDE -MaxParallelActions=8
+Log file: C:\Users\niglyn\AppData\Local\UnrealBuildTool\Log.txt
+Deleting old log file: C:\Users\niglyn\AppData\Local\UnrealBuildTool\Log-backup-2025.06.24-15.13.12.txt
+
+Executing up to 8 actions based on MaxProcessorCount override
+Creating makefile for DublinFlight (no existing makefile)
+UbaStorageServer - Database loaded from C:\ProgramData\Epic\UnrealBuildAccelerator\cas\casdb (v32) in 12ms (contained 0 entries estimated to 0b)
+UbaServer - Listening on 0.0.0.0:1345
+Skipping C:\Program Files\Epic Games\UE_5.8\Engine\Intermediate\Build\BuildRules\UE5Rules.dll: File is installed
+Skipping C:\Program Files\Epic Games\UE_5.8\Engine\Intermediate\Build\BuildRules\UE5ProgramRules.dll: File is installed
+Compiler: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\Hostx64\x64\cl.exe
+Linker: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\Hostx64\x64\link.exe
+Library Manager: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\Hostx64\x64\link.exe
+Resource Compiler: C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\rc.exe
+Resource Converter: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\Hostx64\x64\cvtres.exe
+Using EngineIncludeOrderVersion.Unreal5_8 for target DublinFlight.Target.cs
+Building UnrealGame - DublinFlight - Win64 - Development
+Plugin 'MetaHumanGenerator' depends on plugin 'StructUtils' which was deprecated in 5.5 and will soon be removed. Please update your dependencies.
+Project 'DublinFlight' depends on plugin 'StructUtils' which was deprecated in 5.5 and will soon be removed. Please update your dependencies.
+VerseVMBytecodeGenerator.Generate, generating CPP headers in: 'C:\Program Files\Epic Games\UE_5.8\Engine\Intermediate\Build\Win64\UnrealGame\Inc\CoreUObject\VerseVMBytecode'
+	Writing out generated header file. Changed:False Path:'C:\Program Files\Epic Games\UE_5.8\Engine\Intermediate\Build\Win64\UnrealGame\Inc\CoreUObject\VerseVMBytecode\VVMBytecodeOps.gen.h'
+	Writing out generated header file. Changed:False Path:'C:\Program Files\Epic Games\UE_5.8\Engine\Intermediate\Build\Win64\UnrealGame\Inc\CoreUObject\VerseVMBytecode\VVMBytecodesAndCaptures.gen.h'
+	Writing out generated header file. Changed:False Path:'C:\Program Files\Epic Games\UE_5.8\Engine\Intermediate\Build\Win64\UnrealGame\Inc\CoreUObject\VerseVMBytecode\VVMMakeCapturesFuncs.gen.h'
+	Writing out generated header file. Changed:False Path:'C:\Program Files\Epic Games\UE_5.8\Engine\Intermediate\Build\Win64\UnrealGame\Inc\CoreUObject\VerseVMBytecode\VVMCaptureSwitch.gen.h'
+Found 4 shared PCH headers (listed in order of preference):
+	Engine
+	Slate
+	CoreUObject
+	Core
+Parsing headers for DublinFlight
+  Running Internal UnrealHeaderTool C:\Code\tmp\messing\dublin-lidar\DublinFlight\DublinFlight.uproject C:\Code\tmp\messing\dublin-lidar\DublinFlight\Intermediate\Build\Win64\DublinFlight\DublinFlight.uhtmanifest -WarningsAsErrors -installed
+UHT compiled-in object format Default
+Step - Parse Headers
+Step - Populate symbol table
+Step - Exports
+       Exporter Stats skipped
+       Exporter Json skipped
+       Running exporter CodeGen
+UHT processed DublinFlight in 5.5570901 seconds (22 generated files written)
+Building DublinFlight...
+===== Toolchain Information =====
+Using ISPC compiler (C:\Program Files\Epic Games\UE_5.8\Engine\Source\ThirdParty\Intel\ISPC\bin\Windows\ispc.exe)
+  Intel(r) Implicit SPMD Program Compiler (Intel(r) ISPC), 1.24.0 (build commit  @ 20250404, LLVM 18.1.2) 
+Using Visual Studio 14.44.35228 toolchain (C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207) and Windows 10.0.22621.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[Adaptive Build] Excluded from DublinFlight unity file: DublinFlight.cpp, DublinFlightGameMode.cpp, DublinFlightHUD.cpp, DublinFlightPawn.cpp, DublinFlightSimulation.cpp, DublinCityData.cpp, DublinCityDestruction.cpp, DublinCityDestructionTests.cpp, DublinCityDestructionWorld.cpp, DublinCityFractureBaker.cpp, DublinCityFractureLibrary.cpp, DublinCityGeometry.cpp, DublinCityTests.cpp, DublinCityWorld.cpp, DublinImpactAudio.cpp, DublinImpactEffectsSubsystem.cpp, DublinImpactEffectsTests.cpp, DublinImpactEffectType.cpp, DublinFlightPerformanceMetrics.cpp, DublinFlightPerformanceSubsystem.cpp, DublinFlightPerformanceTests.cpp, DublinFlightPIETests.cpp, DublinFlightSimulationTests.cpp, DublinProjectile.cpp, DublinWeaponComponent.cpp, DublinWeaponModel.cpp, DublinWeaponPIETests.cpp, DublinWeaponTests.cpp
+=================================
+Using Unreal Build Accelerator local executor to run 39 action(s)
+  CPU 24 physical cores, 32 logical cores
+  Memory 63.66 GB physical, 42.24 GB/127.66 GB committed
+  UBA Storage capacity 40 GB
+  UBA RootDir C:\ProgramData\Epic\UnrealBuildAccelerator
+Cache bucket 2684190757 used. Action: Compile [x64] SharedPCH.Engine.Project.ValApi.ValExpApi.Cpp20.cpp ()
+Cache bucket 3084607794 used. Action: Compile Resource [x64] DublinFlight-Default.rc2 ()
+Cache bucket 3201187683 used. Action: Compile [x64] DublinCityData.cpp ()
+Cache bucket 136926991 used. Action: Link [x64] DublinFlight.exe ()
+All processes queued
+[1/39] Copy tbbmalloc.dll
+[2/39] Copy tbb12.dll
+[3/39] Copy DublinFlight-Default.rc2
+[4/39] Copy D3D12Core.dll
+[5/39] Copy d3d12SDKLayers.dll
+[6/39] Copy DirectML.dll
+[7/39] Compile Resource [x64] DublinFlight-Default.rc2
+[8/39] Compile [x64] SharedPCH.Engine.Project.ValApi.ValExpApi.Cpp20.cpp
+[9/39] Compile [x64] DublinCityFractureBaker.cpp
+[10/39] Compile [x64] DublinCityFractureLibrary.cpp
+[11/39] Compile [x64] DublinCityDestructionTests.cpp
+[12/39] Compile [x64] DublinCityDestruction.cpp
+[13/39] Compile [x64] DublinCityGeometry.cpp
+[14/39] Compile [x64] DublinCityTests.cpp
+[15/39] Compile [x64] DublinCityData.cpp
+[16/39] Compile [x64] DublinFlight.cpp
+[17/39] Compile [x64] DublinFlightGameMode.cpp
+[18/39] Compile [x64] DublinFlightPIETests.cpp
+[19/39] Compile [x64] DublinFlightHUD.cpp
+[20/39] Compile [x64] DublinFlightPerformanceMetrics.cpp
+[21/39] Compile [x64] DublinFlightPawn.cpp
+[22/39] Compile [x64] DublinFlightSimulation.cpp
+[23/39] Compile [x64] DublinFlightPerformanceTests.cpp
+[24/39] Compile [x64] DublinFlightPerformanceSubsystem.cpp
+[25/39] Compile [x64] DublinFlightSimulationTests.cpp
+[26/39] Compile [x64] DublinImpactAudio.cpp
+[27/39] Compile [x64] DublinCityWorld.cpp
+[28/39] Compile [x64] DublinImpactEffectType.cpp
+[29/39] Compile [x64] DublinWeaponModel.cpp
+[30/39] Compile [x64] DublinProjectile.cpp
+[31/39] Compile [x64] DublinWeaponComponent.cpp
+[32/39] Compile [x64] DublinWeaponPIETests.cpp
+[33/39] Compile [x64] DublinWeaponTests.cpp
+[34/39] Compile [x64] DublinImpactEffectsTests.cpp
+[35/39] Compile [x64] DublinImpactEffectsSubsystem.cpp
+[36/39] Compile [x64] Module.DublinFlight.cpp
+[37/39] Compile [x64] DublinCityDestructionWorld.cpp
+[38/39] Link [x64] DublinFlight.exe
+[39/39] WriteMetadata DublinFlight.target [NoUba]
+
+Total time in Unreal Build Accelerator local executor: 69.93 seconds
+Output binary: C:\Code\tmp\messing\dublin-lidar\DublinFlight\Binaries\Win64\DublinFlight.exe
+UbaStorageServer - Database saved in 1ms (0 file entries, 0 cas entries. deleted 0 dropped cas files)
+WriteFileIfChanged() wrote 0 changed files of 1 requested writes.
+
+Timeline:
+[  0.000]  +0.507 Main
+   0.016          [  0.016]  +0.110 Apply XmlConfig
+   0.021             0.020          [  0.004]  +0.007 Find target files
+   0.128          [  0.128]  +0.244 AddTelemetry
+   0.382          [  0.382]  +0.124 RegisterPlatforms
+[  0.525]  +0.022 ParseCommandLine
+[  0.600]  +0.554 EngineRulesPlugins
+[  1.157]  +0.016 EngineRulesFetchDirs
+[  1.182]  +0.008 EngineRulesAssembly
+[  1.190]  +0.001 ProgramRulesAssembly
+[  1.192]  +0.006 ProjectRulesAssembly
+[  1.199]  +0.426 CreateTargetRules
+[  1.672]  +0.002 CppDependencyCache
+[  1.681]  +3.157 DublinFlight Win64 Development
+   1.681          [  0.000]  +1.799 <unknown>
+   3.481          [  1.799]  +0.041 UHTModules
+   3.667          [  1.985]  +0.134 UHTManifest
+   3.801          [  2.120]  +5.563 UHT
+   3.801             2.120          [  0.000]  +1.035 <unknown>
+   4.837             3.155          [  1.035]  +0.000 WaitOnWrites
+   4.840             3.158          [  1.038]  +0.176 SavingMakefile
+   5.016             3.334          [  1.214]  +4.348 <unknown>
+[  4.839]  +4.527 <unknown>
+[  9.366]  +0.013 UHTTimestamps
+[  9.385]  +0.000 CppDependencyCache
+[  9.386]  +0.051 Preparing ActionGraph
+   9.398          [  0.012]  +0.005 LinkActions
+   9.404             0.017          [  0.005]  +0.000 DetectActionGraphCycles
+   9.405          [  0.018]  +0.000 GatherPrerequisiteActions
+   9.406          [  0.020]  +0.000 CppDependencyCacheWait
+   9.407          [  0.021]  +0.018 GatherOutdatedActions
+   9.428          [  0.041]  +0.002 LinkActions
+   9.428             0.041          [  0.000]  +0.000 DetectActionGraphCycles
+   9.431          [  0.045]  +0.000 DeleteOutdatedProducedItems
+   9.432          [  0.045]  +0.003 SaveActionHistory
+   9.436          [  0.050]  +0.001 CreateDirectoriesForProducedItems
+[  9.449]  +0.198 GarbageCollect
+[  9.647] +69.728 <unknown>
+[ 79.376]  +0.000 Deploying targets
+[ 79.377]  +0.000 DisconnectCache
+[ 79.381]  +0.033 SaveCasTable
+[ 79.417]  +0.070 Saving caches
+[ 79.488]  +0.001 TelemetryService.FlushEvents
+[ 79.491]
+
+Result: Succeeded
+Total execution time: 79.49 seconds

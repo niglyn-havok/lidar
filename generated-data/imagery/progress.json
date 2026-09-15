@@ -1,0 +1,259 @@
+{
+  "schema_version": 1,
+  "status": "ready_for_partial_import",
+  "updated_on": "2026-09-08",
+  "scope": "Four NYU 2015 RGBi orthophoto tiles only; no Esri imagery or Unreal actions.",
+  "core_extent_en_m": [
+    315605,
+    234009,
+    316373,
+    234777
+  ],
+  "output_dimensions_wh": [
+    4096,
+    4096
+  ],
+  "output_pixel_spacing_m": 0.1875,
+  "archive_budget_bytes": 2000000000,
+  "maximum_concurrent_downloads": 2,
+  "maximum_sequential_retries": 2,
+  "tiles": [
+    "315500_234000",
+    "315500_234500",
+    "316000_234000",
+    "316000_234500"
+  ],
+  "completed_downloads": [
+    {
+      "tile": "315500_234500",
+      "record_url": "https://archive.nyu.edu/handle/2451/38586?mode=full",
+      "archive_url": "https://archive.nyu.edu/retrieve/79772/nyu_2451_38586_orthophoto_T_315500-234500.zip",
+      "resolved_archive_url": "https://archive.nyu.edu/retrieve/79772/nyu_2451_38586_orthophoto_T_315500-234500.zip",
+      "head_bytes": 224867801,
+      "head_at_utc": "2026-09-08T17:01:24.246083+00:00",
+      "http_headers": {
+        "Content-Type": "application/octet-stream",
+        "Content-Length": "224867801"
+      },
+      "archive_path": "generated-data\\imagery\\downloads\\nyu_2451_38586_orthophoto_T_315500-234500.zip",
+      "reused_existing": false,
+      "archive_sha256": "3e473861ee8d92c2d133fd6cc4c3169e594fcf7eb45ae533459f4ac5e9bfb698",
+      "download_completed_at_utc": "2026-09-08T17:01:39.086552+00:00",
+      "actual_archive_bytes": 224867801
+    },
+    {
+      "tile": "315500_234000",
+      "record_url": "https://archive.nyu.edu/handle/2451/38601?mode=full",
+      "archive_url": "https://archive.nyu.edu/retrieve/79851/nyu_2451_38601_orthophoto_T_315500_234000.zip",
+      "resolved_archive_url": "https://archive.nyu.edu/retrieve/79851/nyu_2451_38601_orthophoto_T_315500_234000.zip",
+      "head_bytes": 339896455,
+      "head_at_utc": "2026-09-08T17:01:23.607587+00:00",
+      "http_headers": {
+        "Content-Type": "application/octet-stream",
+        "Content-Length": "339896455"
+      },
+      "archive_path": "generated-data\\imagery\\downloads\\nyu_2451_38601_orthophoto_T_315500_234000.zip",
+      "reused_existing": false,
+      "archive_sha256": "50f1c44196ce93aa63d23de8d9cfe751814bf6e15628ede297da0daa607286f7",
+      "download_completed_at_utc": "2026-09-08T17:01:44.475896+00:00",
+      "actual_archive_bytes": 339896455
+    },
+    {
+      "tile": "316000_234500",
+      "record_url": "https://archive.nyu.edu/handle/2451/38607?mode=full",
+      "archive_url": "https://archive.nyu.edu/retrieve/79897/nyu_2451_38607_orthophoto_T_316000_234500.zip",
+      "resolved_archive_url": "https://archive.nyu.edu/retrieve/79897/nyu_2451_38607_orthophoto_T_316000_234500.zip",
+      "head_bytes": 145990712,
+      "head_at_utc": "2026-09-08T17:01:25.714086+00:00",
+      "http_headers": {
+        "Content-Type": "application/octet-stream",
+        "Content-Length": "145990712"
+      },
+      "archive_path": "generated-data\\imagery\\downloads\\nyu_2451_38607_orthophoto_T_316000_234500.zip",
+      "reused_existing": false,
+      "archive_sha256": "e60de854b8beb6f14d9352051b482a914e5b9c0fe307fc2d43b0f8f2e33d0da5",
+      "download_completed_at_utc": "2026-09-08T17:01:49.848909+00:00",
+      "actual_archive_bytes": 145990712
+    },
+    {
+      "tile": "316000_234000",
+      "record_url": "https://archive.nyu.edu/handle/2451/38606?mode=full",
+      "archive_url": "https://archive.nyu.edu/retrieve/79893/nyu_2451_38606_orthophoto_T_316000_234000.zip",
+      "resolved_archive_url": "https://archive.nyu.edu/retrieve/79893/nyu_2451_38606_orthophoto_T_316000_234000.zip",
+      "head_bytes": 342596125,
+      "head_at_utc": "2026-09-08T17:01:24.966176+00:00",
+      "http_headers": {
+        "Content-Type": "application/octet-stream",
+        "Content-Length": "342596125"
+      },
+      "archive_path": "generated-data\\imagery\\downloads\\nyu_2451_38606_orthophoto_T_316000_234000.zip",
+      "reused_existing": false,
+      "archive_sha256": "906f9611dc84d4bb9f92096a97a31b03c02cbdf1a4f747fc4b4391bfe4d5acf0",
+      "download_completed_at_utc": "2026-09-08T17:01:52.321742+00:00",
+      "actual_archive_bytes": 342596125
+    }
+  ],
+  "next_action": "Native coordinator may render licensed imagery where binary mask is 255 and explicitly generic neutral materials elsewhere. Further gap-fill acquisition requires verified viable source coverage.",
+  "updated_at_utc": "2026-09-08T17:22:40.020641+00:00",
+  "verified_tiles": [
+    {
+      "tile": "315500_234000",
+      "record_url": "https://archive.nyu.edu/handle/2451/38601?mode=full",
+      "archive_url": "https://archive.nyu.edu/retrieve/79851/nyu_2451_38601_orthophoto_T_315500_234000.zip",
+      "resolved_archive_url": "https://archive.nyu.edu/retrieve/79851/nyu_2451_38601_orthophoto_T_315500_234000.zip",
+      "head_bytes": 339896455,
+      "head_at_utc": "2026-09-08T17:01:23.607587+00:00",
+      "http_headers": {
+        "Content-Type": "application/octet-stream",
+        "Content-Length": "339896455"
+      },
+      "archive_path": "generated-data\\imagery\\downloads\\nyu_2451_38601_orthophoto_T_315500_234000.zip",
+      "reused_existing": false
+    },
+    {
+      "tile": "315500_234500",
+      "record_url": "https://archive.nyu.edu/handle/2451/38586?mode=full",
+      "archive_url": "https://archive.nyu.edu/retrieve/79772/nyu_2451_38586_orthophoto_T_315500-234500.zip",
+      "resolved_archive_url": "https://archive.nyu.edu/retrieve/79772/nyu_2451_38586_orthophoto_T_315500-234500.zip",
+      "head_bytes": 224867801,
+      "head_at_utc": "2026-09-08T17:01:24.246083+00:00",
+      "http_headers": {
+        "Content-Type": "application/octet-stream",
+        "Content-Length": "224867801"
+      },
+      "archive_path": "generated-data\\imagery\\downloads\\nyu_2451_38586_orthophoto_T_315500-234500.zip",
+      "reused_existing": false
+    },
+    {
+      "tile": "316000_234000",
+      "record_url": "https://archive.nyu.edu/handle/2451/38606?mode=full",
+      "archive_url": "https://archive.nyu.edu/retrieve/79893/nyu_2451_38606_orthophoto_T_316000_234000.zip",
+      "resolved_archive_url": "https://archive.nyu.edu/retrieve/79893/nyu_2451_38606_orthophoto_T_316000_234000.zip",
+      "head_bytes": 342596125,
+      "head_at_utc": "2026-09-08T17:01:24.966176+00:00",
+      "http_headers": {
+        "Content-Type": "application/octet-stream",
+        "Content-Length": "342596125"
+      },
+      "archive_path": "generated-data\\imagery\\downloads\\nyu_2451_38606_orthophoto_T_316000_234000.zip",
+      "reused_existing": false
+    },
+    {
+      "tile": "316000_234500",
+      "record_url": "https://archive.nyu.edu/handle/2451/38607?mode=full",
+      "archive_url": "https://archive.nyu.edu/retrieve/79897/nyu_2451_38607_orthophoto_T_316000_234500.zip",
+      "resolved_archive_url": "https://archive.nyu.edu/retrieve/79897/nyu_2451_38607_orthophoto_T_316000_234500.zip",
+      "head_bytes": 145990712,
+      "head_at_utc": "2026-09-08T17:01:25.714086+00:00",
+      "http_headers": {
+        "Content-Type": "application/octet-stream",
+        "Content-Length": "145990712"
+      },
+      "archive_path": "generated-data\\imagery\\downloads\\nyu_2451_38607_orthophoto_T_316000_234500.zip",
+      "reused_existing": false
+    }
+  ],
+  "official_verification": [
+    {
+      "url": "https://archive.nyu.edu/handle/2451/38684",
+      "resolved_url": "https://archive.nyu.edu/handle/2451/38684",
+      "checked_at_utc": "2026-09-08T17:01:22.333398+00:00",
+      "html_sha256": "30a8d7c7efce767c9f18fe0e10d657c4b7be01aabab5f374f3e78a450ca823cb",
+      "verified_tokens": [
+        "Attribution 4.0",
+        "CC BY 4.0",
+        "Debra F. Laefer",
+        "Saleh Abuwarda",
+        "Anh-Vu Vo",
+        "Linh Truong-Hong",
+        "Hamid Gharibi"
+      ]
+    },
+    {
+      "url": "https://serv.cusp.nyu.edu/projects/ALSDublin15/ALSDublin15.html",
+      "resolved_url": "https://serv.cusp.nyu.edu/projects/ALSDublin15/ALSDublin15.html",
+      "checked_at_utc": "2026-09-08T17:01:22.766609+00:00",
+      "html_sha256": "edf8576e1ad305fd1565d6f5f604d8805d2090ba2253e1d15d05cfbf6be64700",
+      "verified_tokens": [
+        "March 26",
+        "2015",
+        "5cm",
+        "infrared"
+      ]
+    },
+    {
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "resolved_url": "https://creativecommons.org/licenses/by/4.0/",
+      "checked_at_utc": "2026-09-08T17:01:22.883067+00:00",
+      "html_sha256": "231a5dac65bbf135ba27145969a63cd289faadc172f1512c4810a6c60ba91036",
+      "verified_tokens": [
+        "Attribution",
+        "4.0",
+        "Share",
+        "Adapt"
+      ]
+    },
+    {
+      "url": "https://archive.nyu.edu/handle/2451/38601?mode=full",
+      "resolved_url": "https://archive.nyu.edu/handle/2451/38601?mode=full",
+      "checked_at_utc": "2026-09-08T17:01:23.223588+00:00",
+      "html_sha256": "6eca422c03604d0a413f96bee044132013cc766dca848b7eb252f1f9f568e786",
+      "rights": "CC BY 4.0",
+      "contains_orthophoto_component": true
+    },
+    {
+      "url": "https://archive.nyu.edu/handle/2451/38586?mode=full",
+      "resolved_url": "https://archive.nyu.edu/handle/2451/38586?mode=full",
+      "checked_at_utc": "2026-09-08T17:01:23.947563+00:00",
+      "html_sha256": "3273fe2c7bb77ec1d04571ed0eecfc55e27a00e0b11c05eb4f90d7bece1068c8",
+      "rights": "CC BY 4.0",
+      "contains_orthophoto_component": true
+    },
+    {
+      "url": "https://archive.nyu.edu/handle/2451/38606?mode=full",
+      "resolved_url": "https://archive.nyu.edu/handle/2451/38606?mode=full",
+      "checked_at_utc": "2026-09-08T17:01:24.655286+00:00",
+      "html_sha256": "bdfbd6626dcf4889d7b744cc7cf68eabfc76e585372ab0866313ec4839aea7f0",
+      "rights": "CC BY 4.0",
+      "contains_orthophoto_component": true
+    },
+    {
+      "url": "https://archive.nyu.edu/handle/2451/38607?mode=full",
+      "resolved_url": "https://archive.nyu.edu/handle/2451/38607?mode=full",
+      "checked_at_utc": "2026-09-08T17:01:25.314223+00:00",
+      "html_sha256": "5e6fb65aca1820015fa034896d265b9205f565d37492f991c30a8759f4b5a76b",
+      "rights": "CC BY 4.0",
+      "contains_orthophoto_component": true
+    }
+  ],
+  "archive_total_bytes": 1053351093,
+  "manifest_path": "generated-data\\imagery\\source-manifest.json",
+  "inspected_tiles": [
+    "315500_234000",
+    "315500_234500",
+    "316000_234000",
+    "316000_234500"
+  ],
+  "completed_output_rows": 3648,
+  "total_output_rows": 4096,
+  "image_path": "DublinFlight\\Content\\Data\\dublin-ortho.png",
+  "image_bytes": 30031884,
+  "image_sha256": "f3e2aa75e4b5c4a52bd6e2f177bc896d2ddd0d78c082a1ab742536f9c075f606",
+  "coverage_fraction": 1.0,
+  "tests_passed": true,
+  "tests_run": 25,
+  "blocker": null,
+  "usable_imagery_fraction": 0.9475504981146918,
+  "ready_for_partial_import": true,
+  "full_coverage": false,
+  "research_started_at_utc": "2026-09-08T17:15:25.982297+00:00",
+  "ready_for_import": true,
+  "final_complete_visual_gate_passed": false,
+  "partial_import_contract_path": "generated-data\\imagery\\partial-import-contract.json",
+  "partial_import_tests_passed": true,
+  "partial_import_tests_run": 6,
+  "followup_status": "complete_partial_import_ready_with_bounded_alternative_evidence",
+  "research_complete": true,
+  "additional_archive_bytes_downloaded": 0,
+  "elapsed_followup_seconds": 434.03689
+}

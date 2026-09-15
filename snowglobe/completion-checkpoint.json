@@ -1,0 +1,12 @@
+{
+  "status": "complete",
+  "render_running": false,
+  "active_camera": "CAMERA | hero - O'Connell Bridge at survey origin",
+  "glass_non_manifold_edges": 0,
+  "non_rendering_wire_edges_removed": 1,
+  "rendered_geometry_unchanged": true,
+  "all_file_textures_packed": true,
+  "saved_blend_exists": true,
+  "hero_exists": true,
+  "detail_exists": true
+}

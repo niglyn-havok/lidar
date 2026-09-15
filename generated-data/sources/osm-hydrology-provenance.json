@@ -1,0 +1,35 @@
+{
+  "source": "OpenStreetMap",
+  "endpoint": "https://overpass-api.de/api/interpreter",
+  "query": "[out:json][timeout:40][maxsize:67108864];(way[\"waterway\"=\"riverbank\"](53.3432878,-6.2657463,53.3512733,-6.2524015);relation[\"waterway\"=\"riverbank\"](53.3432878,-6.2657463,53.3512733,-6.2524015);way[\"natural\"=\"water\"](53.3432878,-6.2657463,53.3512733,-6.2524015);relation[\"natural\"=\"water\"](53.3432878,-6.2657463,53.3512733,-6.2524015);way[\"waterway\"=\"river\"](53.3432878,-6.2657463,53.3512733,-6.2524015);way[\"highway\"](53.3432878,-6.2657463,53.3512733,-6.2524015);way[\"man_made\"=\"bridge\"](53.3432878,-6.2657463,53.3512733,-6.2524015);relation[\"man_made\"=\"bridge\"](53.3432878,-6.2657463,53.3512733,-6.2524015);way[\"place\"=\"island\"](53.3432878,-6.2657463,53.3512733,-6.2524015);relation[\"place\"=\"island\"](53.3432878,-6.2657463,53.3512733,-6.2524015););out body geom;",
+  "bboxSouthWestNorthEast": [
+    53.34328782529877,
+    -6.265746327362666,
+    53.35127331818866,
+    -6.252401520452229
+  ],
+  "coreBoundsEN": [
+    315605,
+    234009,
+    316373,
+    234777
+  ],
+  "haloBoundsEN": [
+    315555,
+    233959,
+    316423,
+    234827
+  ],
+  "acquiredUtc": "2026-09-08T17:00:53.871293+00:00",
+  "osmBaseTimestampUtc": "2026-09-08T16:59:35Z",
+  "bytes": 841032,
+  "sha256": "2a41280ec5bfca2b80f4839203c87536f8b22a3aaf803f689b3b007eb42f86f8",
+  "elements": 1149,
+  "seconds": 1.769,
+  "attempts": 1,
+  "earlierErrors": [],
+  "responseLimitBytes": 10000000,
+  "attribution": "\u00a9 OpenStreetMap contributors",
+  "license": "ODbL 1.0",
+  "licenseUrl": "https://www.openstreetmap.org/copyright"
+}

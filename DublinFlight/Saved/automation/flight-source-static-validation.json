@@ -1,0 +1,77 @@
+{
+  "timestamp": "2026-09-08T18:13:36.5836175+01:00",
+  "kind": "STATIC SOURCE VALIDATION ONLY: not compilation, linking, automation execution, or visual acceptance",
+  "files_checked": 10,
+  "issues": [],
+  "test_labels": [
+    "DublinFlight.Flight.InitialStateUnitsAndCompass",
+    "DublinFlight.Flight.ThrottleBoundsAndDistance",
+    "DublinFlight.Flight.AttitudeAndFramePartition",
+    "DublinFlight.Flight.ModeTransitionsAndReset",
+    "DublinFlight.Flight.GodStationaryAimingAndTranslation",
+    "DublinFlight.Flight.InputMappingAndHeldKeySuppression",
+    "DublinFlight.Flight.FiniteGuardsAndBoundedSubsteps",
+    "DublinFlight.Flight.SweptMovementCallbackContract",
+    "DublinFlight.PIE.ActualPlayerControllerInput"
+  ],
+  "checks": [
+    "Owned-source delimiters, conflict markers, UTF-8/CRLF",
+    "Nine unique correctly prefixed test labels",
+    "PIE acceptance uses InputKey pressed/released/axis events, no direct state or manual tick bypass",
+    "UE5.8 EAutomationTestFlags type",
+    "36 quoted include paths previously checked against installed engine headers, generated headers deferred to UHT"
+  ],
+  "source_hashes": [
+    {
+      "path": "Source\\DublinFlight\\DublinFlightSimulation.h",
+      "sha256": "934C9CB164EE3BED74035004A40FD46B92D4E323FDD5A11099A63992EFEE3510",
+      "bytes": 3987
+    },
+    {
+      "path": "Source\\DublinFlight\\DublinFlightSimulation.cpp",
+      "sha256": "257D423F5B344DBAD97FA0673EC749C1F33CD42E1ABD9DEFE72C3882925D6F99",
+      "bytes": 9938
+    },
+    {
+      "path": "Source\\DublinFlight\\DublinFlightPawn.h",
+      "sha256": "80352A47382C5398201A9E87039156BFDE6261F4DAE3FF6D9C2541AC90FDFDD6",
+      "bytes": 4767
+    },
+    {
+      "path": "Source\\DublinFlight\\DublinFlightPawn.cpp",
+      "sha256": "F3F6BE4B5CBEFD1DDAD64D47D275810FCD0B9FD4FA72B387D703DF9890738B37",
+      "bytes": 16290
+    },
+    {
+      "path": "Source\\DublinFlight\\DublinFlightHUD.h",
+      "sha256": "6E254A9F8A4257AA05AF8795DAE9BA51A9C3F1E1FDE669A1B460B3F97784BFA5",
+      "bytes": 302
+    },
+    {
+      "path": "Source\\DublinFlight\\DublinFlightHUD.cpp",
+      "sha256": "C25F72593537CFE7D8E65F849C0B2371D8C1810460D6B99C3032AA7CDEDE2B44",
+      "bytes": 4910
+    },
+    {
+      "path": "Source\\DublinFlight\\DublinFlightGameMode.h",
+      "sha256": "F4B4FD8F9E7FB2B853767AC03A6EC124AB3B4CC590A196A572EFE6A467EAE652",
+      "bytes": 273
+    },
+    {
+      "path": "Source\\DublinFlight\\DublinFlightGameMode.cpp",
+      "sha256": "4735A379C1B21F5F7E27D54AE44BA2D0560EE6F8C849DDDBFDA5B6E9A2DDB486",
+      "bytes": 397
+    },
+    {
+      "path": "Source\\DublinFlight\\Tests\\DublinFlightSimulationTests.cpp",
+      "sha256": "D355333F19DC3714CFAD8A08B5648B30DDD8C6BD4F42B432AF606B0596534EB8",
+      "bytes": 16868
+    },
+    {
+      "path": "Source\\DublinFlight\\Tests\\DublinFlightPIETests.cpp",
+      "sha256": "56761E8C21E9C3899E7B0C12DBE39D37C9AE979EECAAA55775D675861551BEE0",
+      "bytes": 20168
+    }
+  ],
+  "runtime_tests_executed": false
+}

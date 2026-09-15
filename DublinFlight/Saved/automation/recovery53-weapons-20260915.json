@@ -1,0 +1,18 @@
+{
+	"tests": [
+		{
+			"name": "DublinFlight.Weapons.PIE.ActualCannonBombInputs",
+			"state": "Fail",
+			"duration": 6.699521541595459,
+			"errors": [
+				"Expected 'Actual held LMB launches multiple shells' to be true."
+			],
+			"warnings": []
+		}
+	],
+	"passed": 0,
+	"failed": 1,
+	"skipped": 0,
+	"total": 1,
+	"duration": 6.699521541595459
+}

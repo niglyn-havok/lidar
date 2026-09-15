@@ -1,0 +1,378 @@
+{
+  "schema_version": 1,
+  "status": "blocked_no_existing_ecw_decoder",
+  "started_at_local": "2026-09-15T12:19:31.889+01:00",
+  "ready_for_import": false,
+  "current_texture_and_mask_changes": 0,
+  "candidate_root": "generated-data\\imagery\\gap-fill-candidate",
+  "authorized_archive_url": "https://archive.nyu.edu/bitstream/2451/38684/26/nyu_2451_38684_misc_other.zip",
+  "expected_archive_bytes": 366295340,
+  "remaining_archive_budget_before_bytes": 946648907,
+  "archive_bytes_downloaded": 366295340,
+  "constraints": [
+    "No editor, build, native code, configuration, existing assets, or current Content Data changes.",
+    "Only the specific licensed NYU alternate archive may be acquired.",
+    "No proprietary decoder installation, license acceptance, fabricated pixels, or uploads.",
+    "Candidate is never a verified gap filler until CRS, coverage, validity, registration and roundtrip gates pass.",
+    "Parent approval is required before any merge or reimport."
+  ],
+  "input_records_read": [
+    "generated-data\\imagery\\gap-fill-options.json",
+    "generated-data\\imagery\\gap-source-investigation.json",
+    "generated-data\\imagery\\partial-import-contract.json",
+    "DublinFlight\\Saved\\Automation\\imagery-generation-handoff.json"
+  ],
+  "original_data_root": "C:\\Code\\tmp\\messing\\dublin-lidar",
+  "baseline_current_data": {
+    "DublinFlight\\Content\\Data\\ATTRIBUTION.txt": {
+      "bytes": 1488,
+      "sha256": "4132fd1ba7910ef12649ff009b118e7fa2bfc32851dc75b66171d50e33bc159a"
+    },
+    "DublinFlight\\Content\\Data\\dublin-city.json": {
+      "bytes": 14059267,
+      "sha256": "54a4e9d6a835632d1e9dd58050559aced46ee92cd675961ff1a9732ac6750af4"
+    },
+    "DublinFlight\\Content\\Data\\dublin-ortho-georeference.json": {
+      "bytes": 47357,
+      "sha256": "03723c3d319213104b3322ab0439bbe3ed218d41052e0ed7485b58d13d9e6729"
+    },
+    "DublinFlight\\Content\\Data\\dublin-ortho-validity.png": {
+      "bytes": 30651,
+      "sha256": "5ac7ad823bec5a925e8b347e019d57ba452d3580f938ab2f0a7800740d89407d"
+    },
+    "DublinFlight\\Content\\Data\\dublin-ortho.png": {
+      "bytes": 30031884,
+      "sha256": "f3e2aa75e4b5c4a52bd6e2f177bc896d2ddd0d78c082a1ab742536f9c075f606"
+    },
+    "DublinFlight\\Content\\Data\\facade-provenance.json": {
+      "bytes": 531491,
+      "sha256": "ae27b7c45c029ce90665eab74305576c17e72452c3b0211d30dac877099d975c"
+    }
+  },
+  "python": "C:\\Users\\niglyn\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+  "import_probes": {
+    "rasterio": {
+      "available": false,
+      "error": "ModuleNotFoundError(\"No module named 'rasterio'\")"
+    },
+    "osgeo.gdal": {
+      "available": false,
+      "error": "ModuleNotFoundError(\"No module named 'osgeo'\")"
+    },
+    "tifffile": {
+      "available": true,
+      "version": "2026.3.3"
+    },
+    "imagecodecs": {
+      "available": false,
+      "error": "ModuleNotFoundError(\"No module named 'imagecodecs'\")"
+    },
+    "PIL": {
+      "available": true,
+      "version": "11.2.1"
+    }
+  },
+  "archive_head": {
+    "checked_at_utc": "2026-09-15T11:20:53.896346+00:00",
+    "status": 200,
+    "resolved_url": "https://archive.nyu.edu/bitstream/2451/38684/26/nyu_2451_38684_misc_other.zip",
+    "content_length": 366295340,
+    "etag": null,
+    "last_modified": "Tue, 18 Sep 2018 16:36:09 GMT",
+    "accept_ranges": null,
+    "digest": null,
+    "content_md5": null
+  },
+  "license_verification": {
+    "checked_at_utc": "2026-09-15T11:21:49.733908+00:00",
+    "license": "CC BY 4.0",
+    "official_record": "https://archive.nyu.edu/handle/2451/38684",
+    "verified_via": "web tool official source record: explicit CC BY 4.0 declaration and direct link to authorized archive",
+    "attribution": "2015 Aerial Laser and Photogrammetry Survey of Dublin City; Debra F. Laefer, Saleh Abuwarda, Anh-Vu Vo, Linh Truong-Hong, Hamid Gharibi; survey 26 March 2015; NYU Faculty Digital Archive.",
+    "changes_notice_required": true
+  },
+  "cache_preflight": {
+    "exact_filename_search_matches": 0,
+    "publisher_archive_checksum_available": false,
+    "note": "HEAD advertises no digest, Content-MD5 or ETag; compute archive SHA-256 locally, do not claim publisher hash verification."
+  },
+  "archive": {
+    "path": "generated-data\\imagery\\gap-fill-candidate\\nyu_2451_38684_misc_other.zip",
+    "bytes": 366295340,
+    "sha256": "05bfbf619a2a801c021c1d3fdac052ab7176520306f7d1741b7c0a99c6da3032",
+    "elapsed_seconds": 49.965,
+    "publisher_checksum_verified": false
+  },
+  "remaining_archive_budget_after_bytes": 580353567,
+  "archive_inventory": {
+    "path": "generated-data\\imagery\\gap-fill-candidate\\archive-inventory.json",
+    "members": 3027,
+    "all_paths_safe": true,
+    "all_member_crc32_passed": true,
+    "total_expanded_bytes": 604257746,
+    "mosaic_ecw_count": 356,
+    "mosaic_ecw_expanded_bytes": 49764040,
+    "mosaic_exact_members_and_sha256_path": "generated-data\\imagery\\gap-fill-candidate\\candidate-inspection.json",
+    "members_extracted": 0
+  },
+  "pillow_ecw_probe": {
+    "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0005.ecw",
+    "opened": false,
+    "error_type": "UnidentifiedImageError",
+    "error": "Existing Pillow cannot identify the ECW image member."
+  },
+  "completed_at_utc": "2026-09-15T11:25:59.324061+00:00",
+  "complete_usable_coverage": false,
+  "verified_added_usable_pixels": 0,
+  "decoder_environment": {
+    "python_3_13": {
+      "rasterio": {
+        "available": false,
+        "error": "ModuleNotFoundError(\"No module named 'rasterio'\")"
+      },
+      "osgeo.gdal": {
+        "available": false,
+        "error": "ModuleNotFoundError(\"No module named 'osgeo'\")"
+      },
+      "tifffile": {
+        "available": true,
+        "version": "2026.3.3"
+      },
+      "imagecodecs": {
+        "available": false,
+        "error": "ModuleNotFoundError(\"No module named 'imagecodecs'\")"
+      },
+      "PIL": {
+        "available": true,
+        "version": "11.2.1"
+      }
+    },
+    "python_3_12": {
+      "rasterio": "ModuleNotFoundError: No module named rasterio",
+      "osgeo.gdal": "ModuleNotFoundError: No module named osgeo"
+    },
+    "gdalinfo_or_gdal_translate_on_path": false,
+    "qgis_osgeo_gdal_arcgis_erdas_global_mapper_hexagon_fme_directory_in_program_files": false,
+    "installed_ecw_driver_available_in_probed_environments": false,
+    "new_dependencies_installed": [],
+    "proprietary_license_accepted": false,
+    "documentation": "https://gdal.org/en/stable/drivers/raster/ecw.html",
+    "documentation_summary": "ECW support is optional and requires the separate ECW/JP2 SDK. No authorized pre-existing reader was found. Installing rasterio solely to confirm the missing optional proprietary decoder is not justified."
+  },
+  "blocker": {
+    "code": "ECW_DECODER_UNAVAILABLE",
+    "detail": "The archive contains 356 20cm-named ECW mosaic pieces (49,764,040 bytes expanded). Neither existing Python has rasterio/osgeo, no GDAL commands or common GIS installation was found in the bounded check, and existing Pillow cannot decode a member. SDK installation and license acceptance are not allowed. Other TIFFs are diagnostic reports/plots, not verified natural-colour gap-fill imagery.",
+    "not_verified": [
+      "Actual ECW CRS or datum equivalence",
+      "Mosaic extent or native pixel spacing from decoded header",
+      "RGB band order",
+      "Usable pixels in any exact gap",
+      "Ground-control or roof-corner registration",
+      "Resampled texture or full coverage"
+    ]
+  },
+  "candidate": {
+    "inspection_path": "generated-data\\imagery\\gap-fill-candidate\\candidate-inspection.json",
+    "crop_path": null,
+    "validity_mask_path": null,
+    "per_pixel_provenance_path": null,
+    "source_native_resolution_m_verified": null,
+    "source_documented_resolution_m": 0.2,
+    "target_extent_wsen_m": [
+      315605.0,
+      234009.0,
+      316373.0,
+      234777.0
+    ],
+    "target_size_wh": [
+      4096,
+      4096
+    ],
+    "target_pixel_spacing_m": 0.1875,
+    "target_top_origin": true,
+    "target_crs_policy": "Verify actual candidate CRS first. Existing TIFF is embedded EPSG:29902; legacy EPSG:29903 numeric-grid rendering is intentionally preserved, not declared datum-equivalent. No relabel, datum shift or one-layer reproject performed.",
+    "nominal_resampling_note": "If decoded source confirms 20cm, 18.75cm output is 1.0666667x linear upsampling, not added survey detail."
+  },
+  "four_gap_coverage": [
+    {
+      "gap_id": "gap-1",
+      "bounds_wsen_m": [
+        315605.0,
+        234628.5,
+        315750.4,
+        234777.0
+      ],
+      "output_fully_void_pixels": 418918,
+      "candidate_usable_pixels": null,
+      "status": "not_testable_without_decoder"
+    },
+    {
+      "gap_id": "gap-2",
+      "bounds_wsen_m": [
+        316241.55,
+        234666.55,
+        316373.0,
+        234777.0
+      ],
+      "output_fully_void_pixels": 341360,
+      "candidate_usable_pixels": null,
+      "status": "not_testable_without_decoder"
+    },
+    {
+      "gap_id": "gap-3",
+      "bounds_wsen_m": [
+        315969.35,
+        234730.15,
+        316129.7,
+        234777.0
+      ],
+      "output_fully_void_pixels": 106248,
+      "candidate_usable_pixels": null,
+      "status": "not_testable_without_decoder"
+    },
+    {
+      "gap_id": "gap-4",
+      "bounds_wsen_m": [
+        315605.0,
+        234475.1,
+        315621.75,
+        234522.0
+      ],
+      "output_fully_void_pixels": 10985,
+      "candidate_usable_pixels": null,
+      "status": "not_testable_without_decoder"
+    }
+  ],
+  "parent_next_action": {
+    "merge_approved": false,
+    "action": "Keep existing partial imagery and neutral mask unchanged. A later continuation needs an already-authorized ECW-capable reader or a publisher-provided licensed GeoTIFF export of these exact mosaic pieces, within a separately approved acquisition. Reuse the cached archive.",
+    "gates_before_parent_approval": [
+      "Read actual CRS/datum, affine grid, band interpretation, nodata and complete mosaic extent.",
+      "Check exact four gap components, not just enclosing rectangles or mosaic footprint.",
+      "Compare independent known roof corners/controls; pixel spacing is not registration accuracy.",
+      "Resample to exact 4096x4096 north-first 0.1875m grid with validity-aware interpolation and source-support guard; label native 20cm upsampling honestly.",
+      "Fill only where existing mask is 0 AND candidate support is fully valid. Preserve every existing 255 pixel and its RGB byte-for-byte.",
+      "Save per-pixel source-ID provenance, candidate-only RGB/mask, per-gap coverage, roundtrip and no-invalid-bleed tests.",
+      "Only after parent approval: registered UETextureTools reimport and saved screenshot visual check."
+    ],
+    "unverified_merge_tests": "Not run: no decoded candidate exists. Archive integrity is not imagery validation."
+  },
+  "preservation_validation": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "archive_exact_approved_size",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "archive_sha256_roundtrip",
+        "passed": true,
+        "detail": "05bfbf619a2a801c021c1d3fdac052ab7176520306f7d1741b7c0a99c6da3032"
+      },
+      {
+        "name": "budget_enforced",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "all_3027_archive_paths_safe",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "all_zip_member_crcs",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "356_explicit_mosaic_members_crc_read",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "no_extraction_or_generated_crop",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "all_six_current_content_data_files_unchanged",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "existing_mask_exact_dimensions_and_mode",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "existing_mask_binary",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "existing_valid_pixel_count_unchanged",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "original_image_preserved",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "original_georeference_preserved",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "original_mask_preserved",
+        "passed": true,
+        "detail": null
+      }
+    ],
+    "current_data_files": [
+      {
+        "path": "DublinFlight\\Content\\Data\\ATTRIBUTION.txt",
+        "before_sha256": "4132fd1ba7910ef12649ff009b118e7fa2bfc32851dc75b66171d50e33bc159a",
+        "after_sha256": "4132fd1ba7910ef12649ff009b118e7fa2bfc32851dc75b66171d50e33bc159a",
+        "unchanged": true
+      },
+      {
+        "path": "DublinFlight\\Content\\Data\\dublin-city.json",
+        "before_sha256": "54a4e9d6a835632d1e9dd58050559aced46ee92cd675961ff1a9732ac6750af4",
+        "after_sha256": "54a4e9d6a835632d1e9dd58050559aced46ee92cd675961ff1a9732ac6750af4",
+        "unchanged": true
+      },
+      {
+        "path": "DublinFlight\\Content\\Data\\dublin-ortho-georeference.json",
+        "before_sha256": "03723c3d319213104b3322ab0439bbe3ed218d41052e0ed7485b58d13d9e6729",
+        "after_sha256": "03723c3d319213104b3322ab0439bbe3ed218d41052e0ed7485b58d13d9e6729",
+        "unchanged": true
+      },
+      {
+        "path": "DublinFlight\\Content\\Data\\dublin-ortho-validity.png",
+        "before_sha256": "5ac7ad823bec5a925e8b347e019d57ba452d3580f938ab2f0a7800740d89407d",
+        "after_sha256": "5ac7ad823bec5a925e8b347e019d57ba452d3580f938ab2f0a7800740d89407d",
+        "unchanged": true
+      },
+      {
+        "path": "DublinFlight\\Content\\Data\\dublin-ortho.png",
+        "before_sha256": "f3e2aa75e4b5c4a52bd6e2f177bc896d2ddd0d78c082a1ab742536f9c075f606",
+        "after_sha256": "f3e2aa75e4b5c4a52bd6e2f177bc896d2ddd0d78c082a1ab742536f9c075f606",
+        "unchanged": true
+      },
+      {
+        "path": "DublinFlight\\Content\\Data\\facade-provenance.json",
+        "before_sha256": "ae27b7c45c029ce90665eab74305576c17e72452c3b0211d30dac877099d975c",
+        "after_sha256": "ae27b7c45c029ce90665eab74305576c17e72452c3b0211d30dac877099d975c",
+        "unchanged": true
+      }
+    ],
+    "existing_shader_valid_pixels": 15889502,
+    "existing_shader_invalid_pixels": 887714,
+    "new_fill_pixels": 0,
+    "candidate_no_invalid_bleed_status": "blocked_not_run",
+    "note": "Current image/mask preservation verified. Candidate coverage, resampling, registration and no-invalid-bleed tests are blocked, not passed."
+  }
+}

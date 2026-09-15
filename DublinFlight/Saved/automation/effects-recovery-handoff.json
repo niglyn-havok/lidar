@@ -1,0 +1,116 @@
+{
+  "status": "assets_recovered_cpp_ready_for_parent_build_and_native_test",
+  "date": "2026-09-15",
+  "scope": "Effects source and /Game/FX only",
+  "observedFailure": "AuthoredAssetContract: three UNiagaraSystem::IsValid failures; load, emitter count, EffectType, user parameter checks passed.",
+  "editor": {"pid": 15344, "state": "LIVE", "pythonRemoteExecution": false},
+  "diagnosis": {
+    "cause": "Cold-loaded Niagara packages were not fully initialized and had deferred on-demand compilation. LoadObject plus immediate IsValid is not Niagara readiness; the production EmitImpact IsValid gate also prevented the first component activation from driving lazy readiness.",
+    "notTheCause": "All three authored packages loaded, contained the expected concrete emitters and parameters, and already referenced /Script/DublinFlight.Default__DublinImpactEffectType. The native EffectType constructor and its significance subobject were valid.",
+    "reproduction": "GetSystemCompileState(NS_CannonImpact) timed out after 120 seconds before resaving. GetSystemData showed the correct native EffectType before recovery.",
+    "recovery": "Typed AssetTools.save_assets for exactly the three /Game/FX Niagara systems returned true. This invokes native UNiagaraSystem::PreSave, which calls EnsureFullyLoaded and WaitForCompilationComplete. Afterwards all three reported UpToDate, not compiling, not stale, no compile errors or warnings.",
+    "engineEvidence": [
+      "NiagaraSystem.h: UNiagaraSystem has LoadBehavior=LazyOnDemand; IsValid does not call EnsureFullyLoaded.",
+      "NiagaraSystem.cpp: UpdateSystemAfterLoad can leave RequestCompileStatus=RequestPendingOnDemand.",
+      "NiagaraSystem.cpp: HasOutstandingCompilationRequests includes deferred requests; passive waiting alone does not start them.",
+      "NiagaraSystem.cpp: PreSave calls EnsureFullyLoaded and WaitForCompilationComplete."
+    ]
+  },
+  "assetsSaved": true,
+  "initialSaveAllThreeReturnedTrue": true,
+  "secondSaveAllThreeReturnedTrue": true,
+  "systems": [
+    {
+      "path": "/Game/FX/NS_CannonImpact.NS_CannonImpact",
+      "saved": true,
+      "diskBytes": 1589371,
+      "sha256": "d8cc8bace6fd97f683586671098d96c7da288e82929c1737550ffe9e0aa541c9",
+      "compileStatus": "UpToDate",
+      "isCompiling": false,
+      "isStale": false,
+      "compileErrors": 0,
+      "compileWarnings": 0,
+      "compiledScripts": 17,
+      "gpuEmitters": 5,
+      "stackErrors": 0,
+      "stackWarnings": 0,
+      "stackVersionUpgradeInfos": 10,
+      "unchangedAuthoredParticleCap": 58
+    },
+    {
+      "path": "/Game/FX/NS_BombExplosion.NS_BombExplosion",
+      "saved": true,
+      "diskBytes": 1586206,
+      "sha256": "bca73846b9c811835fc8ab2d2a6c7eee28d47fcd6caa38777f589d3f3265bfec",
+      "compileStatus": "UpToDate",
+      "isCompiling": false,
+      "isStale": false,
+      "compileErrors": 0,
+      "compileWarnings": 0,
+      "compiledScripts": 17,
+      "gpuEmitters": 5,
+      "stackErrors": 0,
+      "stackWarnings": 0,
+      "stackVersionUpgradeInfos": 10,
+      "unchangedAuthoredParticleCap": 194
+    },
+    {
+      "path": "/Game/FX/NS_WaterImpact.NS_WaterImpact",
+      "saved": true,
+      "diskBytes": 1343823,
+      "sha256": "183effd273688f276bc3c4e332fb4537fcef7654044d1edb7944c2577f4798f0",
+      "compileStatus": "UpToDate",
+      "isCompiling": false,
+      "isStale": false,
+      "compileErrors": 0,
+      "compileWarnings": 0,
+      "compiledScripts": 14,
+      "gpuEmitters": 4,
+      "stackErrors": 0,
+      "stackWarnings": 0,
+      "stackVersionUpgradeInfos": 8,
+      "unchangedAuthoredParticleCap": 204
+    }
+  ],
+  "nativeEffectType": {
+    "path": "/Script/DublinFlight.Default__DublinImpactEffectType",
+    "boundToAllThree": true,
+    "significanceHandler": "/Script/DublinFlight.Default__DublinImpactEffectType:DistanceSignificance",
+    "policyCount": 1,
+    "maxInstances": 16,
+    "maxSystemInstances": 16,
+    "updateFrequency": "High",
+    "cullReaction": "DeactivateImmediate"
+  },
+  "cppChanged": true,
+  "sourceFilesChanged": [
+    "Source\\DublinFlight\\Effects\\DublinImpactEffectsSubsystem.h",
+    "Source\\DublinFlight\\Effects\\DublinImpactEffectsSubsystem.cpp",
+    "Source\\DublinFlight\\Effects\\DublinImpactEffectsTests.cpp"
+  ],
+  "sourceChanges": [
+    "Shared PrepareSystem helper finishes Niagara lazy post-load and starts only deferred editor compilation; called during world subsystem initialization, not the native CDO constructor.",
+    "Impact submission polls outstanding editor compilation rather than logging a valid pending asset as missing/corrupt. No game-thread blocking wait.",
+    "AuthoredAssetContract uses native latent commands, strong UObject references, actual compilation polling including GPU shaders and a 120-second per-system timeout with path-specific diagnostics.",
+    "Retained IsValid assertion; strengthened contract with IsReadyToRun, successful system spawn/update scripts, exact shared native EffectType identity, and guarded scalability-policy validation."
+  ],
+  "preserved": [
+    "Native CDO hard UPROPERTY asset references for cooking",
+    "Seven existing FX assets; no placeholders or copies created",
+    "Authored emitter counts, burst budgets, materials, user variables and loops",
+    "Sixteen global systems and sixteen per-system pool entries",
+    "Other three previously passing Effects tests unchanged"
+  ],
+  "validation": {
+    "typedNiagaraCompileInspection": "All 48 scripts across three systems UpToDate; no errors/warnings.",
+    "typedNiagaraStackInspection": "All three systems zero errors/warnings; existing module-version upgrade information only.",
+    "sourceApiReview": "Checked new calls against installed UE5.8 NiagaraSystem.h, NiagaraScript.h, AutomationTest.h.",
+    "staticRecoveryInvariants": "PASS: handoff parses, exact three systems and budgets, latent/valid/ready/GPU checks present, production preparation present, hard references preserved, no production blocking wait.",
+    "encoding": "All three edited source files retain UTF-8 without BOM and CRLF.",
+    "nativeCompileAndExecution": "Not run, as required by ownership constraints."
+  },
+  "parentNextAction": "Build once with the parent's other pending source changes; rerun ONLY DublinFlight.Effects.AuthoredAssetContract. Then parent owns visual validation in the destruction world.",
+  "cityMaterialOrParameterChangesRequired": [],
+  "nativeTestsRun": false,
+  "constraints": "No builds, PIE, map/binding changes, editor lifecycle, external assets, or unrestricted Python."
+}

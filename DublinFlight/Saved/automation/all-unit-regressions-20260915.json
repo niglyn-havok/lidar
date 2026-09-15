@@ -1,0 +1,324 @@
+{
+	"tests": [
+		{
+			"name": "DublinFlight.City.Coordinates.KnownSurveyAndClockwise",
+			"state": "Success",
+			"duration": 0.05635090172290802,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.City.Geometry.ChunkMappingAndMaterials",
+			"state": "Success",
+			"duration": 0.067699097096920013,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.City.Geometry.FixedTerrainTopology",
+			"state": "Success",
+			"duration": 0.063701793551445007,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.City.Lifecycle.ReclaimsUntrackedDuplicates",
+			"state": "Success",
+			"duration": 0.080633200705051422,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.City.Parser.SafeRelativePath",
+			"state": "Success",
+			"duration": 0.064410299062728882,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.City.Parser.ShapeAndBounds",
+			"state": "Success",
+			"duration": 0.10175959765911102,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Destruction.Buildings.SelectiveMeshRemovalAndIdentity",
+			"state": "Success",
+			"duration": 0.072503596544265747,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Destruction.Fracture.AuthoredContactGraph",
+			"state": "Success",
+			"duration": 0.071981504559516907,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Destruction.Fracture.RegisteredCollisionInitialization",
+			"state": "Success",
+			"duration": 0.09136749804019928,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Destruction.Fracture.RepeatedHitsUseCurrentLeaves",
+			"state": "Success",
+			"duration": 0.050047900527715683,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Destruction.Fracture.RgbaAndCosmeticIdentity",
+			"state": "Success",
+			"duration": 0.067222602665424347,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Destruction.Ground.PersistentCraterAndBorderContinuity",
+			"state": "Success",
+			"duration": 0.062462601810693741,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Destruction.Impact.BoundsLocalityAndStrain",
+			"state": "Success",
+			"duration": 0.059777397662401199,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Destruction.Readiness.RejectsUnavailableAssetsWithoutMutation",
+			"state": "Success",
+			"duration": 0.094447195529937744,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Destruction.Water.PropagationDampingAndRiverMask",
+			"state": "Success",
+			"duration": 0.064509198069572449,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Effects.AuthoredAssetContract",
+			"state": "Success",
+			"duration": 0.12569700181484222,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Effects.BoundedBudgetAndScale",
+			"state": "Success",
+			"duration": 0.063364103436470032,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Effects.FinitePayloadRouting",
+			"state": "Success",
+			"duration": 0.067442901432514191,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Effects.OriginalAudioBoundedAndDeterministic",
+			"state": "Success",
+			"duration": 0.064729399979114532,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Flight.AttitudeAndFramePartition",
+			"state": "Success",
+			"duration": 0.061530701816082001,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Flight.FiniteGuardsAndBoundedSubsteps",
+			"state": "Success",
+			"duration": 0.064050301909446716,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Flight.GodStationaryAimingAndTranslation",
+			"state": "Success",
+			"duration": 0.069533601403236389,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Flight.InitialStateUnitsAndCompass",
+			"state": "Success",
+			"duration": 0.063013195991516113,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Flight.InputMappingAndHeldKeySuppression",
+			"state": "Success",
+			"duration": 0.060802299529314041,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Flight.ModeTransitionsAndReset",
+			"state": "Success",
+			"duration": 0.062899798154830933,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Flight.SweptMovementCallbackContract",
+			"state": "Success",
+			"duration": 0.064022399485111237,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Flight.ThrottleBoundsAndDistance",
+			"state": "Success",
+			"duration": 0.068762004375457764,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Input.LabelsAndDurations",
+			"state": "Success",
+			"duration": 0.064447402954101562,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Input.ScenarioTargetMinimumFPS",
+			"state": "Success",
+			"duration": 0.0582846999168396,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Metrics.Exact30FPSThreshold",
+			"state": "Success",
+			"duration": 0.0686459019780159,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Metrics.Exact60FPSThreshold",
+			"state": "Success",
+			"duration": 0.062346197664737701,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Metrics.MemoryCap",
+			"state": "Success",
+			"duration": 0.055366899818181992,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Metrics.QuantilesAndOrder",
+			"state": "Success",
+			"duration": 0.066074199974536896,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Metrics.RejectInvalidSamples",
+			"state": "Success",
+			"duration": 0.06723080575466156,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Metrics.ScenarioTargetsAndSpike",
+			"state": "Success",
+			"duration": 0.062986403703689575,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Metrics.SpikeDespiteGoodAverage",
+			"state": "Success",
+			"duration": 0.061754800379276276,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Window.RejectInvalidClock",
+			"state": "Success",
+			"duration": 0.064439594745635986,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Window.WarmupAndFullFrames",
+			"state": "Success",
+			"duration": 0.067169100046157837,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Visuals.AirframeGeometry",
+			"state": "Success",
+			"duration": 0.066868007183074951,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Weapons.Unit.BallisticGravityAndInheritedVelocity",
+			"state": "Success",
+			"duration": 0.064456596970558167,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Weapons.Unit.CooldownAndNoCatchupBurst",
+			"state": "Success",
+			"duration": 0.061430100351572037,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Weapons.Unit.GodMovementInputHasNoWeaponConflicts",
+			"state": "Success",
+			"duration": 0.06611180305480957,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Weapons.Unit.NonblockingWaterTrajectoryCrossing",
+			"state": "Success",
+			"duration": 0.066731303930282593,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Weapons.Unit.OwnerImmunityAndExactlyOnceImpact",
+			"state": "Success",
+			"duration": 0.061988398432731628,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Weapons.Unit.YieldFiniteClampAndMonotonicGameCurve",
+			"state": "Success",
+			"duration": 0.067716501653194427,
+			"errors": [],
+			"warnings": []
+		}
+	],
+	"passed": 45,
+	"failed": 0,
+	"skipped": 0,
+	"total": 45,
+	"duration": 3.0587711334228516
+}

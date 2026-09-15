@@ -1,0 +1,267 @@
+{
+  "schema_version": 1,
+  "status": "lifecycle_fix_complete_ready_for_parent_compile",
+  "phase": "Editor-only native latent PIE startup replaces preexisting-PIE assumption; actual input assertions unchanged",
+  "started_at": "2026-09-08T17:59:33.1353732+01:00",
+  "completed_at": "2026-09-08T18:46:52.9889119+01:00",
+  "acceptance_documents": [
+    "checkpoint-01-flight-acceptance.md",
+    "checkpoint-06-dublin-midair.md (supersedes map/runway assumptions)"
+  ],
+  "scope": {
+    "read_in_full": [
+      "DublinFlightSimulation.h",
+      "DublinFlightSimulation.cpp",
+      "DublinFlightPawn.h",
+      "DublinFlightPawn.cpp",
+      "DublinFlightHUD.h",
+      "DublinFlightHUD.cpp",
+      "DublinFlightGameMode.h",
+      "DublinFlightGameMode.cpp"
+    ],
+    "modified": [
+      "Source\\DublinFlight\\DublinFlightSimulation.h",
+      "Source\\DublinFlight\\DublinFlightSimulation.cpp",
+      "Source\\DublinFlight\\DublinFlightPawn.h",
+      "Source\\DublinFlight\\DublinFlightPawn.cpp",
+      "Source\\DublinFlight\\DublinFlightHUD.cpp"
+    ],
+    "added": [
+      "Source\\DublinFlight\\Tests\\DublinFlightSimulationTests.cpp",
+      "Source\\DublinFlight\\Tests\\DublinFlightPIETests.cpp"
+    ],
+    "read_only_dependency_check": "Source\\DublinFlight\\DublinFlight.Build.cs",
+    "untouched": [
+      "Performance and City subfolders: neither inspected nor changed",
+      "Config, Build.cs and .uproject: not modified",
+      "Editor assets and maps: not mutated",
+      "HUD.h and GameMode.h/cpp recovered and reviewed unchanged"
+    ]
+  },
+  "changes": [
+    "Compass helper and HUD-facing pawn heading now use (yaw+90) modulo 360 for +X east/+Y south/+Z up, including negative/wrapped/invalid input guards.",
+    "Aircraft uses existing /Game/Materials/M_FlightSurface with Tint and Roughness MIDs. Primitive silhouette remains explicitly interim art.",
+    "Successful resume from a formerly obstructed position clears stale blocked status.",
+    "Preserved 40 m/s initial speed, 20-65 m/s envelope, deterministic bounded substeps, swept collision and checked Home reset, stationary aiming/repositioning god mode, held-input suppression.",
+    "HUD help wording compacted; units, compass, speed, altitude, reticle and mode-specific controls retained.",
+    "Eight deterministic math/input/mover tests plus one full latent actual-PIE-input scenario added.",
+    "PIE scenario uses UE5.8 FInputKeyEventArgs::CreateSimulated and the local player mapped input device, waits on elapsed world time and at least two world frames per phase, never manually ticks or calls state methods in acceptance steps.",
+    "PIE setup alone may ResetFlight; cleanup alone may ToggleGodMode. All acceptance toggle/reset actions are pressed/released G/Home through PlayerController InputKey.",
+    "PIE cleanup releases all held keys, zeros mouse axes, flushes controller input and leaves stationary god mode, including failure/timeout teardown.",
+    "Lifecycle correction: RunTest requires current editor /Game/Maps/Dublin, queues native FStartPIECommand(false) after automation-session setup, then waits up to 60 seconds for initialized/possessed pawn, input/HUD and native viewport focus/capture.",
+    "The original actual-input BuildSteps body is byte-for-byte unchanged after line-ending normalization; runtime and eight unit tests were not modified by this revision.",
+    "Native viewport focus/capture is acquired before the input scenario and maintained during it; failure remains explicit.",
+    "PrePIEEnded cleanup releases held input before world teardown. Startup/fixture destruction also parks any surviving pawn. No FEndPlayMapCommand is scheduled; external StopTestSession can nevertheless destroy PIE after completion."
+  ],
+  "dependencies": {
+    "engine": "UE 5.8 Development Editor with WITH_DEV_AUTOMATION_TESTS enabled",
+    "modules_required": [
+      "Core",
+      "CoreUObject",
+      "Engine",
+      "InputCore",
+      "ApplicationCore",
+      "UnrealEd (editor targets only)"
+    ],
+    "already_declared": "Existing runtime dependencies unchanged. Parent must add the editor-only UnrealEd dependency before compiling the revised PIE test.",
+    "editor_module": "NEW: UnrealEd private dependency required for editor targets only; PIE test is guarded WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR.",
+    "material": {
+      "asset": "/Game/Materials/M_FlightSurface.M_FlightSurface",
+      "parameters": [
+        "Tint: vector",
+        "Roughness: scalar"
+      ],
+      "existence_checked": true,
+      "parameter_runtime_check": "Pawn logs error and HUD status if missing; actual parameter values not validated in editor by this agent."
+    },
+    "map": {
+      "asset": "/Game/Maps/Dublin",
+      "player_start_cm": [
+        -28000,
+        8000,
+        18000
+      ],
+      "rotation_degrees": [
+        0,
+        0,
+        0
+      ],
+      "basis": "+X east, +Y south, +Z up; centimetres",
+      "game_mode": "/Script/DublinFlight.DublinFlightGameMode",
+      "clearance": "Keep at least 4.7 m radius plus 2 cm around PlayerStart clear of blocking geometry.",
+      "city_integration": "Parent owns actual city data/runtime and saved map; no synthetic course created."
+    },
+    "required_build_cs_snippet": "if (Target.bBuildEditor) { PrivateDependencyModuleNames.Add(\"UnrealEd\"); }"
+  },
+  "test_invocation": {
+    "pure_editor_console": "Automation RunTests DublinFlight.Flight",
+    "pure_command_line_example": "\"<UE_ROOT>\\Engine\\Binaries\\Win64\\UnrealEditor-Cmd.exe\" \"<PROJECT_ROOT>\\DublinFlight.uproject\" -unattended -NullRHI -ExecCmds=\"Automation RunTests DublinFlight.Flight\" -TestExit=\"Automation Test Queue Empty\" -ReportExportPath=\"<PROJECT_ROOT>\\Saved\\Automation\\Flight\"",
+    "pie_setup": [
+      "Parent adds editor-only UnrealEd dependency and compiles the revised test.",
+      "Keep /Game/Maps/Dublin open as the current editor map, with DublinFlightGameMode and the specified mid-air PlayerStart.",
+      "Run the typed AutomationTestToolset.RunTests for DublinFlight.PIE.ActualPlayerControllerInput from editor mode; do not rely on pre-starting PIE.",
+      "The fixture queues native FStartPIECommand(false), waits for possession/HUD/player input, then captures the real PIE viewport and runs the unchanged input sequence.",
+      "Use a single local player and keep PIE unpaused; do not provide physical input during the sequence. Parent owns background-throttle preferences."
+    ],
+    "pie_console": "Automation RunTests DublinFlight.PIE.ActualPlayerControllerInput",
+    "pie_no_session_behavior": "No preexisting PIE is required: the current editor Dublin map is required instead. The native fixture must create PIE and acquire its possessed pawn/input/HUD/captured viewport within 60 seconds or explicitly FAIL. Wrong editor/PIE map, multiple local worlds, startup teardown, lost possession or failed capture also FAIL; no skip or reduced assertion path.",
+    "pie_timing": "60-second bounded startup/possession/capture wait, then unchanged 120-second maximum actual-input scenario; ordinary input sequence approximately 12-20 seconds after startup.",
+    "pie_end_state": "Fixture releases held keys, zeros mouse, flushes input and parks a surviving pawn in GOD. It does not request PIE shutdown, but AutomationController StopTestSession may tear PIE down again before an external screenshot; no persistence guarantee across that teardown."
+  },
+  "test_coverage": {
+    "pure": [
+      "Initial units and Dublin compass basis",
+      "Throttle limits and accelerated distance",
+      "Pitch/bank/yaw, angle limits, 30/120 Hz partition consistency",
+      "Mode transitions, pose preservation, resume velocity and exact original reset",
+      "Five-second exact-zero god drift, mouse aim, horizontal/diagonal/vertical translation and no coasting",
+      "Native input mapping, opposing keys, dual Shift and held-key suppression/rearm",
+      "NaN/infinity guards, normal frame-time preservation, bounded hitches/substeps and world-range guard",
+      "Mover callback collision stop, contact position and invalid mover output"
+    ],
+    "pie": [
+      "Fixture-created and natively focused Dublin PIE pawn, HUD, view target, initial 40 m/s eastward flight",
+      "Held D/A bank, S/W pitch, E/Q yaw and Shift/Ctrl throttle over elapsed frames, with explicit release checks",
+      "G held/repeated for five seconds with carried W suppressed; measured maximum drift must be under 1 cm",
+      "No-input god stop; W re-press, D strafe, Space/C vertical reposition",
+      "Actual MouseX/MouseY axis input changes aim without translation",
+      "G resume from repositioned pose, per-frame teleport guards, preserved cruise",
+      "Actual Home input restores original spawn path, orientation, altitude, heading and 40 m/s",
+      "Final G parks; cleanup releases all held keys"
+    ]
+  },
+  "validation": {
+    "static_passed": true,
+    "artifact": "Original Saved\\Automation\\flight-source-static-validation.json is historical; lifecycle revision static evidence is embedded in validation.latest_static_validation.",
+    "engine_api_review": [
+      "PlayerController InputKey(const FInputKeyEventArgs&) and CreateSimulated",
+      "UE5.8 scoped EAutomationTestFlags rather than uint32",
+      "Native key/axis binding signatures",
+      "Material Tint/Roughness getter and MID APIs",
+      "Controller-to-pawn tick prerequisite",
+      "World RemovePIEPrefix and elapsed time",
+      "Platform user/input-device mapper",
+      "Automation test assertion and latent command APIs"
+    ],
+    "tests_run": [
+      "DublinFlight.Flight.InitialStateUnitsAndCompass",
+      "DublinFlight.Flight.ThrottleBoundsAndDistance",
+      "DublinFlight.Flight.AttitudeAndFramePartition",
+      "DublinFlight.Flight.ModeTransitionsAndReset",
+      "DublinFlight.Flight.GodStationaryAimingAndTranslation",
+      "DublinFlight.Flight.InputMappingAndHeldKeySuppression",
+      "DublinFlight.Flight.FiniteGuardsAndBoundedSubsteps",
+      "DublinFlight.Flight.SweptMovementCallbackContract"
+    ],
+    "tests_unrun": [
+      "DublinFlight.PIE.ActualPlayerControllerInput (revised lifecycle fixture)"
+    ],
+    "build": "Parent reports initial integration build PASS. This editor-only PIE lifecycle revision has NOT been compiled; parent owns serialized rebuild.",
+    "editor_launch_or_calls": "NONE",
+    "screenshots": "NOT CAPTURED",
+    "assets_saved": "NOT APPLICABLE: no editor assets changed",
+    "parent_reported_results": [
+      "Initial native integration build succeeded.",
+      "All eight DublinFlight.Flight.* unit tests passed.",
+      "Previous PIE test failed before input setup because AutomationController tore down externally started PIE; this revision replaces that fixture contract.",
+      "Revised lifecycle and actual-input PIE acceptance remain unrun."
+    ],
+    "latest_static_validation": {
+      "timestamp": "2026-09-08T18:46:52.9889119+01:00",
+      "scope": "PIE test lifecycle revision only",
+      "issues": [],
+      "acceptance_body_unchanged": true,
+      "acceptance_body_sha256": "A6286EB1C8D6977758BBBCB712FEBA138C3D8E70FC75A4D0F27EFA8171924880",
+      "checked": [
+        "Balanced delimiters and CRLF/UTF-8",
+        "Editor-only compile guard and native StartPIE command order",
+        "Original actual-input sequence/assertions unchanged",
+        "Bounded no-PIE/possession/capture failure replaces the old preexisting-PIE contract",
+        "PrePIEEnded cleanup handler registered and removed",
+        "UE5.8 native helper/delegate/editor-world APIs verified against installed headers/source"
+      ],
+      "compiled_or_executed": false
+    }
+  },
+  "remaining_parent_work": [
+    "Add conditional UnrealEd private dependency: if (Target.bBuildEditor) { PrivateDependencyModuleNames.Add(\"UnrealEd\"); }",
+    "Compile the revised editor-only PIE fixture using the parent serialized build. Runtime and eight passing unit tests were not changed.",
+    "Run typed AutomationTestToolset.RunTests(\"DublinFlight.PIE.ActualPlayerControllerInput\") with current editor map /Game/Maps/Dublin; the fixture now starts PIE itself.",
+    "Confirm native startup, focus/capture and all unchanged held-input acceptance phases pass; inspect any explicit 60-second startup or 120-second scenario failure.",
+    "Capture gameplay while fixture-owned PIE remains alive if the automation session permits. StopTestSession may destroy PIE again; parent must not treat a surviving screenshot world as guaranteed.",
+    "Continue real city collision/blocked-reset and visual review acceptance; these are not proven by unit tests alone."
+  ],
+  "limitations": [
+    "Source-ready is not a passed flight, visual quality or game-completion milestone.",
+    "Primitive aircraft is interim; no stunning/final-art claim.",
+    "No runway, pylons or test-course actors/levels created.",
+    "No weapons/destruction/water/performance/60 FPS acceptance claimed.",
+    "No builds, editor calls, PythonRemoteExecution, GitHub/issue operations, or delegation performed."
+  ],
+  "source_hashes": [
+    {
+      "path": "Source\\DublinFlight\\DublinFlightSimulation.h",
+      "sha256": "934C9CB164EE3BED74035004A40FD46B92D4E323FDD5A11099A63992EFEE3510",
+      "bytes": 3987
+    },
+    {
+      "path": "Source\\DublinFlight\\DublinFlightSimulation.cpp",
+      "sha256": "257D423F5B344DBAD97FA0673EC749C1F33CD42E1ABD9DEFE72C3882925D6F99",
+      "bytes": 9938
+    },
+    {
+      "path": "Source\\DublinFlight\\DublinFlightPawn.h",
+      "sha256": "80352A47382C5398201A9E87039156BFDE6261F4DAE3FF6D9C2541AC90FDFDD6",
+      "bytes": 4767
+    },
+    {
+      "path": "Source\\DublinFlight\\DublinFlightPawn.cpp",
+      "sha256": "F3F6BE4B5CBEFD1DDAD64D47D275810FCD0B9FD4FA72B387D703DF9890738B37",
+      "bytes": 16290
+    },
+    {
+      "path": "Source\\DublinFlight\\DublinFlightHUD.h",
+      "sha256": "6E254A9F8A4257AA05AF8795DAE9BA51A9C3F1E1FDE669A1B460B3F97784BFA5",
+      "bytes": 302
+    },
+    {
+      "path": "Source\\DublinFlight\\DublinFlightHUD.cpp",
+      "sha256": "C25F72593537CFE7D8E65F849C0B2371D8C1810460D6B99C3032AA7CDEDE2B44",
+      "bytes": 4910
+    },
+    {
+      "path": "Source\\DublinFlight\\DublinFlightGameMode.h",
+      "sha256": "F4B4FD8F9E7FB2B853767AC03A6EC124AB3B4CC590A196A572EFE6A467EAE652",
+      "bytes": 273
+    },
+    {
+      "path": "Source\\DublinFlight\\DublinFlightGameMode.cpp",
+      "sha256": "4735A379C1B21F5F7E27D54AE44BA2D0560EE6F8C849DDDBFDA5B6E9A2DDB486",
+      "bytes": 397
+    },
+    {
+      "path": "Source\\DublinFlight\\Tests\\DublinFlightSimulationTests.cpp",
+      "sha256": "D355333F19DC3714CFAD8A08B5648B30DDD8C6BD4F42B432AF606B0596534EB8",
+      "bytes": 16868
+    },
+    {
+      "path": "Source\\DublinFlight\\Tests\\DublinFlightPIETests.cpp",
+      "sha256": "D3D94465CCFFCB959B275525656C5EACE52785004AE6D26540F8614C1BC421C3",
+      "bytes": 23814
+    }
+  ],
+  "lifecycle_revision": {
+    "started_at": "2026-09-08T18:43:22.9130215+01:00",
+    "scope": [
+      "Source\\DublinFlight\\Tests\\DublinFlightPIETests.cpp",
+      "Saved\\Automation\\flight-implementation-handoff.json"
+    ],
+    "reported_baseline": "Parent reports integration build succeeded and all eight flight math tests passed; old PIE test failed because AutomationController tears down preexisting PIE before RunTest.",
+    "acceptance_body_sha256_before": "A6286EB1C8D6977758BBBCB712FEBA138C3D8E70FC75A4D0F27EFA8171924880",
+    "build_or_editor_calls_by_agent": false,
+    "completed_at": "2026-09-08T18:46:52.9889119+01:00",
+    "acceptance_body_sha256_after": "A6286EB1C8D6977758BBBCB712FEBA138C3D8E70FC75A4D0F27EFA8171924880",
+    "static_passed": true,
+    "standard_pipeline": "FStartPIECommand(false) -> bounded possession/focus wait -> unchanged actual PlayerController InputKey scenario"
+  }
+}

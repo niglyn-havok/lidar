@@ -1,0 +1,383 @@
+{
+  "dataset": "2015 Aerial Laser and Photogrammetry Survey of Dublin City",
+  "capture_date": "2015-03-26",
+  "licence": "CC BY 4.0",
+  "attribution": "Debra F. Laefer, Saleh Abuwarda, Anh-Vu Vo, Linh Truong-Hong, Hamid Gharibi",
+  "source_index": "https://serv.cusp.nyu.edu/projects/ALSDublin15/json/all_bitstreams.json",
+  "horizontal_coordinates": "Irish National Grid, metres",
+  "vertical_datum": "Ordnance Survey Malin Head",
+  "center_irish_grid": [
+    315989,
+    234393
+  ],
+  "center_source": "https://www.buildingsofireland.ie/buildings-search/building/50060552/oconnell-bridge-dublin-1-dublin",
+  "radius_metres": 1000,
+  "selection": "Every available 500m tile whose square intersects the 1000m circle; complete tiles are retained, not clipped.",
+  "coverage_caution": "Tile availability does not guarantee continuous point coverage. The 2015 survey has partial coverage outside its densely surveyed core.",
+  "required_tile_ids": [
+    "314500_234000",
+    "314500_234500",
+    "315000_233500",
+    "315000_234000",
+    "315000_234500",
+    "315000_235000",
+    "315500_233000",
+    "315500_233500",
+    "315500_234000",
+    "315500_234500",
+    "315500_235000",
+    "316000_233000",
+    "316000_233500",
+    "316000_234000",
+    "316000_234500",
+    "316000_235000",
+    "316500_233500",
+    "316500_234000",
+    "316500_234500",
+    "316500_235000"
+  ],
+  "unavailable_tile_ids": [],
+  "archive_bytes_total": 6073459475,
+  "tiles": [
+    {
+      "tile_id": "314500_234000",
+      "bounds_irish_grid": [
+        314500,
+        234000,
+        315000,
+        234500
+      ],
+      "record_url": "https://geo.nyu.edu/catalog/nyu-2451-38591",
+      "download_url": "https://archive.nyu.edu/retrieve/79805/nyu_2451_38591_pc_T_314500_234000.zip",
+      "archive_filename": "nyu_2451_38591_pc_T_314500_234000.zip",
+      "archive_bytes": 107110211,
+      "laz_filename": "T_314500_234000.laz",
+      "laz_sha256": "a9dfdacd3660717d9db947226159fe39eddddf1e3463755ba122003565300b48",
+      "checksum_url": "https://archive.nyu.edu/retrieve/79806/nyu_2451_38591_manifest_T_314500_234000.json",
+      "worker": 0
+    },
+    {
+      "tile_id": "314500_234500",
+      "bounds_irish_grid": [
+        314500,
+        234500,
+        315000,
+        235000
+      ],
+      "record_url": "https://geo.nyu.edu/catalog/nyu-2451-38592",
+      "download_url": "https://archive.nyu.edu/retrieve/79962/nyu_2451_38592_pc_T_314500_234500.zip",
+      "archive_filename": "nyu_2451_38592_pc_T_314500_234500.zip",
+      "archive_bytes": 7774730,
+      "laz_filename": "T_314500_234500.laz",
+      "laz_sha256": "f5cc512bab4d86fad35eba49686856df253438eda874d289259d7805a3959015",
+      "checksum_url": "https://archive.nyu.edu/retrieve/79810/nyu_2451_38592_manifest_T_314500_234500.json",
+      "worker": 1
+    },
+    {
+      "tile_id": "315000_233500",
+      "bounds_irish_grid": [
+        315000,
+        233500,
+        315500,
+        234000
+      ],
+      "record_url": "https://geo.nyu.edu/catalog/nyu-2451-38594",
+      "download_url": "https://archive.nyu.edu/retrieve/79817/nyu_2451_38594_pc_T_315000_233500.zip",
+      "archive_filename": "nyu_2451_38594_pc_T_315000_233500.zip",
+      "archive_bytes": 451052234,
+      "laz_filename": "T_315000_233500.laz",
+      "laz_sha256": "8a53c3c191cd27e3472b3e717e3c2d7d979084b74ace0d1e86042b11b56f2797",
+      "checksum_url": "https://archive.nyu.edu/retrieve/79818/nyu_2451_38594_manifest_T_315000_233500.json",
+      "worker": 0
+    },
+    {
+      "tile_id": "315000_234000",
+      "bounds_irish_grid": [
+        315000,
+        234000,
+        315500,
+        234500
+      ],
+      "record_url": "https://geo.nyu.edu/catalog/nyu-2451-38595",
+      "download_url": "https://archive.nyu.edu/retrieve/79822/nyu_2451_38595_pc_T_315000_234000.zip",
+      "archive_filename": "nyu_2451_38595_pc_T_315000_234000.zip",
+      "archive_bytes": 361976142,
+      "laz_filename": "T_315000_234000.laz",
+      "laz_sha256": "9a2b195ae8d8b915371956f92b58727575ce7e57915b3b97a47bcfd38255dd98",
+      "checksum_url": "https://archive.nyu.edu/retrieve/79823/nyu_2451_38595_manifest_T_315000_234000.json",
+      "worker": 1
+    },
+    {
+      "tile_id": "315000_234500",
+      "bounds_irish_grid": [
+        315000,
+        234500,
+        315500,
+        235000
+      ],
+      "record_url": "https://geo.nyu.edu/catalog/nyu-2451-38596",
+      "download_url": "https://archive.nyu.edu/retrieve/79827/nyu_2451_38596_pc_T_315000_234500.zip",
+      "archive_filename": "nyu_2451_38596_pc_T_315000_234500.zip",
+      "archive_bytes": 157382732,
+      "laz_filename": "T_315000_234500.laz",
+      "laz_sha256": "3d2497f3a49b10ff84355e25c81c3166296add9fa30817915a704ee3d0f3adee",
+      "checksum_url": "https://archive.nyu.edu/retrieve/79828/nyu_2451_38596_manifest_T_315000_234500.json",
+      "worker": 1
+    },
+    {
+      "tile_id": "315000_235000",
+      "bounds_irish_grid": [
+        315000,
+        235000,
+        315500,
+        235500
+      ],
+      "record_url": "https://geo.nyu.edu/catalog/nyu-2451-38597",
+      "download_url": "https://archive.nyu.edu/retrieve/79831/nyu_2451_38597_pc_T_315000_235000.zip",
+      "archive_filename": "nyu_2451_38597_pc_T_315000_235000.zip",
+      "archive_bytes": 4440954,
+      "laz_filename": "T_315000_235000.laz",
+      "laz_sha256": "688f401967756a191c901b27c34a8610c3b948d094636cc41fad038a9d6ceafe",
+      "checksum_url": "https://archive.nyu.edu/retrieve/79832/nyu_2451_38597_manifest_T_315000_235000.json",
+      "worker": 1
+    },
+    {
+      "tile_id": "315500_233000",
+      "bounds_irish_grid": [
+        315500,
+        233000,
+        316000,
+        233500
+      ],
+      "record_url": "https://geo.nyu.edu/catalog/nyu-2451-38599",
+      "download_url": "https://archive.nyu.edu/retrieve/79839/nyu_2451_38599_pc_T_315500_233000.zip",
+      "archive_filename": "nyu_2451_38599_pc_T_315500_233000.zip",
+      "archive_bytes": 337144904,
+      "laz_filename": "T_315500_233000.laz",
+      "laz_sha256": "9556a00e9a354a4d21dd73fcc36696dd6773cac04da3ba4518ce9b3ef10ff2b9",
+      "checksum_url": "https://archive.nyu.edu/retrieve/79840/nyu_2451_38599_manifest_T_315500_233000.json",
+      "worker": 0
+    },
+    {
+      "tile_id": "315500_233500",
+      "bounds_irish_grid": [
+        315500,
+        233500,
+        316000,
+        234000
+      ],
+      "record_url": "https://geo.nyu.edu/catalog/nyu-2451-38600",
+      "download_url": "https://archive.nyu.edu/retrieve/79843/nyu_2451_38600_pc_T_315500_233500.zip",
+      "archive_filename": "nyu_2451_38600_pc_T_315500_233500.zip",
+      "archive_bytes": 475270592,
+      "laz_filename": "T_315500_233500.laz",
+      "laz_sha256": "fd84022749954c08aaa9a7f6939cd4983e65c9fb2700c74d77fecb4ae55b6a86",
+      "checksum_url": "https://archive.nyu.edu/retrieve/79844/nyu_2451_38600_manifest_T_315500_233500.json",
+      "worker": 1
+    },
+    {
+      "tile_id": "315500_234000",
+      "bounds_irish_grid": [
+        315500,
+        234000,
+        316000,
+        234500
+      ],
+      "record_url": "https://geo.nyu.edu/catalog/nyu-2451-38601",
+      "download_url": "https://archive.nyu.edu/retrieve/79848/nyu_2451_38601_pc_T_315500_234000.zip",
+      "archive_filename": "nyu_2451_38601_pc_T_315500_234000.zip",
+      "archive_bytes": 410650750,
+      "laz_filename": "T_315500_234000.laz",
+      "laz_sha256": "8ec41be0ce17033a5cfdaad7443a77c413bf7dc913aa6a67669c78d88f552d42",
+      "checksum_url": "https://archive.nyu.edu/retrieve/79849/nyu_2451_38601_manifest_T_315500_234000.json",
+      "worker": 0
+    },
+    {
+      "tile_id": "315500_234500",
+      "bounds_irish_grid": [
+        315500,
+        234500,
+        316000,
+        235000
+      ],
+      "record_url": "https://geo.nyu.edu/catalog/nyu-2451-38586",
+      "download_url": "https://archive.nyu.edu/retrieve/79771/nyu_2451_38586_pc_T_315500-234500.zip",
+      "archive_filename": "nyu_2451_38586_pc_T_315500-234500.zip",
+      "archive_bytes": 366974136,
+      "laz_filename": "T_315500_234500.laz",
+      "laz_sha256": "c3d7f57a0e96b61c29f944c92c717dddc0c08280ed7573ce8cf7dd973712702d",
+      "checksum_url": "https://archive.nyu.edu/retrieve/79773/nyu_2451_38586_manifest_T_315500-234500.json",
+      "worker": 1
+    },
+    {
+      "tile_id": "315500_235000",
+      "bounds_irish_grid": [
+        315500,
+        235000,
+        316000,
+        235500
+      ],
+      "record_url": "https://geo.nyu.edu/catalog/nyu-2451-38602",
+      "download_url": "https://archive.nyu.edu/retrieve/79853/nyu_2451_38602_pc_T_315500_235000.zip",
+      "archive_filename": "nyu_2451_38602_pc_T_315500_235000.zip",
+      "archive_bytes": 165925076,
+      "laz_filename": "T_315500_235000.laz",
+      "laz_sha256": "8bef083d0b8037de6066e96889019a53780cde09e3f9f385aaedc723a91e5548",
+      "checksum_url": "https://archive.nyu.edu/retrieve/79854/nyu_2451_38602_manifest_T_315500_235000.json",
+      "worker": 0
+    },
+    {
+      "tile_id": "316000_233000",
+      "bounds_irish_grid": [
+        316000,
+        233000,
+        316500,
+        233500
+      ],
+      "record_url": "https://geo.nyu.edu/catalog/nyu-2451-38604",
+      "download_url": "https://archive.nyu.edu/retrieve/79862/nyu_2451_38604_pc_T_316000_233000.zip",
+      "archive_filename": "nyu_2451_38604_pc_T_316000_233000.zip",
+      "archive_bytes": 462695175,
+      "laz_filename": "T_316000_233000.laz",
+      "laz_sha256": "4bc188c9cd103b347af4cc5e0fd81bb0046605d8e78b9176c2d796c9fc0fbb38",
+      "checksum_url": "https://archive.nyu.edu/retrieve/79863/nyu_2451_38604_manifest_T_316000_233000.json",
+      "worker": 0
+    },
+    {
+      "tile_id": "316000_233500",
+      "bounds_irish_grid": [
+        316000,
+        233500,
+        316500,
+        234000
+      ],
+      "record_url": "https://geo.nyu.edu/catalog/nyu-2451-38605",
+      "download_url": "https://archive.nyu.edu/retrieve/79887/nyu_2451_38605_pc_T_316000_233500.zip",
+      "archive_filename": "nyu_2451_38605_pc_T_316000_233500.zip",
+      "archive_bytes": 501935240,
+      "laz_filename": "T_316000_233500.laz",
+      "laz_sha256": "863cf80b7c490ff48df6c6a20dbf022622d89f41b2fb6cd845bfcaf2c57842a2",
+      "checksum_url": "https://archive.nyu.edu/retrieve/79864/nyu_2451_38605_manifest_T_316000_233500.json",
+      "worker": 1
+    },
+    {
+      "tile_id": "316000_234000",
+      "bounds_irish_grid": [
+        316000,
+        234000,
+        316500,
+        234500
+      ],
+      "record_url": "https://geo.nyu.edu/catalog/nyu-2451-38606",
+      "download_url": "https://archive.nyu.edu/retrieve/79891/nyu_2451_38606_pc_T_316000_234000.zip",
+      "archive_filename": "nyu_2451_38606_pc_T_316000_234000.zip",
+      "archive_bytes": 451439182,
+      "laz_filename": "T_316000_234000.laz",
+      "laz_sha256": "ed8c026e13742eeb8880b69f407e7c7b9fc0a16fe70a39a0142aaee1250330cc",
+      "checksum_url": "https://archive.nyu.edu/retrieve/79865/nyu_2451_38606_manifest_T_316000_234000.json",
+      "worker": 1
+    },
+    {
+      "tile_id": "316000_234500",
+      "bounds_irish_grid": [
+        316000,
+        234500,
+        316500,
+        235000
+      ],
+      "record_url": "https://geo.nyu.edu/catalog/nyu-2451-38607",
+      "download_url": "https://archive.nyu.edu/retrieve/79895/nyu_2451_38607_pc_T_316000_234500.zip",
+      "archive_filename": "nyu_2451_38607_pc_T_316000_234500.zip",
+      "archive_bytes": 446818324,
+      "laz_filename": "T_316000_234500.laz",
+      "laz_sha256": "3fc5d7f07bfe112a8b3b58bf4ec4d6def1bda46c3aa8c67f0abf7cb148a5a406",
+      "checksum_url": "https://archive.nyu.edu/retrieve/79866/nyu_2451_38607_manifest_T_316000_234500.json",
+      "worker": 1
+    },
+    {
+      "tile_id": "316000_235000",
+      "bounds_irish_grid": [
+        316000,
+        235000,
+        316500,
+        235500
+      ],
+      "record_url": "https://geo.nyu.edu/catalog/nyu-2451-38608",
+      "download_url": "https://archive.nyu.edu/retrieve/79899/nyu_2451_38608_pc_T_316000_235000.zip",
+      "archive_filename": "nyu_2451_38608_pc_T_316000_235000.zip",
+      "archive_bytes": 177441541,
+      "laz_filename": "T_316000_235000.laz",
+      "laz_sha256": "3c17cf6e62ba96ca57673fde47593c3394d5fc33070d3527186f83171aa7311d",
+      "checksum_url": "https://archive.nyu.edu/retrieve/79867/nyu_2451_38608_manifest_T_316000_235000.json",
+      "worker": 0
+    },
+    {
+      "tile_id": "316500_233500",
+      "bounds_irish_grid": [
+        316500,
+        233500,
+        317000,
+        234000
+      ],
+      "record_url": "https://geo.nyu.edu/catalog/nyu-2451-38612",
+      "download_url": "https://archive.nyu.edu/retrieve/79911/nyu_2451_38612_pc_T_316500_233500.zip",
+      "archive_filename": "nyu_2451_38612_pc_T_316500_233500.zip",
+      "archive_bytes": 531224416,
+      "laz_filename": "T_316500_233500.laz",
+      "laz_sha256": "dbbf357ac22424ac3399ff46c4b2caddbb5d099797737c5f01c72ffb7775df2d",
+      "checksum_url": "https://archive.nyu.edu/retrieve/79871/nyu_2451_38612_manifest_T_316500_233500.json",
+      "worker": 0
+    },
+    {
+      "tile_id": "316500_234000",
+      "bounds_irish_grid": [
+        316500,
+        234000,
+        317000,
+        234500
+      ],
+      "record_url": "https://geo.nyu.edu/catalog/nyu-2451-38613",
+      "download_url": "https://archive.nyu.edu/retrieve/79915/nyu_2451_38613_pc_T_316500_234000.zip",
+      "archive_filename": "nyu_2451_38613_pc_T_316500_234000.zip",
+      "archive_bytes": 423726236,
+      "laz_filename": "T_316500_234000.laz",
+      "laz_sha256": "be0ba7e59a63a7de9c19bf6a7ef47e5b6c6d4e1683018ae24fca536829bcf4be",
+      "checksum_url": "https://archive.nyu.edu/retrieve/79872/nyu_2451_38613_manifest_T_316500_234000.json",
+      "worker": 0
+    },
+    {
+      "tile_id": "316500_234500",
+      "bounds_irish_grid": [
+        316500,
+        234500,
+        317000,
+        235000
+      ],
+      "record_url": "https://geo.nyu.edu/catalog/nyu-2451-38614",
+      "download_url": "https://archive.nyu.edu/retrieve/79919/nyu_2451_38614_pc_T_316500_234500.zip",
+      "archive_filename": "nyu_2451_38614_pc_T_316500_234500.zip",
+      "archive_bytes": 214417460,
+      "laz_filename": "T_316500_234500.laz",
+      "laz_sha256": "617c8ea92a2fd6fbeb6c542e597370d985d18bf66df056687a72c85aaf501c86",
+      "checksum_url": "https://archive.nyu.edu/retrieve/79873/nyu_2451_38614_manifest_T_316500_234500.json",
+      "worker": 1
+    },
+    {
+      "tile_id": "316500_235000",
+      "bounds_irish_grid": [
+        316500,
+        235000,
+        317000,
+        235500
+      ],
+      "record_url": "https://geo.nyu.edu/catalog/nyu-2451-38615",
+      "download_url": "https://archive.nyu.edu/retrieve/79923/nyu_2451_38615_pc_T_316500_235000.zip",
+      "archive_filename": "nyu_2451_38615_pc_T_316500_235000.zip",
+      "archive_bytes": 18059440,
+      "laz_filename": "T_316500_235000.laz",
+      "laz_sha256": "f518c9042e01a71e648c310a234cfeb4d7197cac8928b92005628366da11a76c",
+      "checksum_url": "https://archive.nyu.edu/retrieve/79874/nyu_2451_38615_manifest_T_316500_235000.json",
+      "worker": 1
+    }
+  ]
+}

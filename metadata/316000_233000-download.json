@@ -1,0 +1,17 @@
+{
+  "tile_id": "316000_233000",
+  "archive_bytes": 462695175,
+  "laz_bytes": 462620596,
+  "laz_sha256": "4bc188c9cd103b347af4cc5e0fd81bb0046605d8e78b9176c2d796c9fc0fbb38",
+  "point_count": 84814119,
+  "point_bounds_irish_grid": [
+    316000.0,
+    233000.0,
+    316499.999,
+    233499.999
+  ],
+  "height_range_metres": [
+    -85.949,
+    370.1
+  ]
+}

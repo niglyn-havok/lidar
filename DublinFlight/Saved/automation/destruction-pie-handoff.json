@@ -1,0 +1,3571 @@
+{
+	"status": "checkpoint_ready_for_coordinator_integration_build",
+	"updated": "2026-09-15T11:31:24+01:00",
+	"checkpoint": "Source is frozen and ready for the coordinator's first integration build/sample physical proof. No further implementation or waiting for parent execution is in progress.",
+	"owned_source": "Source\\DublinFlight\\Tests\\DublinDestructionPIETests.cpp",
+	"test": "DublinFlight.Destruction.PIE.ActualCityDamage",
+	"scope": "Native real-map PIE verification; selected eligible saved baked buildings including explicitly permitted partial-bake preview. This is not full-city acceptance.",
+	"verification_owner": "Coordinator builds, launches, bakes and runs; this agent performs static checks only.",
+	"implemented_checks": [
+		"Require saved real Dublin editor map; enqueue standard FStartPIECommand(false) after automation-session teardown; 60-second bootstrap and 120-second wall deadline.",
+		"Select deterministic source IDs by sorting all current source records, validating saved fracture records/digests and all buildings within both actual impact footprints. Require compact, collidable, multi-anchor target, not a bridge/spire/rooftop fixture.",
+		"Call ADublinCityWorld::ApplyImpact with real FDublinImpact payloads, then the original UDublinImpactEffectsSubsystem::EmitImpact only after acceptance. No direct physics setters, fake mocks, source mutation, manual ticks or input processing.",
+		"One cannon hit: retain all finite authored GC leaf transforms, at least two distant leaves still in rest positions, and a world collision ray against an unhit GC roof portion.",
+		"Three repeated cannon hits, then a support-covering bomb made through the existing bounded game-yield curve. Observe real component-space COM transforms converted to world positions across advancing world frames.",
+		"Require leaf travel and fall over 25cm, at least two downward-motion world frames, and leaf-pair distance change over 25cm, rejecting rigid whole-building movement as fragment-separation proof.",
+		"Require a previously stationary authored support leaf to move over 25cm after the bomb; counters alone do not pass.",
+		"Distant control is outside the impact neighborhood and in another chunk: actual mesh vertices, indices, collision/visibility flags and transform remain unchanged; original roof ray still hits.",
+		"Dry crater point is selected from real terrain triangles, clear of buildings, river and other impacts. Actual chunk vertices and live PMC buffer change, depth is within 100cm of the requested 250cm game crater, and the world collision ray matches rendered height within 10cm.",
+		"Water uses an exact-source river corridor with bridge-excluding vertical collision probes and real rendered near/far grid vertices. Far probe is 2800cm away, outside the initial 1000cm solver injection footprint.",
+		"Require near response, an actually sampled initially quiet far frame, later far response after near arrival, and matching near/far live water-render movement. Original water Niagara component activation is additional diagnostic evidence, not visual proof.",
+		"Check existing activation/queue and impact-effects caps without modifying them; clean player input/projectiles; native fixture owns no timers."
+	],
+	"native_test_invocation":
+	{
+		"name": "DublinFlight.Destruction.PIE.ActualCityDamage",
+		"console": "Automation RunTests DublinFlight.Destruction.PIE.ActualCityDamage",
+		"preconditions": "Open saved /Game/Maps/Dublin in the editor, with saved fracture library and either full readiness or explicit partial-bake preview. The coordinator now reports bAllowPartialBakePreview=true with 12/1044 ready and PIE stopped: the native fixture can start its own PIE after the integration build. The fixture never silently toggles preview or requires full readiness for the sample. Do not expect an already-running PIE to survive automation startup.",
+		"nominal_simulation_seconds": 17.5,
+		"focus_policy": "No OS focus, mouse capture, viewport client or positive viewport-size requirement. Physical checks use native city/pawn readiness and genuinely advancing world frames. Focus/capture are queried read-only for diagnostics, never changed or used as a readiness gate.",
+		"bootstrap_diagnostics": "Timeout and readiness errors now log compact JSON with actual world path/type, editor play-world existence, engine frame counter/delta, world-context count, world time/delta, begun-play/paused/teardown state, player/locality/input, possessed pawn class, spawn capture/weapons, city/source/library/readiness/partial-preview, native errors and viewport/client/size/focus/capture booleans. Bootstrap poll count and observed world-time advances distinguish a starved startup from missing actors.",
+		"runtime_timeout_diagnostics": "The physical phase timeout logs engine-frame delta and actual advancing-world observations with the same world/pawn/city/viewport snapshot. Both bootstrap and final diagnostics persist under last_runtime_verification; visible-scenario startup failures and final evidence also include world diagnostics.",
+		"september15_environment_note": "RESOLVED without source changes: coordinator identified focused Message Log and an automatic-import notification using registered Slate tools, selected Don't Import because the generated JSON was already consumed directly, and closed Message Log. The unchanged existing flight actual-input PIE test then PASSED in 15.889s. Earlier startup starvation/shader-compilation speculation is not an established current blocker. Dedicated physical diagnostics remain useful, with OS focus still diagnostic-only and real simulation-frame assertions unchanged.",
+		"coordinator_latest_state": "As reported September 15 at 11:31:24+01:00: PIE stopped; bAllowPartialBakePreview=true; 12 saved fracture samples ready with Nanite and anchors. Niagara repair and new airframe owners have finished. Existing flight logic remains untouched. First integration build and sample physical proof come next; full 1044-volume baking follows proof.",
+		"unit_filter_note": "The PIE test is separate from Destruction.Impact, Destruction.Ground, Destruction.Water, Destruction.Buildings, Destruction.Readiness and Destruction.Fracture unit groups. A broad DublinFlight.Destruction prefix now also includes PIE.",
+		"screenshots": "Automation may tear down PIE at test completion. Use the bounded fixed-purpose developer scenarios below for screenshots instead."
+	},
+	"visible_scenarios":
+	{
+		"availability": "Compiled only with WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR. Commands operate only on existing actual Dublin PIE; they do not launch an editor or expose arguments/arbitrary execution.",
+		"DublinFlight.Verify.Idle": "Fresh ready city: 30 world seconds without impacts, retaining camera control. This quiet GOD-mode baseline does not replace a normal-flight performance capture.",
+		"DublinFlight.Verify.Sample": "Fresh ready city: fixed cannon, support bomb, dry crater and water sequence for 30 world seconds. Explicit partial preview allowed. Intended for sample screenshot/effect/physics observation, NOT maximal-load acceptance.",
+		"DublinFlight.Verify.Maximal": "Fresh fully baked city with ALL buildings ready and partial preview OFF. Select 8..24 spatially separated in-bounds neighborhoods, use the existing 1000-game-ton bomb curve with interspersed selected water impacts, run for 30 world seconds.",
+		"DublinFlight.Verify.Stop": "Cancel only scenario submission timer and watchdog, flush input, preserve PIE and native world state. Accepted queues drain normally, and engine-owned debris/waves/FX continue their existing lifetime and cleanup policies.",
+		"bounds": "At most 2 impact admissions/second with no catch-up burst; backpressure skips when 16 native impact batches are queued. Existing 64-impact/24-active-collection/1536-active-piece/16-impact-FX caps are unchanged. Core ticker watchdog stops after 45 wall seconds including paused PIE; PrePIEEnded also cleans up.",
+		"capture_clock": "No performance capture start/stop/reset commands are issued. Evidence records absolute world time plus elapsed world/wall time; coordinator aligns independent frame-time capture and explicit settings.",
+		"repeatability": "Restart PIE between scenarios that submitted impacts. Re-running against previously damaged state is explicitly rejected.",
+		"evidence": "Fixed Saved\\Automation\\destruction-pie-handoff.json preserves this implementation handoff and receives last_visible_scenario with at most 32 counter samples and 128 selected-target leaf observations; last_runtime_verification holds test assertions, positions and diagnostics."
+	},
+	"sample_selection_diagnostics":
+	{
+		"note": "Reconciled current source geometry with the actual Saved\\Automation\\fracture-sample-20260915.json snapshot. This is static inspection, not physical simulation; runtime still selects and logs an actually collidable eligible record rather than hardcoding an ID.",
+		"likely_compact_sample_target": "osm/relation/4453909",
+		"actual_sample_records": 12,
+		"actual_sample_all_ready_and_nanite": true,
+		"target_baked_pieces": 65,
+		"target_baked_anchors": 21,
+		"target_saved_collection": "/Game/Dublin/Fracture/GC_e1a2ead797616ccccb355e9202b681a3.GC_e1a2ead797616ccccb355e9202b681a3",
+		"target_static_bomb_position_cm": [
+			16007.65,
+			26990.150000000001,
+			416.69999999999999
+		],
+		"target_static_bomb_radius_cm": 1587.900693166946,
+		"target_static_bomb_game_yield_tons": 49.055572856366965,
+		"target_static_bomb_touched_ids": [
+			"osm/relation/4453907",
+			"osm/relation/4453909",
+			"osm/relation/4453908"
+		],
+		"target_static_bomb_unbaked_neighbors": [],
+		"why_not_first_record": "Using the exact implementation radius (XY half-diagonal plus 120cm), osm/relation/4453907 reaches unbaked osm/way/313675128 and osm/way/313675129; osm/relation/4453908 reaches unbaked osm/way/310862364. The middle relation's footprint reaches only the three already-sampled relations.",
+		"why_not_tiny_eight_piece_volumes": "osm/way/1494457211 and osm/way/1494457210 each have 8 pieces and 4 anchors, but their source footprints are only approximately 266x139cm and 265x138cm. The real cannon has a 200cm radius, so these are unsuitable for this combined locality assertion requiring two pieces beyond twice that radius. They are not silently substituted for a meaningful local-damage proof.",
+		"restriction": "Only selected impact neighborhoods need be baked in partial preview, but every intersected building must have a current saved record. Distant untouched control may remain intact/unbaked. Missing/unsafe samples fail, never skip.",
+		"full_city": "12-building sample success must never be reported as 1044-building readiness. Full-city baking and final readiness are coordinator-owned."
+	},
+	"shared_API_assumptions": [
+		"ADublinCityWorld retains public GetSourceData/GetTerrainChunks/GetBuildingChunks, ApplyImpact/GetWaterSurfaceZ and readable native counters.",
+		"Authored city actor transform is identity; current world impact/terrain/water APIs use source coordinates directly.",
+		"Fracture components retain the DublinFlight.City.Fracture.v1 tag, saved collection reference and source pivot; generated PMCs retain existing DublinBuildings_, DublinTerrain_ and DublinWater naming.",
+		"Current UE5.8 GetCurrentTransforms and GetInitialLocalRestTransforms both return component-space center-of-mass transforms; the fixture converts these using the actual component transform.",
+		"Source terrain chunks retain original triangle ordering and updated source-node heights; actual live buffers and rays independently verify their physical rendering/collision.",
+		"No confirmed City root bug was established statically. Any physical support/motion/collision failure must be investigated in City, not weakened into a counter-only passing assertion."
+	],
+	"validation":
+	{
+		"static_checks": "PASS: balanced delimiters, unique test/command names, all 35 direct quoted includes resolved against installed UE5.8/existing module roots, no merge markers, UTF-8 without BOM and CRLF-only source. Exactly two focus/capture queries occur only in the read-only diagnostic snapshot; no CaptureMouse, SetUserFocus, SetInputMode or existing-flight focus helper calls.",
+		"API_checks": "Reviewed installed GetCurrentTransforms/GetInitialLocalRestTransforms implementation and declarations, procedural mesh buffers/collision flags, console delegates and ticker cleanup. Simple world rays deliberately support both complex-as-simple terrain/building PMCs and Chaos convex pieces.",
+		"scope_checks": "Only the new dedicated test/scenario CPP and this handoff were written; no existing source, test, config, Build.cs or asset modifications.",
+		"prohibited_operations": "No builds, editor launches/calls, baking, Python execution, issue filing, GitHub operations or delegation.",
+		"source_sha256": "0F2207B5F10E4F1783EEB42BDCE3EDB54E1D1CE5C30725DF542C1378AF6594B9",
+		"native_build": "NOT_RUN_BY_THIS_AGENT",
+		"native_tests": "NOT_RUN_BY_THIS_AGENT",
+		"runtime_result": "NOT_RUN",
+		"visual_quality": "NOT_ASSESSED",
+		"performance": "NOT_MEASURED: 60 FPS normal/light and 30 FPS maximal remain independent coordinator gates."
+	},
+	"runtime_result": "NOT_RUN",
+	"last_runtime_verification":
+	{
+		"target_id": "osm/relation/4453909",
+		"distant_control_id": "bridge/osm/way/282571104/0",
+		"collection": "/Game/Dublin/Fracture/GC_ed38e27d841037b589ca03220035ac05.GC_ed38e27d841037b589ca03220035ac05",
+		"authored_leaves": 65,
+		"anchors": 21,
+		"cannon_cm": [
+			15983.799999999999,
+			28069.066666666666,
+			1013.9499999999999
+		],
+		"support_bomb_cm": [
+			16007.65,
+			26990.150000000001,
+			416.69999999999999
+		],
+		"support_bomb_radius_cm": 1587.900634765625,
+		"support_bomb_game_yield_tons": 49.055572509765625,
+		"crater_cm": [
+			-32733.333333333332,
+			-32933.333333333336,
+			498.00666666666666
+		],
+		"water_near_cm": [
+			15200,
+			-5600,
+			110
+		],
+		"water_far_cm": [
+			18000,
+			-5600,
+			110
+		],
+		"selection_error": "",
+		"status": "passed",
+		"test": "DublinFlight.Destruction.PIE.ActualCityDamage",
+		"verification_scope": "actual_city_damage",
+		"building_damage_in_scope": true,
+		"building_motion_status": "See physical leaf observations and errors; inclusion in scope does not imply success",
+		"acceptance_scope": "Selected native physical sample only; not full-city, visual or performance acceptance",
+		"utc": "2026-09-15T14:12:23.254Z",
+		"elapsed_wall_seconds": 25.137071900069714,
+		"phase": 4,
+		"phase_advancing_world_observations": 306,
+		"engine_frames_since_fixture_created": 906,
+		"bootstrap_diagnostics":
+		{
+			"engine_present": true,
+			"engine_frame_counter": 8273,
+			"engine_world_context_count": 3,
+			"editor_play_world_present": true,
+			"world_present": true,
+			"world_name": "/Game/Maps/UEDPIE_0_Dublin.Dublin",
+			"world_type": 3,
+			"actual_Dublin_PIE": true,
+			"world_tearing_down": false,
+			"world_begun_play": true,
+			"world_paused": false,
+			"world_seconds": 0.016666799783706665,
+			"world_delta_seconds": 0.016666799783706665,
+			"player_controller_present": true,
+			"local_player_controller": true,
+			"player_input_present": true,
+			"possessed_pawn_present": true,
+			"possessed_pawn_class": "/Script/DublinFlight.DublinFlightPawn",
+			"dublin_pawn_present": true,
+			"spawn_captured": true,
+			"weapons_component_present": true,
+			"unique_city_present": true,
+			"city_ready": true,
+			"source_data_present": true,
+			"fracture_library_present": true,
+			"destruction_ready": true,
+			"all_buildings_ready": false,
+			"partial_preview": true,
+			"fracture_ready_buildings": 248,
+			"source_buildings": 1044,
+			"city_build_error": "",
+			"destruction_error": "",
+			"viewport_client_present": true,
+			"viewport_present": true,
+			"viewport_has_positive_size": true,
+			"viewport_has_OS_focus": true,
+			"viewport_has_mouse_capture": false,
+			"viewport_focus_required": false,
+			"bootstrap_wall_seconds": 7.9598699025809765,
+			"bootstrap_poll_count": 2,
+			"engine_frames_since_fixture_created": 2,
+			"observed_world_time_advances": 0
+		},
+		"final_world_diagnostics":
+		{
+			"engine_present": true,
+			"engine_frame_counter": 9177,
+			"engine_world_context_count": 3,
+			"editor_play_world_present": true,
+			"world_present": true,
+			"world_name": "/Game/Maps/UEDPIE_0_Dublin.Dublin",
+			"world_type": 3,
+			"actual_Dublin_PIE": true,
+			"world_tearing_down": false,
+			"world_begun_play": true,
+			"world_paused": false,
+			"world_seconds": 17.543389808386564,
+			"world_delta_seconds": 0.017438802868127823,
+			"player_controller_present": true,
+			"local_player_controller": true,
+			"player_input_present": true,
+			"possessed_pawn_present": true,
+			"possessed_pawn_class": "/Script/DublinFlight.DublinFlightPawn",
+			"dublin_pawn_present": true,
+			"spawn_captured": true,
+			"weapons_component_present": true,
+			"unique_city_present": true,
+			"city_ready": true,
+			"source_data_present": true,
+			"fracture_library_present": true,
+			"destruction_ready": true,
+			"all_buildings_ready": false,
+			"partial_preview": true,
+			"fracture_ready_buildings": 248,
+			"source_buildings": 1044,
+			"city_build_error": "",
+			"destruction_error": "",
+			"viewport_client_present": true,
+			"viewport_present": true,
+			"viewport_has_positive_size": true,
+			"viewport_has_OS_focus": true,
+			"viewport_has_mouse_capture": false,
+			"viewport_focus_required": false
+		},
+		"cannon_retained_remote_leaves": 63,
+		"maximum_leaf_travel_cm": 36554782.440159485,
+		"maximum_leaf_drop_cm": 119.94024711019279,
+		"maximum_leaf_pair_distance_change_cm": 36554589.448409967,
+		"stationary_supports_before_bomb": 21,
+		"supports_physically_moved_after_bomb": 4,
+		"descending_world_frames": 64,
+		"crater_observations": 1,
+		"crater_depth_cm": 213.09424296982172,
+		"crater_requested_depth_cm": 250,
+		"near_peak_cm": 20.635009765625,
+		"far_peak_cm": 1.3547134399414062,
+		"early_far_peak_cm": 0,
+		"early_water_world_frames": 12,
+		"near_arrival_world_seconds": 0.016929399222135544,
+		"far_arrival_world_seconds": 2.1513513997197151,
+		"near_water_render_matches_surface": true,
+		"far_water_render_matches_surface": true,
+		"water_niagara_component_seen_not_visual_proof": true,
+		"errors": [],
+		"physical_leaf_observations": [
+			{
+				"transform_index": 1,
+				"pre_bomb_world_cm": [
+					15307.094531250001,
+					26173.738940429688,
+					578.16875000000005
+				],
+				"last_world_cm": [
+					15307.863045679469,
+					26171.57366272205,
+					577.20750824553045
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": true,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 2,
+				"pre_bomb_world_cm": [
+					15762.138308715821,
+					26179.923327636719,
+					578.16875000000005
+				],
+				"last_world_cm": [
+					15762.610950246875,
+					26176.730473201376,
+					577.83282566041942
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": true,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 3,
+				"pre_bomb_world_cm": [
+					16213.28692932129,
+					26235.271105957032,
+					566.50603027343755
+				],
+				"last_world_cm": [
+					16213.397147574176,
+					26232.387955336344,
+					565.79806438079004
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": true,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 4,
+				"pre_bomb_world_cm": [
+					16717.895434570313,
+					26305.208605957032,
+					578.16875000000005
+				],
+				"last_world_cm": [
+					16717.851631951256,
+					26299.436326885025,
+					579.53621644283248
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": true,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 5,
+				"pre_bomb_world_cm": [
+					15340.659838867188,
+					26672.385943603516,
+					511.98247070312499
+				],
+				"last_world_cm": [
+					15344.292494387995,
+					26671.626320584302,
+					510.16357114507423
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": true,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 6,
+				"pre_bomb_world_cm": [
+					15656.884051513673,
+					26716.788806152344,
+					525.6968872070313
+				],
+				"last_world_cm": [
+					15622.078608438265,
+					26734.656334071846,
+					408.95636163286849
+				],
+				"observed_fall_over_25cm": true,
+				"stationary_authored_support_before_bomb": true,
+				"authored_support_moved_over_25cm": true
+			},
+			{
+				"transform_index": 7,
+				"pre_bomb_world_cm": [
+					16351.948809814454,
+					26732.104602050782,
+					570.69470520019536
+				],
+				"last_world_cm": [
+					16349.273234453478,
+					26734.679744500361,
+					450.85170247423724
+				],
+				"observed_fall_over_25cm": true,
+				"stationary_authored_support_before_bomb": true,
+				"authored_support_moved_over_25cm": true
+			},
+			{
+				"transform_index": 8,
+				"pre_bomb_world_cm": [
+					16706.218249511719,
+					26712.830096435548,
+					551.68904418945317
+				],
+				"last_world_cm": [
+					16697.666995996893,
+					26709.032267916897,
+					546.85309729670269
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": true,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 9,
+				"pre_bomb_world_cm": [
+					15991.840728950501,
+					26933.791466546059,
+					354.1082896709442
+				],
+				"last_world_cm": [
+					-8306852.1592710493,
+					-29643182.208533455,
+					19664194.10828967
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": true,
+				"authored_support_moved_over_25cm": true
+			},
+			{
+				"transform_index": 10,
+				"pre_bomb_world_cm": [
+					15301.921923828126,
+					27263.953295898438,
+					576.04365844726567
+				],
+				"last_world_cm": [
+					15360.55336116635,
+					27263.183671016919,
+					521.65760662843013
+				],
+				"observed_fall_over_25cm": true,
+				"stationary_authored_support_before_bomb": true,
+				"authored_support_moved_over_25cm": true
+			},
+			{
+				"transform_index": 11,
+				"pre_bomb_world_cm": [
+					15763.487506103516,
+					27264.112506103516,
+					578.16875000000005
+				],
+				"last_world_cm": [
+					15762.431568948596,
+					27267.353399836906,
+					573.40921143086075
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": true,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 12,
+				"pre_bomb_world_cm": [
+					16221.292193603516,
+					27230.257861328126,
+					512.80156250000005
+				],
+				"last_world_cm": [
+					16220.349407557025,
+					27233.031305729888,
+					504.33306557239996
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": true,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 13,
+				"pre_bomb_world_cm": [
+					16712.830004882813,
+					27261.097186279298,
+					578.16875000000005
+				],
+				"last_world_cm": [
+					16712.595496265378,
+					27263.530578237012,
+					577.15573123591832
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": true,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 14,
+				"pre_bomb_world_cm": [
+					15282.067126464844,
+					27792.897753906251,
+					578.16875000000005
+				],
+				"last_world_cm": [
+					15281.933525572551,
+					27795.02701756404,
+					577.42831721393486
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": true,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 15,
+				"pre_bomb_world_cm": [
+					15764.837634277344,
+					27799.679431152344,
+					578.16875000000005
+				],
+				"last_world_cm": [
+					15764.811513636238,
+					27803.128544297586,
+					577.90958151656707
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": true,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 16,
+				"pre_bomb_world_cm": [
+					16245.023516845704,
+					27803.415576171876,
+					578.16875000000005
+				],
+				"last_world_cm": [
+					16245.986216496778,
+					27807.294369048068,
+					578.06589413707502
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": true,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 17,
+				"pre_bomb_world_cm": [
+					16606.475695800782,
+					27614.117419433594,
+					561.56654663085942
+				],
+				"last_world_cm": [
+					16604.324695364638,
+					27615.579902448397,
+					557.53450603053454
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": true,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 18,
+				"pre_bomb_world_cm": [
+					15303.968859863282,
+					26189.213427734376,
+					1059.3810302734375
+				],
+				"last_world_cm": [
+					15304.613959816666,
+					26187.999625871231,
+					1058.4076817696091
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 19,
+				"pre_bomb_world_cm": [
+					15762.138308715821,
+					26179.923327636719,
+					1101.10625
+				],
+				"last_world_cm": [
+					15761.675032079074,
+					26176.399989406898,
+					1100.83040648519
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 20,
+				"pre_bomb_world_cm": [
+					16250.417071533204,
+					26188.618212890626,
+					1101.10625
+				],
+				"last_world_cm": [
+					16250.957343177615,
+					26185.032786535678,
+					1100.369974541049
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 21,
+				"pre_bomb_world_cm": [
+					16730.289050292969,
+					26314.181140136719,
+					1059.0600463867188
+				],
+				"last_world_cm": [
+					16729.332678786523,
+					26309.606837888867,
+					1058.9734900333608
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 22,
+				"pre_bomb_world_cm": [
+					15276.705676269532,
+					26702.957202148438,
+					1019.4374267578125
+				],
+				"last_world_cm": [
+					15279.584163818696,
+					26702.867221572655,
+					1017.8411361707831
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 23,
+				"pre_bomb_world_cm": [
+					15768.139697265626,
+					26720.333666992188,
+					950.2960083007813
+				],
+				"last_world_cm": [
+					15769.73202145138,
+					26719.001092537106,
+					949.80433647704854
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": true,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 24,
+				"pre_bomb_world_cm": [
+					16251.812518310548,
+					26716.187518310548,
+					1101.10625
+				],
+				"last_world_cm": [
+					16253.915360391933,
+					26713.337059185353,
+					1101.434993316597
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": true,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 25,
+				"pre_bomb_world_cm": [
+					16749.683520507813,
+					26712.533068847657,
+					982.6483032226563
+				],
+				"last_world_cm": [
+					16749.341118618602,
+					26710.805762590568,
+					981.81417113610155
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": true,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 26,
+				"pre_bomb_world_cm": [
+					15289.576586914063,
+					27265.727008056641,
+					1101.10625
+				],
+				"last_world_cm": [
+					15291.929706450452,
+					27266.126181583673,
+					1096.4767362916218
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 27,
+				"pre_bomb_world_cm": [
+					15763.487506103516,
+					27264.112506103516,
+					1101.10625
+				],
+				"last_world_cm": [
+					15765.696902975124,
+					27265.536895730267,
+					1095.7647995338193
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 28,
+				"pre_bomb_world_cm": [
+					16241.528033447266,
+					27236.870806884766,
+					880.0649291992188
+				],
+				"last_world_cm": [
+					16243.257623488729,
+					27238.720365694437,
+					873.2683859017443
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": true,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 29,
+				"pre_bomb_world_cm": [
+					16712.830004882813,
+					27261.097186279298,
+					1101.10625
+				],
+				"last_world_cm": [
+					16714.343941455849,
+					27265.208484465547,
+					1099.6913813118445
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 30,
+				"pre_bomb_world_cm": [
+					15282.067126464844,
+					27792.897753906251,
+					1101.10625
+				],
+				"last_world_cm": [
+					15283.505658907128,
+					27794.038383513802,
+					1099.7551879709433
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 31,
+				"pre_bomb_world_cm": [
+					15764.837664991923,
+					27799.680914825458,
+					1101.1050953630358
+				],
+				"last_world_cm": [
+					15765.737622005165,
+					27801.688817749888,
+					1100.3737452796561
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 32,
+				"pre_bomb_world_cm": [
+					16245.023516845704,
+					27803.415576171876,
+					1101.10625
+				],
+				"last_world_cm": [
+					16245.941668526859,
+					27807.41737974502,
+					1100.8021098841919
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 33,
+				"pre_bomb_world_cm": [
+					16705.058520507813,
+					27670.471362304688,
+					1101.10625
+				],
+				"last_world_cm": [
+					16703.829907512703,
+					27673.808040885335,
+					1099.8900595890871
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 34,
+				"pre_bomb_world_cm": [
+					15307.094531250001,
+					26173.738940429688,
+					1624.04375
+				],
+				"last_world_cm": [
+					15308.849022519324,
+					26173.586667529959,
+					1623.3299886919001
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 35,
+				"pre_bomb_world_cm": [
+					15762.138308715821,
+					26179.923327636719,
+					1624.04375
+				],
+				"last_world_cm": [
+					15762.641338110041,
+					26178.9531799324,
+					1624.0635561485506
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 36,
+				"pre_bomb_world_cm": [
+					16250.417071533204,
+					26188.618212890626,
+					1624.04375
+				],
+				"last_world_cm": [
+					16250.931776612164,
+					26185.865954255016,
+					1623.432280619726
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 37,
+				"pre_bomb_world_cm": [
+					16717.895434570313,
+					26305.208605957032,
+					1624.04375
+				],
+				"last_world_cm": [
+					16711.83579645089,
+					26278.612852410417,
+					1624.5913587186601
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 38,
+				"pre_bomb_world_cm": [
+					15298.450366210938,
+					26718.264697265626,
+					1624.04375
+				],
+				"last_world_cm": [
+					15299.460579568247,
+					26718.12518293213,
+					1623.142234129487
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 39,
+				"pre_bomb_world_cm": [
+					15763.487506103516,
+					26716.187518310548,
+					1624.04375
+				],
+				"last_world_cm": [
+					15764.391719378924,
+					26715.591598601404,
+					1624.2480800087424
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 40,
+				"pre_bomb_world_cm": [
+					16251.812518310548,
+					26716.187518310548,
+					1624.04375
+				],
+				"last_world_cm": [
+					16252.913522788409,
+					26715.021705702024,
+					1624.2009935463971
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 41,
+				"pre_bomb_world_cm": [
+					16727.140551757813,
+					26713.358996582032,
+					1624.04375
+				],
+				"last_world_cm": [
+					16723.773053099343,
+					26711.420109649625,
+					1624.7943485776286
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 42,
+				"pre_bomb_world_cm": [
+					15289.576586914063,
+					27265.727008056641,
+					1624.04375
+				],
+				"last_world_cm": [
+					15309.115265029697,
+					27266.111953512751,
+					1619.2755946293776
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 43,
+				"pre_bomb_world_cm": [
+					15763.487506103516,
+					27264.112506103516,
+					1624.04375
+				],
+				"last_world_cm": [
+					15765.922741244256,
+					27265.070028341706,
+					1621.0933896073052
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 44,
+				"pre_bomb_world_cm": [
+					16251.812518310548,
+					27264.112506103516,
+					1624.04375
+				],
+				"last_world_cm": [
+					16254.481435069267,
+					27264.639812170146,
+					1623.3940258098921
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 45,
+				"pre_bomb_world_cm": [
+					16712.830004882813,
+					27261.097186279298,
+					1624.04375
+				],
+				"last_world_cm": [
+					16713.098797627707,
+					27261.020298124964,
+					1623.9604246478584
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 46,
+				"pre_bomb_world_cm": [
+					15282.067126464844,
+					27792.897753906251,
+					1624.04375
+				],
+				"last_world_cm": [
+					15284.35292120257,
+					27792.753867326839,
+					1623.2341404071767
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 47,
+				"pre_bomb_world_cm": [
+					15764.837634277344,
+					27799.679431152344,
+					1624.04375
+				],
+				"last_world_cm": [
+					15766.60636276136,
+					27801.078029679455,
+					1623.7638597845348
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 48,
+				"pre_bomb_world_cm": [
+					16245.023516845704,
+					27803.415576171876,
+					1624.04375
+				],
+				"last_world_cm": [
+					16246.962611581452,
+					27805.074810726666,
+					1624.1071562706347
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 49,
+				"pre_bomb_world_cm": [
+					16705.058520507813,
+					27670.471362304688,
+					1624.04375
+				],
+				"last_world_cm": [
+					16702.857679223187,
+					27673.172831768643,
+					1623.7184863846287
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 50,
+				"pre_bomb_world_cm": [
+					15307.094531250001,
+					26173.738940429688,
+					2146.9812499999998
+				],
+				"last_world_cm": [
+					15308.189381959764,
+					26173.60770242352,
+					2146.2669740667125
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 51,
+				"pre_bomb_world_cm": [
+					15762.138308715821,
+					26179.923327636719,
+					2146.9812499999998
+				],
+				"last_world_cm": [
+					15763.234797580935,
+					26179.642801645045,
+					2146.8407357958854
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 52,
+				"pre_bomb_world_cm": [
+					16250.417071533204,
+					26188.618212890626,
+					2146.9812499999998
+				],
+				"last_world_cm": [
+					16251.515965381092,
+					26188.177651905626,
+					2147.456822260574
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 53,
+				"pre_bomb_world_cm": [
+					16717.895434570313,
+					26305.208544921876,
+					2146.9812499999998
+				],
+				"last_world_cm": [
+					16719.032466092332,
+					26304.614570078927,
+					2148.0416914879293
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 54,
+				"pre_bomb_world_cm": [
+					15298.450366210938,
+					26718.264697265626,
+					2146.9812499999998
+				],
+				"last_world_cm": [
+					15299.723898877484,
+					26718.136159423499,
+					2146.2343921445708
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 55,
+				"pre_bomb_world_cm": [
+					15763.487506103516,
+					26716.187518310548,
+					2146.9812499999998
+				],
+				"last_world_cm": [
+					15764.75996030888,
+					26715.906419586827,
+					2146.8210887820069
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 56,
+				"pre_bomb_world_cm": [
+					16251.812518310548,
+					26716.187518310548,
+					2146.9812499999998
+				],
+				"last_world_cm": [
+					16253.084557659777,
+					26715.746213216713,
+					2147.4370788412316
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 57,
+				"pre_bomb_world_cm": [
+					16727.140551757813,
+					26713.358996582032,
+					2146.9812499999998
+				],
+				"last_world_cm": [
+					16728.411260928809,
+					26712.761753424762,
+					2148.0367866029474
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 58,
+				"pre_bomb_world_cm": [
+					15289.576586914063,
+					27265.727008056641,
+					2146.9812499999998
+				],
+				"last_world_cm": [
+					15291.029760747791,
+					27265.60124915218,
+					2146.2014036896894
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 59,
+				"pre_bomb_world_cm": [
+					15763.487506103516,
+					27264.112506103516,
+					2146.9812499999998
+				],
+				"last_world_cm": [
+					15764.939749622241,
+					27263.831274547822,
+					2146.7992756329686
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 60,
+				"pre_bomb_world_cm": [
+					16251.812518310548,
+					27264.112506103516,
+					2146.9812499999998
+				],
+				"last_world_cm": [
+					16253.264347211556,
+					27263.671068177708,
+					2147.4152656921933
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 61,
+				"pre_bomb_world_cm": [
+					16712.830004882813,
+					27261.097186279298,
+					2146.9812499999998
+				],
+				"last_world_cm": [
+					16714.280450790146,
+					27260.504507908714,
+					2147.9969291328121
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 62,
+				"pre_bomb_world_cm": [
+					15282.067126464844,
+					27792.897753906251,
+					2146.9812499999998
+				],
+				"last_world_cm": [
+					15283.693280994657,
+					27792.775027497784,
+					2146.1712692276305
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 63,
+				"pre_bomb_world_cm": [
+					15764.837634277344,
+					27799.679431152344,
+					2146.9812499999998
+				],
+				"last_world_cm": [
+					15766.465613393824,
+					27799.397627889273,
+					2146.779657571843
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 64,
+				"pre_bomb_world_cm": [
+					16245.023516845704,
+					27803.415576171876,
+					2146.9812499999998
+				],
+				"last_world_cm": [
+					16246.65230283201,
+					27802.976239632026,
+					2147.3852319055063
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 65,
+				"pre_bomb_world_cm": [
+					16705.058520507813,
+					27670.471362304688,
+					2146.9812499999998
+				],
+				"last_world_cm": [
+					16706.643344989418,
+					27669.881372197979,
+					2147.9711144800613
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			}
+		],
+		"counters":
+		{
+			"accepted_impacts": 7,
+			"queued_impacts": 0,
+			"queued_building_hits": 0,
+			"active_collections": 1,
+			"active_pieces": 65,
+			"sleeping_collections": 2,
+			"fractured_buildings": 3,
+			"reported_moved_fragments": 32,
+			"forced_sleep": 0,
+			"crater_changed_nodes": 302,
+			"water_max_displacement_cm": 1.1138722896575928,
+			"queue_blocked": false,
+			"full_city_ready": false,
+			"partial_preview": true,
+			"ready_buildings": 248,
+			"source_buildings": 1044,
+			"last_error": ""
+		}
+	},
+	"last_visible_scenario":
+	{
+		"target_id": "osm/relation/4453909",
+		"distant_control_id": "bridge/osm/way/282571104/0",
+		"collection": "/Game/Dublin/Fracture/GC_e1a2ead797616ccccb355e9202b681a3.GC_e1a2ead797616ccccb355e9202b681a3",
+		"authored_leaves": 65,
+		"anchors": 21,
+		"cannon_cm": [
+			15983.799999999999,
+			28069.066666666666,
+			1013.9499999999999
+		],
+		"support_bomb_cm": [
+			16007.65,
+			26990.150000000001,
+			416.69999999999999
+		],
+		"support_bomb_radius_cm": 1587.900634765625,
+		"support_bomb_game_yield_tons": 49.055572509765625,
+		"crater_cm": [
+			-32733.333333333332,
+			-32933.333333333336,
+			498.00666666666666
+		],
+		"water_near_cm": [
+			15200,
+			-5600,
+			110
+		],
+		"water_far_cm": [
+			18000,
+			-5600,
+			110
+		],
+		"selection_error": "",
+		"scenario": "Sample",
+		"status": "completed_30_world_seconds",
+		"utc": "2026-09-15T11:18:22.856Z",
+		"running": false,
+		"world_diagnostics":
+		{
+			"engine_present": true,
+			"engine_frame_counter": 4979,
+			"engine_world_context_count": 3,
+			"editor_play_world_present": true,
+			"world_present": true,
+			"world_name": "/Game/Maps/UEDPIE_0_Dublin.Dublin",
+			"world_type": 3,
+			"actual_Dublin_PIE": true,
+			"world_tearing_down": false,
+			"world_begun_play": true,
+			"world_paused": false,
+			"world_seconds": 52.382703516632318,
+			"world_delta_seconds": 0.016666799783706665,
+			"player_controller_present": true,
+			"local_player_controller": true,
+			"player_input_present": true,
+			"possessed_pawn_present": true,
+			"possessed_pawn_class": "/Script/DublinFlight.DublinFlightPawn",
+			"dublin_pawn_present": true,
+			"spawn_captured": true,
+			"weapons_component_present": true,
+			"unique_city_present": true,
+			"city_ready": true,
+			"source_data_present": true,
+			"fracture_library_present": true,
+			"destruction_ready": true,
+			"all_buildings_ready": false,
+			"partial_preview": true,
+			"fracture_ready_buildings": 12,
+			"source_buildings": 1044,
+			"city_build_error": "",
+			"destruction_error": "",
+			"viewport_client_present": true,
+			"viewport_present": true,
+			"viewport_has_positive_size": true,
+			"viewport_has_OS_focus": false,
+			"viewport_has_mouse_capture": true,
+			"viewport_focus_required": false
+		},
+		"start_world_seconds": 22.378107503056526,
+		"elapsed_world_seconds": 30.004596013575792,
+		"elapsed_wall_seconds": 35.893244300037622,
+		"submitted_impacts": 47,
+		"backpressure_skips": 0,
+		"world_duration_limit_seconds": 30,
+		"wall_duration_limit_seconds": 45,
+		"maximum_submission_rate_hz": 2,
+		"maximal_neighborhood_ids": [],
+		"counter_samples_max32": [
+			{
+				"accepted_impacts": 0,
+				"queued_impacts": 0,
+				"queued_building_hits": 0,
+				"active_collections": 0,
+				"active_pieces": 0,
+				"sleeping_collections": 0,
+				"fractured_buildings": 0,
+				"reported_moved_fragments": 0,
+				"forced_sleep": 0,
+				"crater_changed_nodes": 0,
+				"water_max_displacement_cm": 0,
+				"queue_blocked": false,
+				"full_city_ready": false,
+				"partial_preview": true,
+				"ready_buildings": 12,
+				"source_buildings": 1044,
+				"last_error": "",
+				"world_seconds": 22.378107503056526,
+				"elapsed_world_seconds": 0,
+				"elapsed_wall_seconds": 6.590038537979126e-05,
+				"live_impact_effect_components": 0
+			},
+			{
+				"accepted_impacts": 2,
+				"queued_impacts": 0,
+				"queued_building_hits": 0,
+				"active_collections": 1,
+				"active_pieces": 65,
+				"sleeping_collections": 0,
+				"fractured_buildings": 1,
+				"reported_moved_fragments": 0,
+				"forced_sleep": 0,
+				"crater_changed_nodes": 0,
+				"water_max_displacement_cm": 0,
+				"queue_blocked": false,
+				"full_city_ready": false,
+				"partial_preview": true,
+				"ready_buildings": 12,
+				"source_buildings": 1044,
+				"last_error": "",
+				"world_seconds": 23.3946643024683,
+				"elapsed_world_seconds": 1.0165567994117737,
+				"elapsed_wall_seconds": 0.90163800120353699,
+				"live_impact_effect_components": 0
+			},
+			{
+				"accepted_impacts": 3,
+				"queued_impacts": 0,
+				"queued_building_hits": 0,
+				"active_collections": 1,
+				"active_pieces": 65,
+				"sleeping_collections": 0,
+				"fractured_buildings": 1,
+				"reported_moved_fragments": 0,
+				"forced_sleep": 0,
+				"crater_changed_nodes": 0,
+				"water_max_displacement_cm": 0,
+				"queue_blocked": false,
+				"full_city_ready": false,
+				"partial_preview": true,
+				"ready_buildings": 12,
+				"source_buildings": 1044,
+				"last_error": "",
+				"world_seconds": 24.379807103425264,
+				"elapsed_world_seconds": 2.0016996003687382,
+				"elapsed_wall_seconds": 1.8877873010933399,
+				"live_impact_effect_components": 0
+			},
+			{
+				"accepted_impacts": 5,
+				"queued_impacts": 0,
+				"queued_building_hits": 0,
+				"active_collections": 3,
+				"active_pieces": 193,
+				"sleeping_collections": 0,
+				"fractured_buildings": 3,
+				"reported_moved_fragments": 0,
+				"forced_sleep": 0,
+				"crater_changed_nodes": 302,
+				"water_max_displacement_cm": 0,
+				"queue_blocked": false,
+				"full_city_ready": false,
+				"partial_preview": true,
+				"ready_buildings": 12,
+				"source_buildings": 1044,
+				"last_error": "",
+				"world_seconds": 25.467560719698668,
+				"elapsed_world_seconds": 3.0894532166421413,
+				"elapsed_wall_seconds": 8.9709936007857323,
+				"live_impact_effect_components": 2
+			},
+			{
+				"accepted_impacts": 7,
+				"queued_impacts": 0,
+				"queued_building_hits": 0,
+				"active_collections": 3,
+				"active_pieces": 193,
+				"sleeping_collections": 0,
+				"fractured_buildings": 3,
+				"reported_moved_fragments": 0,
+				"forced_sleep": 0,
+				"crater_changed_nodes": 302,
+				"water_max_displacement_cm": 19.357070922851562,
+				"queue_blocked": false,
+				"full_city_ready": false,
+				"partial_preview": true,
+				"ready_buildings": 12,
+				"source_buildings": 1044,
+				"last_error": "",
+				"world_seconds": 26.394406218081713,
+				"elapsed_world_seconds": 4.0162987150251865,
+				"elapsed_wall_seconds": 9.9006872996687889,
+				"live_impact_effect_components": 3
+			},
+			{
+				"accepted_impacts": 8,
+				"queued_impacts": 0,
+				"queued_building_hits": 0,
+				"active_collections": 3,
+				"active_pieces": 193,
+				"sleeping_collections": 0,
+				"fractured_buildings": 3,
+				"reported_moved_fragments": 0,
+				"forced_sleep": 0,
+				"crater_changed_nodes": 302,
+				"water_max_displacement_cm": 5.7371978759765625,
+				"queue_blocked": false,
+				"full_city_ready": false,
+				"partial_preview": true,
+				"ready_buildings": 12,
+				"source_buildings": 1044,
+				"last_error": "",
+				"world_seconds": 27.406262319535017,
+				"elapsed_world_seconds": 5.0281548164784908,
+				"elapsed_wall_seconds": 10.914186898618937,
+				"live_impact_effect_components": 3
+			},
+			{
+				"accepted_impacts": 10,
+				"queued_impacts": 0,
+				"queued_building_hits": 0,
+				"active_collections": 3,
+				"active_pieces": 193,
+				"sleeping_collections": 0,
+				"fractured_buildings": 3,
+				"reported_moved_fragments": 0,
+				"forced_sleep": 0,
+				"crater_changed_nodes": 551,
+				"water_max_displacement_cm": 6.2184534072875977,
+				"queue_blocked": false,
+				"full_city_ready": false,
+				"partial_preview": true,
+				"ready_buildings": 12,
+				"source_buildings": 1044,
+				"last_error": "",
+				"world_seconds": 28.397084817290306,
+				"elapsed_world_seconds": 6.0189773142337799,
+				"elapsed_wall_seconds": 11.902372598648071,
+				"live_impact_effect_components": 4
+			},
+			{
+				"accepted_impacts": 11,
+				"queued_impacts": 0,
+				"queued_building_hits": 0,
+				"active_collections": 3,
+				"active_pieces": 193,
+				"sleeping_collections": 0,
+				"fractured_buildings": 3,
+				"reported_moved_fragments": 0,
+				"forced_sleep": 0,
+				"crater_changed_nodes": 604,
+				"water_max_displacement_cm": 2.8038027286529541,
+				"queue_blocked": false,
+				"full_city_ready": false,
+				"partial_preview": true,
+				"ready_buildings": 12,
+				"source_buildings": 1044,
+				"last_error": "",
+				"world_seconds": 29.41459621861577,
+				"elapsed_world_seconds": 7.0364887155592442,
+				"elapsed_wall_seconds": 12.923606898635626,
+				"live_impact_effect_components": 5
+			},
+			{
+				"accepted_impacts": 13,
+				"queued_impacts": 0,
+				"queued_building_hits": 0,
+				"active_collections": 3,
+				"active_pieces": 193,
+				"sleeping_collections": 0,
+				"fractured_buildings": 3,
+				"reported_moved_fragments": 0,
+				"forced_sleep": 0,
+				"crater_changed_nodes": 604,
+				"water_max_displacement_cm": 15.63016414642334,
+				"queue_blocked": false,
+				"full_city_ready": false,
+				"partial_preview": true,
+				"ready_buildings": 12,
+				"source_buildings": 1044,
+				"last_error": "",
+				"world_seconds": 30.387309517711401,
+				"elapsed_world_seconds": 8.0092020146548748,
+				"elapsed_wall_seconds": 13.896113701164722,
+				"live_impact_effect_components": 5
+			},
+			{
+				"accepted_impacts": 14,
+				"queued_impacts": 0,
+				"queued_building_hits": 0,
+				"active_collections": 1,
+				"active_pieces": 65,
+				"sleeping_collections": 2,
+				"fractured_buildings": 3,
+				"reported_moved_fragments": 0,
+				"forced_sleep": 0,
+				"crater_changed_nodes": 604,
+				"water_max_displacement_cm": 5.9706006050109863,
+				"queue_blocked": false,
+				"full_city_ready": false,
+				"partial_preview": true,
+				"ready_buildings": 12,
+				"source_buildings": 1044,
+				"last_error": "",
+				"world_seconds": 31.413152020424604,
+				"elapsed_world_seconds": 9.0350445173680782,
+				"elapsed_wall_seconds": 14.919486399739981,
+				"live_impact_effect_components": 3
+			},
+			{
+				"accepted_impacts": 16,
+				"queued_impacts": 0,
+				"queued_building_hits": 0,
+				"active_collections": 3,
+				"active_pieces": 193,
+				"sleeping_collections": 0,
+				"fractured_buildings": 3,
+				"reported_moved_fragments": 0,
+				"forced_sleep": 0,
+				"crater_changed_nodes": 853,
+				"water_max_displacement_cm": 6.6205253601074219,
+				"queue_blocked": false,
+				"full_city_ready": false,
+				"partial_preview": true,
+				"ready_buildings": 12,
+				"source_buildings": 1044,
+				"last_error": "",
+				"world_seconds": 32.394980818033218,
+				"elapsed_world_seconds": 10.016873314976692,
+				"elapsed_wall_seconds": 15.903328102082014,
+				"live_impact_effect_components": 4
+			},
+			{
+				"accepted_impacts": 17,
+				"queued_impacts": 0,
+				"queued_building_hits": 0,
+				"active_collections": 3,
+				"active_pieces": 193,
+				"sleeping_collections": 0,
+				"fractured_buildings": 3,
+				"reported_moved_fragments": 0,
+				"forced_sleep": 0,
+				"crater_changed_nodes": 906,
+				"water_max_displacement_cm": 3.2096133232116699,
+				"queue_blocked": false,
+				"full_city_ready": false,
+				"partial_preview": true,
+				"ready_buildings": 12,
+				"source_buildings": 1044,
+				"last_error": "",
+				"world_seconds": 33.420345723628998,
+				"elapsed_world_seconds": 11.042238220572472,
+				"elapsed_wall_seconds": 16.92903820052743,
+				"live_impact_effect_components": 5
+			},
+			{
+				"accepted_impacts": 19,
+				"queued_impacts": 0,
+				"queued_building_hits": 0,
+				"active_collections": 3,
+				"active_pieces": 193,
+				"sleeping_collections": 0,
+				"fractured_buildings": 3,
+				"reported_moved_fragments": 0,
+				"forced_sleep": 0,
+				"crater_changed_nodes": 906,
+				"water_max_displacement_cm": 15.237364768981934,
+				"queue_blocked": false,
+				"full_city_ready": false,
+				"partial_preview": true,
+				"ready_buildings": 12,
+				"source_buildings": 1044,
+				"last_error": "",
+				"world_seconds": 34.399501819163561,
+				"elapsed_world_seconds": 12.021394316107035,
+				"elapsed_wall_seconds": 17.909102000296116,
+				"live_impact_effect_components": 4
+			},
+			{
+				"accepted_impacts": 20,
+				"queued_impacts": 0,
+				"queued_building_hits": 0,
+				"active_collections": 1,
+				"active_pieces": 65,
+				"sleeping_collections": 2,
+				"fractured_buildings": 3,
+				"reported_moved_fragments": 0,
+				"forced_sleep": 0,
+				"crater_changed_nodes": 906,
+				"water_max_displacement_cm": 6.4041757583618164,
+				"queue_blocked": false,
+				"full_city_ready": false,
+				"partial_preview": true,
+				"ready_buildings": 12,
+				"source_buildings": 1044,
+				"last_error": "",
+				"world_seconds": 35.391619019210339,
+				"elapsed_world_seconds": 13.013511516153812,
+				"elapsed_wall_seconds": 18.896683301776648,
+				"live_impact_effect_components": 3
+			},
+			{
+				"accepted_impacts": 22,
+				"queued_impacts": 0,
+				"queued_building_hits": 0,
+				"active_collections": 3,
+				"active_pieces": 193,
+				"sleeping_collections": 0,
+				"fractured_buildings": 3,
+				"reported_moved_fragments": 0,
+				"forced_sleep": 0,
+				"crater_changed_nodes": 1155,
+				"water_max_displacement_cm": 6.9732022285461426,
+				"queue_blocked": false,
+				"full_city_ready": false,
+				"partial_preview": true,
+				"ready_buildings": 12,
+				"source_buildings": 1044,
+				"last_error": "",
+				"world_seconds": 36.392446119338274,
+				"elapsed_world_seconds": 14.014338616281748,
+				"elapsed_wall_seconds": 19.895498301833868,
+				"live_impact_effect_components": 4
+			},
+			{
+				"accepted_impacts": 23,
+				"queued_impacts": 0,
+				"queued_building_hits": 0,
+				"active_collections": 3,
+				"active_pieces": 193,
+				"sleeping_collections": 0,
+				"fractured_buildings": 3,
+				"reported_moved_fragments": 0,
+				"forced_sleep": 0,
+				"crater_changed_nodes": 1208,
+				"water_max_displacement_cm": 3.4817430973052979,
+				"queue_blocked": false,
+				"full_city_ready": false,
+				"partial_preview": true,
+				"ready_buildings": 12,
+				"source_buildings": 1044,
+				"last_error": "",
+				"world_seconds": 37.395241819322109,
+				"elapsed_world_seconds": 15.017134316265583,
+				"elapsed_wall_seconds": 20.899684298783541,
+				"live_impact_effect_components": 5
+			},
+			{
+				"accepted_impacts": 25,
+				"queued_impacts": 0,
+				"queued_building_hits": 0,
+				"active_collections": 3,
+				"active_pieces": 193,
+				"sleeping_collections": 0,
+				"fractured_buildings": 3,
+				"reported_moved_fragments": 0,
+				"forced_sleep": 0,
+				"crater_changed_nodes": 1208,
+				"water_max_displacement_cm": 15.43714427947998,
+				"queue_blocked": false,
+				"full_city_ready": false,
+				"partial_preview": true,
+				"ready_buildings": 12,
+				"source_buildings": 1044,
+				"last_error": "",
+				"world_seconds": 38.381240017712116,
+				"elapsed_world_seconds": 16.00313251465559,
+				"elapsed_wall_seconds": 21.888685699552298,
+				"live_impact_effect_components": 4
+			},
+			{
+				"accepted_impacts": 27,
+				"queued_impacts": 0,
+				"queued_building_hits": 0,
+				"active_collections": 1,
+				"active_pieces": 65,
+				"sleeping_collections": 2,
+				"fractured_buildings": 3,
+				"reported_moved_fragments": 0,
+				"forced_sleep": 0,
+				"crater_changed_nodes": 1208,
+				"water_max_displacement_cm": 6.5107107162475586,
+				"queue_blocked": false,
+				"full_city_ready": false,
+				"partial_preview": true,
+				"ready_buildings": 12,
+				"source_buildings": 1044,
+				"last_error": "",
+				"world_seconds": 39.386686019599438,
+				"elapsed_world_seconds": 17.008578516542912,
+				"elapsed_wall_seconds": 22.891674600541592,
+				"live_impact_effect_components": 3
+			},
+			{
+				"accepted_impacts": 29,
+				"queued_impacts": 0,
+				"queued_building_hits": 0,
+				"active_collections": 3,
+				"active_pieces": 193,
+				"sleeping_collections": 0,
+				"fractured_buildings": 3,
+				"reported_moved_fragments": 0,
+				"forced_sleep": 0,
+				"crater_changed_nodes": 1509,
+				"water_max_displacement_cm": 6.8838872909545898,
+				"queue_blocked": false,
+				"full_city_ready": false,
+				"partial_preview": true,
+				"ready_buildings": 12,
+				"source_buildings": 1044,
+				"last_error": "",
+				"world_seconds": 40.395114418119192,
+				"elapsed_world_seconds": 18.017006915062666,
+				"elapsed_wall_seconds": 23.905210301280022,
+				"live_impact_effect_components": 5
+			},
+			{
+				"accepted_impacts": 30,
+				"queued_impacts": 0,
+				"queued_building_hits": 0,
+				"active_collections": 3,
+				"active_pieces": 193,
+				"sleeping_collections": 0,
+				"fractured_buildings": 3,
+				"reported_moved_fragments": 0,
+				"forced_sleep": 0,
+				"crater_changed_nodes": 1509,
+				"water_max_displacement_cm": 22.898998260498047,
+				"queue_blocked": false,
+				"full_city_ready": false,
+				"partial_preview": true,
+				"ready_buildings": 12,
+				"source_buildings": 1044,
+				"last_error": "",
+				"world_seconds": 41.386528417468071,
+				"elapsed_world_seconds": 19.008420914411545,
+				"elapsed_wall_seconds": 24.893148299306631,
+				"live_impact_effect_components": 6
+			},
+			{
+				"accepted_impacts": 31,
+				"queued_impacts": 0,
+				"queued_building_hits": 0,
+				"active_collections": 3,
+				"active_pieces": 193,
+				"sleeping_collections": 0,
+				"fractured_buildings": 3,
+				"reported_moved_fragments": 0,
+				"forced_sleep": 0,
+				"crater_changed_nodes": 1509,
+				"water_max_displacement_cm": 9.2119674682617188,
+				"queue_blocked": false,
+				"full_city_ready": false,
+				"partial_preview": true,
+				"ready_buildings": 12,
+				"source_buildings": 1044,
+				"last_error": "",
+				"world_seconds": 42.386963117867708,
+				"elapsed_world_seconds": 20.008855614811182,
+				"elapsed_wall_seconds": 25.898839801549911,
+				"live_impact_effect_components": 4
+			},
+			{
+				"accepted_impacts": 33,
+				"queued_impacts": 0,
+				"queued_building_hits": 0,
+				"active_collections": 1,
+				"active_pieces": 65,
+				"sleeping_collections": 2,
+				"fractured_buildings": 3,
+				"reported_moved_fragments": 0,
+				"forced_sleep": 0,
+				"crater_changed_nodes": 1509,
+				"water_max_displacement_cm": 7.3213968276977539,
+				"queue_blocked": false,
+				"full_city_ready": false,
+				"partial_preview": true,
+				"ready_buildings": 12,
+				"source_buildings": 1044,
+				"last_error": "",
+				"world_seconds": 43.381349615752697,
+				"elapsed_world_seconds": 21.003242112696171,
+				"elapsed_wall_seconds": 26.889791399240494,
+				"live_impact_effect_components": 3
+			},
+			{
+				"accepted_impacts": 34,
+				"queued_impacts": 0,
+				"queued_building_hits": 0,
+				"active_collections": 3,
+				"active_pieces": 193,
+				"sleeping_collections": 0,
+				"fractured_buildings": 3,
+				"reported_moved_fragments": 0,
+				"forced_sleep": 0,
+				"crater_changed_nodes": 1751,
+				"water_max_displacement_cm": 4.6145052909851074,
+				"queue_blocked": false,
+				"full_city_ready": false,
+				"partial_preview": true,
+				"ready_buildings": 12,
+				"source_buildings": 1044,
+				"last_error": "",
+				"world_seconds": 44.37826331704855,
+				"elapsed_world_seconds": 22.000155813992023,
+				"elapsed_wall_seconds": 27.887916602194309,
+				"live_impact_effect_components": 4
+			},
+			{
+				"accepted_impacts": 35,
+				"queued_impacts": 0,
+				"queued_building_hits": 0,
+				"active_collections": 3,
+				"active_pieces": 193,
+				"sleeping_collections": 0,
+				"fractured_buildings": 3,
+				"reported_moved_fragments": 0,
+				"forced_sleep": 0,
+				"crater_changed_nodes": 1804,
+				"water_max_displacement_cm": 3.1573615074157715,
+				"queue_blocked": false,
+				"full_city_ready": false,
+				"partial_preview": true,
+				"ready_buildings": 12,
+				"source_buildings": 1044,
+				"last_error": "",
+				"world_seconds": 45.391259215772152,
+				"elapsed_world_seconds": 23.013151712715626,
+				"elapsed_wall_seconds": 28.894905898720026,
+				"live_impact_effect_components": 4
+			},
+			{
+				"accepted_impacts": 37,
+				"queued_impacts": 0,
+				"queued_building_hits": 0,
+				"active_collections": 3,
+				"active_pieces": 193,
+				"sleeping_collections": 0,
+				"fractured_buildings": 3,
+				"reported_moved_fragments": 0,
+				"forced_sleep": 0,
+				"crater_changed_nodes": 1804,
+				"water_max_displacement_cm": 15.373879432678223,
+				"queue_blocked": false,
+				"full_city_ready": false,
+				"partial_preview": true,
+				"ready_buildings": 12,
+				"source_buildings": 1044,
+				"last_error": "",
+				"world_seconds": 46.382423914968967,
+				"elapsed_world_seconds": 24.004316411912441,
+				"elapsed_wall_seconds": 29.890320401638746,
+				"live_impact_effect_components": 3
+			},
+			{
+				"accepted_impacts": 38,
+				"queued_impacts": 0,
+				"queued_building_hits": 0,
+				"active_collections": 1,
+				"active_pieces": 65,
+				"sleeping_collections": 2,
+				"fractured_buildings": 3,
+				"reported_moved_fragments": 0,
+				"forced_sleep": 0,
+				"crater_changed_nodes": 1804,
+				"water_max_displacement_cm": 6.5953640937805176,
+				"queue_blocked": false,
+				"full_city_ready": false,
+				"partial_preview": true,
+				"ready_buildings": 12,
+				"source_buildings": 1044,
+				"last_error": "",
+				"world_seconds": 47.3882219158113,
+				"elapsed_world_seconds": 25.010114412754774,
+				"elapsed_wall_seconds": 30.89746680110693,
+				"live_impact_effect_components": 3
+			},
+			{
+				"accepted_impacts": 39,
+				"queued_impacts": 0,
+				"queued_building_hits": 0,
+				"active_collections": 1,
+				"active_pieces": 65,
+				"sleeping_collections": 2,
+				"fractured_buildings": 3,
+				"reported_moved_fragments": 0,
+				"forced_sleep": 0,
+				"crater_changed_nodes": 1804,
+				"water_max_displacement_cm": 7.0000581741333008,
+				"queue_blocked": false,
+				"full_city_ready": false,
+				"partial_preview": true,
+				"ready_buildings": 12,
+				"source_buildings": 1044,
+				"last_error": "",
+				"world_seconds": 48.379895813763142,
+				"elapsed_world_seconds": 26.001788310706615,
+				"elapsed_wall_seconds": 31.891940101981163,
+				"live_impact_effect_components": 3
+			},
+			{
+				"accepted_impacts": 41,
+				"queued_impacts": 0,
+				"queued_building_hits": 0,
+				"active_collections": 3,
+				"active_pieces": 193,
+				"sleeping_collections": 0,
+				"fractured_buildings": 3,
+				"reported_moved_fragments": 0,
+				"forced_sleep": 0,
+				"crater_changed_nodes": 2093,
+				"water_max_displacement_cm": 3.5770833492279053,
+				"queue_blocked": false,
+				"full_city_ready": false,
+				"partial_preview": true,
+				"ready_buildings": 12,
+				"source_buildings": 1044,
+				"last_error": "",
+				"world_seconds": 49.379440017044544,
+				"elapsed_world_seconds": 27.001332513988018,
+				"elapsed_wall_seconds": 32.889630202203989,
+				"live_impact_effect_components": 5
+			},
+			{
+				"accepted_impacts": 43,
+				"queued_impacts": 0,
+				"queued_building_hits": 0,
+				"active_collections": 3,
+				"active_pieces": 193,
+				"sleeping_collections": 0,
+				"fractured_buildings": 3,
+				"reported_moved_fragments": 0,
+				"forced_sleep": 0,
+				"crater_changed_nodes": 2093,
+				"water_max_displacement_cm": 20.931386947631836,
+				"queue_blocked": false,
+				"full_city_ready": false,
+				"partial_preview": true,
+				"ready_buildings": 12,
+				"source_buildings": 1044,
+				"last_error": "",
+				"world_seconds": 50.391307316720486,
+				"elapsed_world_seconds": 28.01319981366396,
+				"elapsed_wall_seconds": 33.894621200859547,
+				"live_impact_effect_components": 4
+			},
+			{
+				"accepted_impacts": 45,
+				"queued_impacts": 0,
+				"queued_building_hits": 0,
+				"active_collections": 3,
+				"active_pieces": 193,
+				"sleeping_collections": 0,
+				"fractured_buildings": 3,
+				"reported_moved_fragments": 0,
+				"forced_sleep": 0,
+				"crater_changed_nodes": 2093,
+				"water_max_displacement_cm": 7.3204865455627441,
+				"queue_blocked": false,
+				"full_city_ready": false,
+				"partial_preview": true,
+				"ready_buildings": 12,
+				"source_buildings": 1044,
+				"last_error": "",
+				"world_seconds": 51.385985814034939,
+				"elapsed_world_seconds": 29.007878310978413,
+				"elapsed_wall_seconds": 34.893926300108433,
+				"live_impact_effect_components": 3
+			},
+			{
+				"accepted_impacts": 47,
+				"queued_impacts": 0,
+				"queued_building_hits": 0,
+				"active_collections": 3,
+				"active_pieces": 193,
+				"sleeping_collections": 0,
+				"fractured_buildings": 3,
+				"reported_moved_fragments": 0,
+				"forced_sleep": 0,
+				"crater_changed_nodes": 2378,
+				"water_max_displacement_cm": 7.4434390068054199,
+				"queue_blocked": false,
+				"full_city_ready": false,
+				"partial_preview": true,
+				"ready_buildings": 12,
+				"source_buildings": 1044,
+				"last_error": "",
+				"world_seconds": 52.382703516632318,
+				"elapsed_world_seconds": 30.004596013575792,
+				"elapsed_wall_seconds": 35.893135398626328,
+				"live_impact_effect_components": 5
+			}
+		],
+		"performance_status": "NOT_ASSESSED: scenario does not reset or substitute for the performance capture clock",
+		"selected_target_leaf_observations_max128": [
+			{
+				"transform_index": 1,
+				"rest_world_cm": [
+					15307.094531250001,
+					26173.738940429688,
+					578.16875000000005
+				],
+				"current_world_cm": [
+					15307.094531250001,
+					26173.738940429688,
+					578.16875000000005
+				]
+			},
+			{
+				"transform_index": 2,
+				"rest_world_cm": [
+					15762.138308715821,
+					26179.923327636719,
+					578.16875000000005
+				],
+				"current_world_cm": [
+					15762.138308715821,
+					26179.923327636719,
+					578.16875000000005
+				]
+			},
+			{
+				"transform_index": 3,
+				"rest_world_cm": [
+					16213.28692932129,
+					26235.271105957032,
+					566.50603027343755
+				],
+				"current_world_cm": [
+					16213.28692932129,
+					26235.271105957032,
+					566.50603027343755
+				]
+			},
+			{
+				"transform_index": 4,
+				"rest_world_cm": [
+					16717.895434570313,
+					26305.208605957032,
+					578.16875000000005
+				],
+				"current_world_cm": [
+					16717.895434570313,
+					26305.208605957032,
+					578.16875000000005
+				]
+			},
+			{
+				"transform_index": 5,
+				"rest_world_cm": [
+					15340.659838867188,
+					26672.385943603516,
+					511.98247070312499
+				],
+				"current_world_cm": [
+					15340.659838867188,
+					26672.385943603516,
+					511.98247070312499
+				]
+			},
+			{
+				"transform_index": 6,
+				"rest_world_cm": [
+					15656.884051513673,
+					26716.788806152344,
+					525.6968872070313
+				],
+				"current_world_cm": [
+					15656.884051513673,
+					26716.788806152344,
+					525.6968872070313
+				]
+			},
+			{
+				"transform_index": 7,
+				"rest_world_cm": [
+					16351.948809814454,
+					26732.104602050782,
+					570.69470520019536
+				],
+				"current_world_cm": [
+					16351.948809814454,
+					26732.104602050782,
+					570.69470520019536
+				]
+			},
+			{
+				"transform_index": 8,
+				"rest_world_cm": [
+					16706.218249511719,
+					26712.830096435548,
+					551.68904418945317
+				],
+				"current_world_cm": [
+					16706.218249511719,
+					26712.830096435548,
+					551.68904418945317
+				]
+			},
+			{
+				"transform_index": 9,
+				"rest_world_cm": [
+					15991.840728950501,
+					26933.791466546059,
+					354.1082896709442
+				],
+				"current_world_cm": [
+					15991.840728950501,
+					26933.791466546059,
+					354.1082896709442
+				]
+			},
+			{
+				"transform_index": 10,
+				"rest_world_cm": [
+					15301.921923828126,
+					27263.953295898438,
+					576.04365844726567
+				],
+				"current_world_cm": [
+					15301.921923828126,
+					27263.953295898438,
+					576.04365844726567
+				]
+			},
+			{
+				"transform_index": 11,
+				"rest_world_cm": [
+					15763.487506103516,
+					27264.112506103516,
+					578.16875000000005
+				],
+				"current_world_cm": [
+					15763.487506103516,
+					27264.112506103516,
+					578.16875000000005
+				]
+			},
+			{
+				"transform_index": 12,
+				"rest_world_cm": [
+					16221.292193603516,
+					27230.257861328126,
+					512.80156250000005
+				],
+				"current_world_cm": [
+					16221.292193603516,
+					27230.257861328126,
+					512.80156250000005
+				]
+			},
+			{
+				"transform_index": 13,
+				"rest_world_cm": [
+					16712.830004882813,
+					27261.097186279298,
+					578.16875000000005
+				],
+				"current_world_cm": [
+					16712.830004882813,
+					27261.097186279298,
+					578.16875000000005
+				]
+			},
+			{
+				"transform_index": 14,
+				"rest_world_cm": [
+					15282.067126464844,
+					27792.897753906251,
+					578.16875000000005
+				],
+				"current_world_cm": [
+					15282.067126464844,
+					27792.897753906251,
+					578.16875000000005
+				]
+			},
+			{
+				"transform_index": 15,
+				"rest_world_cm": [
+					15764.837634277344,
+					27799.679431152344,
+					578.16875000000005
+				],
+				"current_world_cm": [
+					15764.837634277344,
+					27799.679431152344,
+					578.16875000000005
+				]
+			},
+			{
+				"transform_index": 16,
+				"rest_world_cm": [
+					16245.023516845704,
+					27803.415576171876,
+					578.16875000000005
+				],
+				"current_world_cm": [
+					16245.023516845704,
+					27803.415576171876,
+					578.16875000000005
+				]
+			},
+			{
+				"transform_index": 17,
+				"rest_world_cm": [
+					16606.475695800782,
+					27614.117419433594,
+					561.56654663085942
+				],
+				"current_world_cm": [
+					16606.475695800782,
+					27614.117419433594,
+					561.56654663085942
+				]
+			},
+			{
+				"transform_index": 18,
+				"rest_world_cm": [
+					15303.968859863282,
+					26189.213427734376,
+					1059.3810302734375
+				],
+				"current_world_cm": [
+					15303.968859863282,
+					26189.213427734376,
+					1059.3810302734375
+				]
+			},
+			{
+				"transform_index": 19,
+				"rest_world_cm": [
+					15762.138308715821,
+					26179.923327636719,
+					1101.10625
+				],
+				"current_world_cm": [
+					15762.138308715821,
+					26179.923327636719,
+					1101.10625
+				]
+			},
+			{
+				"transform_index": 20,
+				"rest_world_cm": [
+					16250.417071533204,
+					26188.618212890626,
+					1101.10625
+				],
+				"current_world_cm": [
+					16250.417071533204,
+					26188.618212890626,
+					1101.10625
+				]
+			},
+			{
+				"transform_index": 21,
+				"rest_world_cm": [
+					16730.289050292969,
+					26314.181140136719,
+					1059.0600463867188
+				],
+				"current_world_cm": [
+					16730.289050292969,
+					26314.181140136719,
+					1059.0600463867188
+				]
+			},
+			{
+				"transform_index": 22,
+				"rest_world_cm": [
+					15276.705676269532,
+					26702.957202148438,
+					1019.4374267578125
+				],
+				"current_world_cm": [
+					15276.705676269532,
+					26702.957202148438,
+					1019.4374267578125
+				]
+			},
+			{
+				"transform_index": 23,
+				"rest_world_cm": [
+					15768.139697265626,
+					26720.333666992188,
+					950.2960083007813
+				],
+				"current_world_cm": [
+					15768.139697265626,
+					26720.333666992188,
+					950.2960083007813
+				]
+			},
+			{
+				"transform_index": 24,
+				"rest_world_cm": [
+					16251.812518310548,
+					26716.187518310548,
+					1101.10625
+				],
+				"current_world_cm": [
+					16251.812518310548,
+					26716.187518310548,
+					1101.10625
+				]
+			},
+			{
+				"transform_index": 25,
+				"rest_world_cm": [
+					16749.683520507813,
+					26712.533068847657,
+					982.6483032226563
+				],
+				"current_world_cm": [
+					16749.683520507813,
+					26712.533068847657,
+					982.6483032226563
+				]
+			},
+			{
+				"transform_index": 26,
+				"rest_world_cm": [
+					15289.576586914063,
+					27265.727008056641,
+					1101.10625
+				],
+				"current_world_cm": [
+					15289.576586914063,
+					27265.727008056641,
+					1101.10625
+				]
+			},
+			{
+				"transform_index": 27,
+				"rest_world_cm": [
+					15763.487506103516,
+					27264.112506103516,
+					1101.10625
+				],
+				"current_world_cm": [
+					15763.487506103516,
+					27264.112506103516,
+					1101.10625
+				]
+			},
+			{
+				"transform_index": 28,
+				"rest_world_cm": [
+					16241.528033447266,
+					27236.870806884766,
+					880.0649291992188
+				],
+				"current_world_cm": [
+					16241.528033447266,
+					27236.870806884766,
+					880.0649291992188
+				]
+			},
+			{
+				"transform_index": 29,
+				"rest_world_cm": [
+					16712.830004882813,
+					27261.097186279298,
+					1101.10625
+				],
+				"current_world_cm": [
+					16712.830004882813,
+					27261.097186279298,
+					1101.10625
+				]
+			},
+			{
+				"transform_index": 30,
+				"rest_world_cm": [
+					15282.067126464844,
+					27792.897753906251,
+					1101.10625
+				],
+				"current_world_cm": [
+					15282.067126464844,
+					27792.897753906251,
+					1101.10625
+				]
+			},
+			{
+				"transform_index": 31,
+				"rest_world_cm": [
+					15764.837634277344,
+					27799.679431152344,
+					1101.10625
+				],
+				"current_world_cm": [
+					15764.837634277344,
+					27799.679431152344,
+					1101.10625
+				]
+			},
+			{
+				"transform_index": 32,
+				"rest_world_cm": [
+					16245.023516845704,
+					27803.415576171876,
+					1101.10625
+				],
+				"current_world_cm": [
+					16245.023516845704,
+					27803.415576171876,
+					1101.10625
+				]
+			},
+			{
+				"transform_index": 33,
+				"rest_world_cm": [
+					16705.058520507813,
+					27670.471362304688,
+					1101.10625
+				],
+				"current_world_cm": [
+					16705.058520507813,
+					27670.471362304688,
+					1101.10625
+				]
+			},
+			{
+				"transform_index": 34,
+				"rest_world_cm": [
+					15307.094531250001,
+					26173.738940429688,
+					1624.04375
+				],
+				"current_world_cm": [
+					15307.094531250001,
+					26173.738940429688,
+					1624.04375
+				]
+			},
+			{
+				"transform_index": 35,
+				"rest_world_cm": [
+					15762.138308715821,
+					26179.923327636719,
+					1624.04375
+				],
+				"current_world_cm": [
+					15762.138308715821,
+					26179.923327636719,
+					1624.04375
+				]
+			},
+			{
+				"transform_index": 36,
+				"rest_world_cm": [
+					16250.417071533204,
+					26188.618212890626,
+					1624.04375
+				],
+				"current_world_cm": [
+					16250.417071533204,
+					26188.618212890626,
+					1624.04375
+				]
+			},
+			{
+				"transform_index": 37,
+				"rest_world_cm": [
+					16717.895434570313,
+					26305.208605957032,
+					1624.04375
+				],
+				"current_world_cm": [
+					16717.895434570313,
+					26305.208605957032,
+					1624.04375
+				]
+			},
+			{
+				"transform_index": 38,
+				"rest_world_cm": [
+					15298.450366210938,
+					26718.264697265626,
+					1624.04375
+				],
+				"current_world_cm": [
+					15298.450366210938,
+					26718.264697265626,
+					1624.04375
+				]
+			},
+			{
+				"transform_index": 39,
+				"rest_world_cm": [
+					15763.487506103516,
+					26716.187518310548,
+					1624.04375
+				],
+				"current_world_cm": [
+					15763.487506103516,
+					26716.187518310548,
+					1624.04375
+				]
+			},
+			{
+				"transform_index": 40,
+				"rest_world_cm": [
+					16251.812518310548,
+					26716.187518310548,
+					1624.04375
+				],
+				"current_world_cm": [
+					16251.812518310548,
+					26716.187518310548,
+					1624.04375
+				]
+			},
+			{
+				"transform_index": 41,
+				"rest_world_cm": [
+					16727.140551757813,
+					26713.358996582032,
+					1624.04375
+				],
+				"current_world_cm": [
+					16727.140551757813,
+					26713.358996582032,
+					1624.04375
+				]
+			},
+			{
+				"transform_index": 42,
+				"rest_world_cm": [
+					15289.576586914063,
+					27265.727008056641,
+					1624.04375
+				],
+				"current_world_cm": [
+					15289.576586914063,
+					27265.727008056641,
+					1624.04375
+				]
+			},
+			{
+				"transform_index": 43,
+				"rest_world_cm": [
+					15763.487506103516,
+					27264.112506103516,
+					1624.04375
+				],
+				"current_world_cm": [
+					15763.487506103516,
+					27264.112506103516,
+					1624.04375
+				]
+			},
+			{
+				"transform_index": 44,
+				"rest_world_cm": [
+					16251.812518310548,
+					27264.112506103516,
+					1624.04375
+				],
+				"current_world_cm": [
+					16251.812518310548,
+					27264.112506103516,
+					1624.04375
+				]
+			},
+			{
+				"transform_index": 45,
+				"rest_world_cm": [
+					16712.830004882813,
+					27261.097186279298,
+					1624.04375
+				],
+				"current_world_cm": [
+					16712.830004882813,
+					27261.097186279298,
+					1624.04375
+				]
+			},
+			{
+				"transform_index": 46,
+				"rest_world_cm": [
+					15282.067126464844,
+					27792.897753906251,
+					1624.04375
+				],
+				"current_world_cm": [
+					15282.067126464844,
+					27792.897753906251,
+					1624.04375
+				]
+			},
+			{
+				"transform_index": 47,
+				"rest_world_cm": [
+					15764.837634277344,
+					27799.679431152344,
+					1624.04375
+				],
+				"current_world_cm": [
+					15764.837634277344,
+					27799.679431152344,
+					1624.04375
+				]
+			},
+			{
+				"transform_index": 48,
+				"rest_world_cm": [
+					16245.023516845704,
+					27803.415576171876,
+					1624.04375
+				],
+				"current_world_cm": [
+					16245.023516845704,
+					27803.415576171876,
+					1624.04375
+				]
+			},
+			{
+				"transform_index": 49,
+				"rest_world_cm": [
+					16705.058520507813,
+					27670.471362304688,
+					1624.04375
+				],
+				"current_world_cm": [
+					16705.058520507813,
+					27670.471362304688,
+					1624.04375
+				]
+			},
+			{
+				"transform_index": 50,
+				"rest_world_cm": [
+					15307.094531250001,
+					26173.738940429688,
+					2146.9812499999998
+				],
+				"current_world_cm": [
+					15307.094531250001,
+					26173.738940429688,
+					2146.9812499999998
+				]
+			},
+			{
+				"transform_index": 51,
+				"rest_world_cm": [
+					15762.138308715821,
+					26179.923327636719,
+					2146.9812499999998
+				],
+				"current_world_cm": [
+					15762.138308715821,
+					26179.923327636719,
+					2146.9812499999998
+				]
+			},
+			{
+				"transform_index": 52,
+				"rest_world_cm": [
+					16250.417071533204,
+					26188.618212890626,
+					2146.9812499999998
+				],
+				"current_world_cm": [
+					16250.417071533204,
+					26188.618212890626,
+					2146.9812499999998
+				]
+			},
+			{
+				"transform_index": 53,
+				"rest_world_cm": [
+					16717.895434570313,
+					26305.208544921876,
+					2146.9812499999998
+				],
+				"current_world_cm": [
+					16717.895434570313,
+					26305.208544921876,
+					2146.9812499999998
+				]
+			},
+			{
+				"transform_index": 54,
+				"rest_world_cm": [
+					15298.450366210938,
+					26718.264697265626,
+					2146.9812499999998
+				],
+				"current_world_cm": [
+					15298.450366210938,
+					26718.264697265626,
+					2146.9812499999998
+				]
+			},
+			{
+				"transform_index": 55,
+				"rest_world_cm": [
+					15763.487506103516,
+					26716.187518310548,
+					2146.9812499999998
+				],
+				"current_world_cm": [
+					15763.487506103516,
+					26716.187518310548,
+					2146.9812499999998
+				]
+			},
+			{
+				"transform_index": 56,
+				"rest_world_cm": [
+					16251.812518310548,
+					26716.187518310548,
+					2146.9812499999998
+				],
+				"current_world_cm": [
+					16251.812518310548,
+					26716.187518310548,
+					2146.9812499999998
+				]
+			},
+			{
+				"transform_index": 57,
+				"rest_world_cm": [
+					16727.140551757813,
+					26713.358996582032,
+					2146.9812499999998
+				],
+				"current_world_cm": [
+					16727.140551757813,
+					26713.358996582032,
+					2146.9812499999998
+				]
+			},
+			{
+				"transform_index": 58,
+				"rest_world_cm": [
+					15289.576586914063,
+					27265.727008056641,
+					2146.9812499999998
+				],
+				"current_world_cm": [
+					15289.576586914063,
+					27265.727008056641,
+					2146.9812499999998
+				]
+			},
+			{
+				"transform_index": 59,
+				"rest_world_cm": [
+					15763.487506103516,
+					27264.112506103516,
+					2146.9812499999998
+				],
+				"current_world_cm": [
+					15763.487506103516,
+					27264.112506103516,
+					2146.9812499999998
+				]
+			},
+			{
+				"transform_index": 60,
+				"rest_world_cm": [
+					16251.812518310548,
+					27264.112506103516,
+					2146.9812499999998
+				],
+				"current_world_cm": [
+					16251.812518310548,
+					27264.112506103516,
+					2146.9812499999998
+				]
+			},
+			{
+				"transform_index": 61,
+				"rest_world_cm": [
+					16712.830004882813,
+					27261.097186279298,
+					2146.9812499999998
+				],
+				"current_world_cm": [
+					16712.830004882813,
+					27261.097186279298,
+					2146.9812499999998
+				]
+			},
+			{
+				"transform_index": 62,
+				"rest_world_cm": [
+					15282.067126464844,
+					27792.897753906251,
+					2146.9812499999998
+				],
+				"current_world_cm": [
+					15282.067126464844,
+					27792.897753906251,
+					2146.9812499999998
+				]
+			},
+			{
+				"transform_index": 63,
+				"rest_world_cm": [
+					15764.837634277344,
+					27799.679431152344,
+					2146.9812499999998
+				],
+				"current_world_cm": [
+					15764.837634277344,
+					27799.679431152344,
+					2146.9812499999998
+				]
+			},
+			{
+				"transform_index": 64,
+				"rest_world_cm": [
+					16245.023516845704,
+					27803.415576171876,
+					2146.9812499999998
+				],
+				"current_world_cm": [
+					16245.023516845704,
+					27803.415576171876,
+					2146.9812499999998
+				]
+			},
+			{
+				"transform_index": 65,
+				"rest_world_cm": [
+					16705.058520507813,
+					27670.471362304688,
+					2146.9812499999998
+				],
+				"current_world_cm": [
+					16705.058520507813,
+					27670.471362304688,
+					2146.9812499999998
+				]
+			}
+		]
+	},
+	"last_terrain_water_verification":
+	{
+		"target_id": "osm/relation/4453909",
+		"distant_control_id": "bridge/osm/way/282571104/0",
+		"collection": "/Game/Dublin/Fracture/GC_ed38e27d841037b589ca03220035ac05.GC_ed38e27d841037b589ca03220035ac05",
+		"authored_leaves": 65,
+		"anchors": 21,
+		"cannon_cm": [
+			15983.799999999999,
+			28069.066666666666,
+			1013.9499999999999
+		],
+		"support_bomb_cm": [
+			16007.65,
+			26990.150000000001,
+			416.69999999999999
+		],
+		"support_bomb_radius_cm": 1587.900634765625,
+		"support_bomb_game_yield_tons": 49.055572509765625,
+		"crater_cm": [
+			-32733.333333333332,
+			-32933.333333333336,
+			498.00666666666666
+		],
+		"water_near_cm": [
+			15200,
+			-5600,
+			110
+		],
+		"water_far_cm": [
+			18000,
+			-5600,
+			110
+		],
+		"selection_error": "",
+		"status": "passed",
+		"test": "DublinFlight.Destruction.PIE.TerrainAndWater",
+		"verification_scope": "terrain_and_water_only",
+		"building_damage_in_scope": false,
+		"building_motion_status": "NOT_ASSESSED: no cannon or support bomb submitted; selected buildings are read-only fixture controls",
+		"acceptance_scope": "Selected native physical sample only; not full-city, visual or performance acceptance",
+		"utc": "2026-09-15T11:45:50.551Z",
+		"elapsed_wall_seconds": 12.379832003265619,
+		"phase": 4,
+		"phase_advancing_world_observations": 90,
+		"engine_frames_since_fixture_created": 102,
+		"bootstrap_diagnostics":
+		{
+			"engine_present": true,
+			"engine_frame_counter": 1921,
+			"engine_world_context_count": 3,
+			"editor_play_world_present": true,
+			"world_present": true,
+			"world_name": "/Game/Maps/UEDPIE_0_Dublin.Dublin",
+			"world_type": 3,
+			"actual_Dublin_PIE": true,
+			"world_tearing_down": false,
+			"world_begun_play": true,
+			"world_paused": false,
+			"world_seconds": 0.067398205399513245,
+			"world_delta_seconds": 0.067398205399513245,
+			"player_controller_present": true,
+			"local_player_controller": true,
+			"player_input_present": true,
+			"possessed_pawn_present": true,
+			"possessed_pawn_class": "/Script/DublinFlight.DublinFlightPawn",
+			"dublin_pawn_present": true,
+			"spawn_captured": true,
+			"weapons_component_present": true,
+			"unique_city_present": true,
+			"city_ready": true,
+			"source_data_present": true,
+			"fracture_library_present": true,
+			"destruction_ready": true,
+			"all_buildings_ready": false,
+			"partial_preview": true,
+			"fracture_ready_buildings": 12,
+			"source_buildings": 1044,
+			"city_build_error": "",
+			"destruction_error": "",
+			"viewport_client_present": true,
+			"viewport_present": true,
+			"viewport_has_positive_size": true,
+			"viewport_has_OS_focus": true,
+			"viewport_has_mouse_capture": true,
+			"viewport_focus_required": false,
+			"bootstrap_wall_seconds": 5.711726501584053,
+			"bootstrap_poll_count": 2,
+			"engine_frames_since_fixture_created": 2,
+			"observed_world_time_advances": 0
+		},
+		"final_world_diagnostics":
+		{
+			"engine_present": true,
+			"engine_frame_counter": 2021,
+			"engine_world_context_count": 3,
+			"editor_play_world_present": true,
+			"world_present": true,
+			"world_name": "/Game/Maps/UEDPIE_0_Dublin.Dublin",
+			"world_type": 3,
+			"actual_Dublin_PIE": true,
+			"world_tearing_down": false,
+			"world_begun_play": true,
+			"world_paused": false,
+			"world_seconds": 7.1140261143445969,
+			"world_delta_seconds": 0.066237099468708038,
+			"player_controller_present": true,
+			"local_player_controller": true,
+			"player_input_present": true,
+			"possessed_pawn_present": true,
+			"possessed_pawn_class": "/Script/DublinFlight.DublinFlightPawn",
+			"dublin_pawn_present": true,
+			"spawn_captured": true,
+			"weapons_component_present": true,
+			"unique_city_present": true,
+			"city_ready": true,
+			"source_data_present": true,
+			"fracture_library_present": true,
+			"destruction_ready": true,
+			"all_buildings_ready": false,
+			"partial_preview": true,
+			"fracture_ready_buildings": 12,
+			"source_buildings": 1044,
+			"city_build_error": "",
+			"destruction_error": "",
+			"viewport_client_present": true,
+			"viewport_present": true,
+			"viewport_has_positive_size": true,
+			"viewport_has_OS_focus": true,
+			"viewport_has_mouse_capture": true,
+			"viewport_focus_required": false
+		},
+		"crater_observations": 2,
+		"crater_depth_cm": 213.09424296982172,
+		"crater_requested_depth_cm": 250,
+		"near_peak_cm": 20.580551147460938,
+		"far_peak_cm": 1.3541336059570312,
+		"early_far_peak_cm": 0,
+		"early_water_world_frames": 3,
+		"near_arrival_world_seconds": 0.066634900867938995,
+		"far_arrival_world_seconds": 2.1348855122923851,
+		"near_water_render_matches_surface": true,
+		"far_water_render_matches_surface": true,
+		"water_niagara_component_seen_not_visual_proof": true,
+		"errors": [],
+		"counters":
+		{
+			"accepted_impacts": 2,
+			"queued_impacts": 0,
+			"queued_building_hits": 0,
+			"active_collections": 0,
+			"active_pieces": 0,
+			"sleeping_collections": 0,
+			"fractured_buildings": 0,
+			"reported_moved_fragments": 0,
+			"forced_sleep": 0,
+			"crater_changed_nodes": 53,
+			"water_max_displacement_cm": 1.1138722896575928,
+			"queue_blocked": false,
+			"full_city_ready": false,
+			"partial_preview": true,
+			"ready_buildings": 12,
+			"source_buildings": 1044,
+			"last_error": ""
+		}
+	},
+	"last_recovered_building_verification":
+	{
+		"target_id": "osm/relation/3375612",
+		"distant_control_id": "bridge/osm/way/282571104/0",
+		"collection": "/Game/Dublin/Fracture/GC_99c6de4d1d1a6dd2798c9ea27d2e6f66.GC_99c6de4d1d1a6dd2798c9ea27d2e6f66",
+		"authored_leaves": 16,
+		"anchors": 4,
+		"cannon_cm": [
+			-16262.966666666667,
+			34966.633333333331,
+			1247.4100000000001
+		],
+		"support_bomb_cm": [
+			-16547.950000000001,
+			35623.150000000001,
+			632.14999999999998
+		],
+		"support_bomb_radius_cm": 1104.787841796875,
+		"support_bomb_game_yield_tons": 11.49504280090332,
+		"crater_cm": [
+			-32733.333333333332,
+			-32933.333333333336,
+			498.00666666666666
+		],
+		"water_near_cm": [
+			15200,
+			-5600,
+			110
+		],
+		"water_far_cm": [
+			18000,
+			-5600,
+			110
+		],
+		"selection_error": "",
+		"status": "failed",
+		"test": "DublinFlight.Destruction.PIE.RecoveredBuildingDamage",
+		"requires_recovered_bake": true,
+		"selected_bake_attempts": 2,
+		"verification_scope": "actual_city_damage",
+		"building_damage_in_scope": true,
+		"building_motion_status": "See physical leaf observations and errors; inclusion in scope does not imply success",
+		"acceptance_scope": "Selected native physical sample only; not full-city, visual or performance acceptance",
+		"utc": "2026-09-15T15:13:09.508Z",
+		"elapsed_wall_seconds": 15.23959119990468,
+		"phase": 2,
+		"phase_advancing_world_observations": 480,
+		"engine_frames_since_fixture_created": 594,
+		"bootstrap_diagnostics":
+		{
+			"engine_present": true,
+			"engine_frame_counter": 2377,
+			"engine_world_context_count": 3,
+			"editor_play_world_present": true,
+			"world_present": true,
+			"world_name": "/Game/Maps/UEDPIE_0_Dublin.Dublin",
+			"world_type": 3,
+			"actual_Dublin_PIE": true,
+			"world_tearing_down": false,
+			"world_begun_play": true,
+			"world_paused": false,
+			"world_seconds": 0.016666799783706665,
+			"world_delta_seconds": 0.016666799783706665,
+			"player_controller_present": true,
+			"local_player_controller": true,
+			"player_input_present": true,
+			"possessed_pawn_present": true,
+			"possessed_pawn_class": "/Script/DublinFlight.DublinFlightPawn",
+			"dublin_pawn_present": true,
+			"spawn_captured": true,
+			"weapons_component_present": true,
+			"unique_city_present": true,
+			"city_ready": true,
+			"source_data_present": true,
+			"fracture_library_present": true,
+			"destruction_ready": true,
+			"all_buildings_ready": false,
+			"partial_preview": true,
+			"fracture_ready_buildings": 823,
+			"source_buildings": 1044,
+			"city_build_error": "",
+			"destruction_error": "",
+			"viewport_client_present": true,
+			"viewport_present": true,
+			"viewport_has_positive_size": true,
+			"viewport_has_OS_focus": true,
+			"viewport_has_mouse_capture": false,
+			"viewport_focus_required": false,
+			"bootstrap_wall_seconds": 4.9866332001984119,
+			"bootstrap_poll_count": 2,
+			"engine_frames_since_fixture_created": 2,
+			"observed_world_time_advances": 0
+		},
+		"final_world_diagnostics":
+		{
+			"engine_present": true,
+			"engine_frame_counter": 2969,
+			"engine_world_context_count": 3,
+			"editor_play_world_present": true,
+			"world_present": true,
+			"world_name": "/Game/Maps/UEDPIE_0_Dublin.Dublin",
+			"world_type": 3,
+			"actual_Dublin_PIE": true,
+			"world_tearing_down": false,
+			"world_begun_play": true,
+			"world_paused": false,
+			"world_seconds": 10.530616506934166,
+			"world_delta_seconds": 0.016666699200868607,
+			"player_controller_present": true,
+			"local_player_controller": true,
+			"player_input_present": true,
+			"possessed_pawn_present": true,
+			"possessed_pawn_class": "/Script/DublinFlight.DublinFlightPawn",
+			"dublin_pawn_present": true,
+			"spawn_captured": true,
+			"weapons_component_present": true,
+			"unique_city_present": true,
+			"city_ready": true,
+			"source_data_present": true,
+			"fracture_library_present": true,
+			"destruction_ready": true,
+			"all_buildings_ready": false,
+			"partial_preview": true,
+			"fracture_ready_buildings": 823,
+			"source_buildings": 1044,
+			"city_build_error": "",
+			"destruction_error": "",
+			"viewport_client_present": true,
+			"viewport_present": true,
+			"viewport_has_positive_size": true,
+			"viewport_has_OS_focus": true,
+			"viewport_has_mouse_capture": false,
+			"viewport_focus_required": false
+		},
+		"cannon_retained_remote_leaves": 15,
+		"maximum_leaf_travel_cm": 2.8189957338355707,
+		"maximum_leaf_drop_cm": 1.2464780170033691,
+		"maximum_leaf_pair_distance_change_cm": 2.2814836299401122,
+		"stationary_supports_before_bomb": 4,
+		"supports_physically_moved_after_bomb": 0,
+		"descending_world_frames": 0,
+		"crater_observations": 0,
+		"crater_depth_cm": 0,
+		"crater_requested_depth_cm": 250,
+		"near_peak_cm": 0,
+		"far_peak_cm": 0,
+		"early_far_peak_cm": 0,
+		"early_water_world_frames": 0,
+		"near_arrival_world_seconds": -1,
+		"far_arrival_world_seconds": -1,
+		"near_water_render_matches_surface": false,
+		"far_water_render_matches_surface": false,
+		"water_niagara_component_seen_not_visual_proof": false,
+		"errors": [
+			"Actual GC leaves moved at least 25cm after the support bomb",
+			"Actual GC leaves fell at least 25cm below their pre-bomb world positions",
+			"Leaf-pair distances change: separated fragments, not just a falling rigid building",
+			"The bomb actually moves a previously stationary authored support leaf",
+			"Downward fragment motion was observed across multiple independent world frames"
+		],
+		"physical_leaf_observations": [
+			{
+				"transform_index": 1,
+				"pre_bomb_world_cm": [
+					-16860.043090820312,
+					35312.012860107425,
+					802.39996948242185
+				],
+				"last_world_cm": [
+					-16860.303295314607,
+					35312.077638378163,
+					801.15349146541848
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": true,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 2,
+				"pre_bomb_world_cm": [
+					-16290.656890869141,
+					35317.913311767581,
+					786.19240417480466
+				],
+				"last_world_cm": [
+					-16291.371151258712,
+					35318.557294567887,
+					785.29134554207155
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": true,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 3,
+				"pre_bomb_world_cm": [
+					-16872.970794677734,
+					35964.363934326175,
+					803.8227600097656
+				],
+				"last_world_cm": [
+					-16873.052069061796,
+					35965.166261549399,
+					803.94535280988725
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": true,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 4,
+				"pre_bomb_world_cm": [
+					-16292.217926025391,
+					35905.174694824222,
+					779.12718811035154
+				],
+				"last_world_cm": [
+					-16292.860389802798,
+					35906.337721136653,
+					778.45570464411719
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": true,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 5,
+				"pre_bomb_world_cm": [
+					-16832.422943115234,
+					35305.282452392581,
+					1337.2864746093751
+				],
+				"last_world_cm": [
+					-16832.606121607172,
+					35305.876451401571,
+					1337.0354272941365
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 6,
+				"pre_bomb_world_cm": [
+					-16316.857155686888,
+					35296.678497714012,
+					1303.3022091239181
+				],
+				"last_world_cm": [
+					-16317.138685909822,
+					35297.121299163038,
+					1303.0659347809737
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 7,
+				"pre_bomb_world_cm": [
+					-16819.782638549805,
+					35899.96622924805,
+					1356.3794921875001
+				],
+				"last_world_cm": [
+					-16819.818518355281,
+					35900.774181830129,
+					1356.2256659742604
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 8,
+				"pre_bomb_world_cm": [
+					-16230.15380859375,
+					35910.410046386722,
+					1309.6921752929688
+				],
+				"last_world_cm": [
+					-16230.263831382172,
+					35912.807322495697,
+					1309.2105662885892
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 9,
+				"pre_bomb_world_cm": [
+					-16924.192321777344,
+					35323.911633300784,
+					1832.9605468750001
+				],
+				"last_world_cm": [
+					-16923.988013733011,
+					35324.394177715258,
+					1833.0950596711182
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 10,
+				"pre_bomb_world_cm": [
+					-16357.229095458984,
+					35296.521740722659,
+					1886.3650878906251
+				],
+				"last_world_cm": [
+					-16357.003748111494,
+					35297.038210492705,
+					1886.2937973942303
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 11,
+				"pre_bomb_world_cm": [
+					-16840.898452758789,
+					35969.126904296878,
+					1867.5868896484376
+				],
+				"last_world_cm": [
+					-16840.703326661314,
+					35969.621612433446,
+					1867.516727451612
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 12,
+				"pre_bomb_world_cm": [
+					-16232.130767822266,
+					35916.437939453128,
+					1893.4534667968751
+				],
+				"last_world_cm": [
+					-16231.924099581258,
+					35916.960472811108,
+					1893.169013282813
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 13,
+				"pre_bomb_world_cm": [
+					-16876.369476318359,
+					35303.622448730472,
+					2380.3196777343751
+				],
+				"last_world_cm": [
+					-16875.958879296373,
+					35304.253691827471,
+					2380.4414531753873
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 14,
+				"pre_bomb_world_cm": [
+					-16297.651580810547,
+					35331.650036621097,
+					2407.6603759765626
+				],
+				"last_world_cm": [
+					-16297.23188813454,
+					35332.308537902631,
+					2407.557604266065
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 15,
+				"pre_bomb_world_cm": [
+					-16838.679595947266,
+					35941.888775634769,
+					2399.3615478515626
+				],
+				"last_world_cm": [
+					-16838.283967796629,
+					35942.526474210426,
+					2399.2978313706863
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			},
+			{
+				"transform_index": 16,
+				"pre_bomb_world_cm": [
+					-16267.191772460938,
+					35876.414868164065,
+					2419.7808593750001
+				],
+				"last_world_cm": [
+					-16266.786207415129,
+					35877.077571268077,
+					2419.5200824344988
+				],
+				"observed_fall_over_25cm": false,
+				"stationary_authored_support_before_bomb": false,
+				"authored_support_moved_over_25cm": false
+			}
+		],
+		"counters":
+		{
+			"accepted_impacts": 5,
+			"queued_impacts": 0,
+			"queued_building_hits": 0,
+			"active_collections": 0,
+			"active_pieces": 0,
+			"sleeping_collections": 3,
+			"fractured_buildings": 3,
+			"reported_moved_fragments": 0,
+			"forced_sleep": 0,
+			"crater_changed_nodes": 136,
+			"water_max_displacement_cm": 0,
+			"queue_blocked": false,
+			"full_city_ready": false,
+			"partial_preview": true,
+			"ready_buildings": 823,
+			"source_buildings": 1044,
+			"last_error": ""
+		}
+	}
+}

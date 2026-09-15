@@ -1,0 +1,340 @@
+{
+  "schema_version": 1,
+  "status": "contract_draft_pending_final_review",
+  "research_date": "2026-09-08",
+  "engine_root": "C:\\Program Files\\Epic Games\\UE_5.8",
+  "objective": "Bounded UE 5.8 Dublin flight-game destruction stage: clean prefractured buildings, geometric terrain craters with collision, local water simulation and effects, cannon and gravity bombs with game-only yield.",
+  "ownership": {
+    "only_write": "Saved\\Automation\\destruction-feasibility.json",
+    "allowed_reads": "Targeted installed-engine Chaos, GeometryCollection, FieldSystem, Niagara, ProceduralMesh, DynamicMesh and Water native source; official Epic web documentation.",
+    "not_performed": [
+      "Editor calls or editor ownership changes",
+      "Builds, installs, downloads or executable code changes",
+      "Python, arbitrary reflection runners or replacement MCP servers",
+      "Delegation, issue filing or identity postings",
+      "Inspection of flight-agent or city-data-agent files"
+    ]
+  },
+  "decisions": {
+    "buildings": "Cook offline/editor-prefractured Geometry Collection assets; instantiate native components and apply bounded local damage at runtime. Asset-wide destruction capability does not mean simultaneous city-wide active rigid bodies.",
+    "terrain": "Use project-owned chunked deformable geometry and collision. No claim that stock Landscape supports the required packaged-runtime deformation.",
+    "water": "Local reduced-order simulation patches plus bounded Niagara plumes; no full-river CFD claim.",
+    "yield": "A dimensionless game tuning value only; no TNT mass, physical blast equations or real explosive recipes.",
+    "performance": "60 FPS is an unverified acceptance target on the specified laptop, conditional on resolution, renderer settings, concurrency and measured frame times.",
+    "authoring_tools": "User reports no explicit GeometryCollection fracture toolset. PhysicsAsset and DataflowAgent availability alone does not establish automated fracture support. Use verified typed tools only, or a purpose-built native editor pipeline; no unrestricted execution bridge.",
+    "feasibility_verdict": "Concrete native mechanisms exist for a bounded vertical slice. Unlimited simultaneous city destruction, literal arbitrary-resolution cutting, realistic full-river fluid mechanics and a guaranteed 60 FPS are not established.",
+    "scope_meaning": "Every accepted building asset must support destruction down to authored pieces, while only a capped near-field set simulates at once. This is prefractured rigid-body destruction, not runtime cutting at arbitrary impact contours."
+  },
+  "evidence": [
+    {
+      "id": "N01",
+      "kind": "installed_native",
+      "path_relative_to_engine_root": "Engine\\Source\\Runtime\\Experimental\\GeometryCollectionEngine\\Public\\GeometryCollection\\GeometryCollectionComponent.h",
+      "lines": "704-799, 865-888, 1001-1058",
+      "finding": "Exported per-hit ApplyExternalStrain/ApplyInternalStrain, anchoring setters, breaking/piece velocity APIs, SetRestCollection, damage thresholds and damage propagation controls exist. Strain radius tests piece centers of mass; ItemIndex is from HitResult."
+    },
+    {
+      "id": "N02",
+      "kind": "installed_native",
+      "path_relative_to_engine_root": "Engine\\Source\\Runtime\\Experimental\\GeometryCollectionEngine\\Private\\GeometryCollection\\GeometryCollectionComponent.cpp",
+      "lines": "5148-5207, 6826-6891",
+      "finding": "SetRestCollection resets the dynamic collection and recreates physics state; per-piece damage and anchoring commands only forward when PhysicsProxy exists. Configure before registration and do not use anchor calls before physics exists."
+    },
+    {
+      "id": "N03",
+      "kind": "installed_native",
+      "path_relative_to_engine_root": "Engine\\Source\\Runtime\\Experimental\\GeometryCollectionEngine\\Public\\GeometryCollection\\GeometryCollectionObject.h",
+      "lines": "414-422, 463-464, 499-525, 865-869",
+      "finding": "GetGeometryCollection/SetGeometryCollection and invalidation exist; CreateSimulationData, CreateSimulationDataIfNeeded and RebuildRenderData are WITH_EDITOR. UpdateGeometryDependentProperties updates proximity, convex hulls, volume and size."
+    },
+    {
+      "id": "N04",
+      "kind": "installed_native",
+      "path_relative_to_engine_root": "Engine\\Plugins\\Runtime\\ProceduralMeshComponent\\Source\\ProceduralMeshComponent\\Public\\ProceduralMeshComponent.h",
+      "lines": "177-196, 199-233, 273-285",
+      "finding": "CreateMeshSection_LinearColor supports collision. UpdateMeshSection_LinearColor preserves topology and updates collision; bUseComplexAsSimpleCollision and bUseAsyncCooking are available."
+    },
+    {
+      "id": "N05",
+      "kind": "installed_native",
+      "path_relative_to_engine_root": "Engine\\Plugins\\Runtime\\ProceduralMeshComponent\\Source\\ProceduralMeshComponent\\Private\\ProceduralMeshComponent.cpp",
+      "lines": "638-761, 1034-1067",
+      "finding": "LinearColor update forwards to UpdateMeshSection. With the same vertex count and collision enabled, the implementation gathers all collidable section vertices on the component and calls BodyInstance.UpdateTriMeshVertices. Async cooking is a separate creation/rebuild path, not proof that vertex updates are asynchronous."
+    },
+    {
+      "id": "N06",
+      "kind": "installed_native",
+      "path_relative_to_engine_root": "Engine\\Plugins\\Experimental\\ChaosEditor\\Source\\FractureEditor\\Private\\FractureToolCutter.cpp",
+      "lines": "651-669",
+      "finding": "Epic's editor cutter constructs FVoronoiDiagram and FPlanarCells and calls exported CutMultipleWithPlanarCells. This establishes a concrete native offline-fracture mechanism without private-editor-tool reflection."
+    },
+    {
+      "id": "N07",
+      "kind": "installed_native",
+      "path_relative_to_engine_root": "Engine\\Source\\Runtime\\Experimental\\GeometryCollectionEngine\\Public\\GeometryCollection\\GeometryCollectionEngineConversion.h",
+      "lines": "51-82",
+      "finding": "FGeometryCollectionEngineConversion exports AppendMeshDescription and AppendStaticMesh. Include GeometryCollection/GeometryCollectionEngineConversion.h; module GeometryCollectionEngine.",
+      "implementation_evidence": {
+        "path": "Engine\\Source\\Runtime\\Experimental\\GeometryCollectionEngine\\Private\\GeometryCollection\\GeometryCollectionEngineConversion.cpp",
+        "lines": "164-168, 443, 590-621, 774",
+        "finding": "The relevant conversion bodies are WITH_EDITORONLY_DATA guarded. An exported declaration in a runtime module is not evidence of usable packaged-runtime mesh-to-collection authoring."
+      }
+    },
+    {
+      "id": "N08",
+      "kind": "installed_native",
+      "path_relative_to_engine_root": "Engine\\Source\\Runtime\\Experimental\\Chaos\\Public\\GeometryCollection\\Facades\\CollectionAnchoringFacade.h",
+      "lines": "16-45",
+      "finding": "Chaos::Facades::FCollectionAnchoringFacade exports AddAnchoredAttribute, SetAnchored(index or array, bool), SetInitialDynamicState and IsAnchored. Module Chaos; include GeometryCollection/Facades/CollectionAnchoringFacade.h. DefineSchema is empty, so explicitly add the Anchored attribute before setting it.",
+      "implementation_evidence": {
+        "path": "Engine\\Source\\Runtime\\Experimental\\Chaos\\Private\\GeometryCollection\\Facades\\CollectionAnchoringFacade.cpp",
+        "lines": "8-20, 33-36, 81-97",
+        "finding": "Anchored is a transform-group attribute; AddAnchoredAttribute initializes false. IsValid also requires InitialDynamicState, so test the specific attribute preconditions rather than assuming the empty DefineSchema creates everything."
+      }
+    },
+    {
+      "id": "N09",
+      "kind": "installed_native",
+      "path_relative_to_engine_root": "Engine\\Source\\Runtime\\Experimental\\Chaos\\Public\\GeometryCollection\\GeometryCollectionClusteringUtility.h",
+      "lines": "10-46, 96-98",
+      "finding": "FGeometryCollectionClusteringUtility exports ClusterBonesUnderNewNode, ClusterBonesUnderNewNodeWithParent, ClusterAllBonesUnderNewRoot and UpdateHierarchyLevelOfChildren. Module Chaos; include GeometryCollection/GeometryCollectionClusteringUtility.h. The root helper describes flattening existing bones; do not call it after authoring the desired nested hierarchy."
+    },
+    {
+      "id": "N10",
+      "kind": "installed_native",
+      "path_relative_to_engine_root": "Engine\\Source\\Runtime\\Experimental\\Chaos\\Public\\GeometryCollection\\GeometryCollectionProximityUtility.h",
+      "lines": "52-60",
+      "finding": "FGeometryCollectionProximityUtility(FGeometryCollection*) and UpdateProximity are exported by Chaos; include GeometryCollection/GeometryCollectionProximityUtility.h."
+    },
+    {
+      "id": "N11",
+      "kind": "installed_native",
+      "path_relative_to_engine_root": "Engine\\Plugins\\Experimental\\PlanarCutPlugin\\Source\\PlanarCut\\Public\\PlanarCut.h",
+      "lines": "122-134, 280-310",
+      "finding": "FPlanarCells can be constructed from sites and FVoronoiDiagram. CutMultipleWithPlanarCells takes cells, collection, transform selection, grout, collision sample spacing, random seed and optional transform/material/island settings; returns first new geometry index or -1 when none was added. Module PlanarCut; include PlanarCut.h.",
+      "implementation_evidence": {
+        "path": "Engine\\Plugins\\Experimental\\PlanarCutPlugin\\Source\\PlanarCut\\PlanarCut.Build.cs",
+        "lines": "5-36",
+        "finding": "Dependencies include Voronoi, GeometryCore, DynamicMesh, Chaos, GeometryAlgorithms and MeshDescription. PlanarCut.uplugin declares module PlanarCut as Runtime and the plugin as Beta; this contract deliberately uses it only in editor authoring."
+      }
+    },
+    {
+      "id": "N12",
+      "kind": "installed_native",
+      "path_relative_to_engine_root": "Engine\\Source\\Runtime\\Experimental\\Voronoi\\Public\\Voronoi\\Voronoi.h",
+      "lines": "54-81",
+      "finding": "FVoronoiDiagram(Sites, Bounds, ExtraBoundingSpace, SquaredDistSkipPtThreshold) is exported. Module Voronoi; include Voronoi/Voronoi.h."
+    },
+    {
+      "id": "N13",
+      "kind": "installed_native",
+      "path_relative_to_engine_root": "Engine\\Source\\Runtime\\Experimental\\Chaos\\Private\\PhysicsProxy\\GeometryCollectionPhysicsProxy.cpp",
+      "lines": "2670-2688, 2691-2751, 2770-2835, 2837-2881",
+      "finding": "Runtime anchor index means authored transform index, not an arbitrary Hit.Item; native code indexes FromTransformToParticleIndex and updates top-parent kinematic properties. ApplyExternalStrain operates on nearby cluster children and always chooses the closest child if the radius finds none. Noncluster targets are acted on directly. External strain is max-combined, not automatically summed; positive ApplyInternalStrain reduces internal strain, clamped at zero. These commands enqueue from the game thread."
+    },
+    {
+      "id": "N14",
+      "kind": "installed_native",
+      "path_relative_to_engine_root": "Engine\\Source\\Runtime\\Experimental\\GeometryCollectionEngine\\Public\\GeometryCollection\\GeometryCollectionDamagePropagationData.h",
+      "lines": "7-24",
+      "finding": "FGeometryCollectionDamagePropagationData has bEnabled, BreakDamagePropagationFactor and ShockDamagePropagationFactor. Defaults include break propagation factor 1, so explicitly override locality settings rather than inheriting an accidental cascade."
+    },
+    {
+      "id": "N15",
+      "kind": "installed_native",
+      "path_relative_to_engine_root": "Engine\\Source\\Runtime\\Experimental\\FieldSystem\\Source\\FieldSystemEngine\\Public\\Field\\FieldSystemObjects.h",
+      "lines": "97-106, 392-408, 691-695, 813-824, 930-935",
+      "finding": "URadialFalloff::SetRadialFalloff(Magnitude, MinRange, MaxRange, Default, Radius, Position, Falloff), URadialVector::SetRadialVector, UOperatorField::SetOperatorField and UCullingField::SetCullingField are available. Use Default=0 outside the radius and multiply the scalar falloff by the radial vector. Include Field/FieldSystemObjects.h; module FieldSystemEngine."
+    },
+    {
+      "id": "N16",
+      "kind": "installed_native",
+      "path_relative_to_engine_root": "Engine\\Source\\Runtime\\Experimental\\GeometryCollectionEngine\\Public\\GeometryCollection\\GeometryCollectionComponent.h",
+      "lines": "1130-1144",
+      "finding": "UGeometryCollectionComponent::ApplyPhysicsField takes EGeometryCollectionPhysicsTypeEnum, unlike UFieldSystemComponent which takes EFieldPhysicsType.",
+      "implementation_evidence": {
+        "path": "Engine\\Source\\Runtime\\Experimental\\GeometryCollectionEngine\\Private\\GeometryCollection\\GeometryCollectionComponent.cpp",
+        "lines": "5971-5999",
+        "finding": "The component creates a transient command and buffers it on its own PhysicsProxy, a concrete per-collection route instead of a global master field."
+      }
+    },
+    {
+      "id": "N17",
+      "kind": "installed_native",
+      "path_relative_to_engine_root": "Engine\\Source\\Runtime\\Experimental\\Chaos\\Public\\GeometryCollection\\GeometryCollectionSimulationTypes.h",
+      "lines": "45-81",
+      "finding": "EGeometryCollectionPhysicsTypeEnum includes Chaos_ExternalClusterStrain, Chaos_LinearForce, Chaos_LinearVelocity and Chaos_LinearImpulse, with explicit mappings to EFieldPhysicsType. Module Chaos; include GeometryCollection/GeometryCollectionSimulationTypes.h. Core field types live under Chaos/Public/Field/FieldSystemTypes.h in this installation."
+    },
+    {
+      "id": "N18",
+      "kind": "installed_native",
+      "path_relative_to_engine_root": "Engine\\Source\\Runtime\\Experimental\\FieldSystem\\Source\\FieldSystemEngine\\Public\\Field\\FieldSystemComponent.h",
+      "lines": "116-128, 181-205, 258-262",
+      "finding": "UFieldSystemComponent exports ApplyStrainField, ApplyPhysicsField and AddFieldCommand. ApplyRadialForce has magnitude and position but no radius argument; it is not the bounded impact API to use here. Initialization fields are a separate construction path."
+    },
+    {
+      "id": "N19",
+      "kind": "installed_native",
+      "path_relative_to_engine_root": "Engine\\Source\\Runtime\\GeometryFramework\\Public\\Components\\DynamicMeshComponent.h",
+      "lines": "208-224, 709-787",
+      "finding": "UDynamicMeshComponent exports SetMesh, EditMesh, SetComplexAsSimpleCollisionEnabled, SetDeferredCollisionUpdatesEnabled and UpdateCollision(bool bOnlyIfPending=true); bUseAsyncCooking is available and explicitly suitable when collision need not be immediately current. Module GeometryFramework, mesh types GeometryCore; include Components/DynamicMeshComponent.h."
+    },
+    {
+      "id": "N20",
+      "kind": "installed_native",
+      "path_relative_to_engine_root": "Engine\\Plugins\\FX\\Niagara\\Source\\Niagara\\Public\\NiagaraFunctionLibrary.h",
+      "lines": "88-98",
+      "finding": "UNiagaraFunctionLibrary::SpawnSystemAtLocation supports bAutoActivate, ENCPoolMethod and bPreCullCheck. Include NiagaraFunctionLibrary.h; module Niagara."
+    },
+    {
+      "id": "N21",
+      "kind": "installed_native",
+      "path_relative_to_engine_root": "Engine\\Plugins\\FX\\Niagara\\Source\\Niagara\\Public\\NiagaraComponent.h",
+      "lines": "79-81, 226-228, 290-295, 422-423, 504-515, 531-533",
+      "finding": "UNiagaraComponent exports ReleaseToPool, Activate, DeactivateImmediate, SetAsset, SetSystemFixedBounds, SetVariableVec3, SetVariablePosition and SetVariableFloat. World-position parameters have a distinct large-world-aware setter. Include NiagaraComponent.h; module Niagara."
+    },
+    {
+      "id": "N22",
+      "kind": "installed_native",
+      "path_relative_to_engine_root": "Engine\\Plugins\\Experimental\\Water\\Source\\Runtime\\Public\\WaterBodyComponent.h",
+      "lines": "203-204, 295-309, 494-498",
+      "finding": "UWaterBodyComponent::TryQueryWaterInfoClosestToWorldLocation returns TValueOrError and replaces the deprecated query; GetWaterSurfaceInfoAtLocation returns bool with surface, normal, velocity and optional depth outputs. Handle failure explicitly. Module Water; include WaterBodyComponent.h."
+    },
+    {
+      "id": "N23",
+      "kind": "installed_native",
+      "path_relative_to_engine_root": "Engine\\Plugins\\Experimental\\Water\\Source\\Runtime\\Public\\WaterWaves.h",
+      "lines": "19-29, 54-64",
+      "finding": "UWaterWavesBase supplies height/normal queries; UWaterWavesAsset::SetWaterWaves changes wave-model data. These methods are not, by themselves, proof of impact-driven, conservative fluid simulation."
+    },
+    {
+      "id": "N24",
+      "kind": "installed_native",
+      "path_relative_to_engine_root": "Engine\\Plugins\\Experimental\\WaterAdvanced\\Source\\WaterAdvanced\\Public\\ShallowWaterSubsystem.h",
+      "lines": "116-169",
+      "finding": "UShallowWaterSubsystem is abstract and exports InitializeShallowWater, IsShallowWaterInitialized, RegisterImpact(FVector ImpactPosition, FVector ImpactVelocity, float ImpactRadius), SetWaterBodyMIDParameters, GetGridSize and GetGridResolution. A concrete UBasicShallowWaterSubsystem exists. Module WaterAdvanced; include ShallowWaterSubsystem.h and BasicShallowWaterSubsystem.h.",
+      "implementation_evidence": {
+        "path": "Engine\\Plugins\\Experimental\\WaterAdvanced\\Source\\WaterAdvanced\\Private\\ShallowWaterSubsystem.cpp",
+        "lines": "669-727",
+        "finding": "RegisterImpact silently returns without its Niagara simulation or an AWaterBody found by a +/-10 cm vertical trace on GetImpactCollisionChannel (default ECC_WorldDynamic). Inactive simulations queue impacts; WriteImpactToNDC writes Position, Velocity and Radius but returns without its configured data channel. The void call is not a success acknowledgement."
+      }
+    },
+    {
+      "id": "N25",
+      "kind": "installed_native",
+      "path_relative_to_engine_root": "Engine\\Plugins\\Experimental\\WaterAdvanced\\Source\\WaterAdvanced\\Public\\ShallowWaterSettings.h",
+      "lines": "16-60",
+      "finding": "UShallowWaterSettings requires configured simulation, collision Niagara Data Channel and material parameter assets; exposes ShallowWaterSimParameters and limits. UseDefaultShallowWaterSubsystem defaults false.",
+      "implementation_evidence": {
+        "path": "Engine\\Plugins\\Experimental\\WaterAdvanced\\Source\\WaterAdvanced\\Private\\BasicShallowWaterSubsystem.cpp",
+        "lines": "11-33",
+        "finding": "Concrete subsystem creation/initialization checks UseDefaultShallowWaterSubsystem. WaterAdvanced.uplugin lines 12-36 declares Experimental, disabled by default, Runtime module and Niagara/NiagaraFluids/Water plugin dependencies."
+      }
+    },
+    {
+      "id": "N26",
+      "kind": "installed_native",
+      "path_relative_to_engine_root": "Engine\\Source\\Runtime\\Experimental\\GeometryCollectionEngine\\GeometryCollectionEngine.Build.cs",
+      "lines": "7-57",
+      "finding": "GeometryCollectionEngine sets physics support, depends publicly on FieldSystemEngine and adds UnrealEd only for editor targets. FieldSystemEngine.Build.cs lines 5-24 explicitly depends on Chaos, ChaosSolverEngine and PhysicsCore. Do not copy obsolete GeometryCollectionCore or FieldSystemCore module lists into this 5.8 project without verifying them."
+    },
+    {
+      "id": "W01",
+      "kind": "official_epic_web",
+      "url": "https://dev.epicgames.com/documentation/en-us/unreal-engine/dataflow-for-destruction-quickstart",
+      "title": "Dataflow for Destruction Quickstart",
+      "checked": "2026-09-08",
+      "finding": "Epic documents static mesh conversion, scatter, Voronoi fracture, clustering, terminal output and local Hit.Item strain/velocity wiring. This proves the authoring workflow, not the capabilities of the parent's typed MCP tools."
+    },
+    {
+      "id": "W02",
+      "kind": "official_epic_web",
+      "url": "https://dev.epicgames.com/documentation/unreal-engine/destruction-overview",
+      "title": "Destruction Overview",
+      "checked": "2026-09-08",
+      "finding": "Geometry Collections use prefractured geometry, clustering, connectivity and strain; caches are a replay optimization, not unrestricted interactive destruction."
+    },
+    {
+      "id": "W03",
+      "kind": "official_epic_web",
+      "url": "https://dev.epicgames.com/documentation/en-us/unreal-engine/API/Plugins/ProceduralMeshComponent/UProceduralMeshComponent",
+      "title": "UProceduralMeshComponent",
+      "checked": "2026-09-08",
+      "finding": "Official API corroborates custom triangles, collision, section creation/update and async cooking; the component carries an Experimental warning. Exact 5.8 collision-update behavior is established by N05."
+    },
+    {
+      "id": "W04",
+      "kind": "official_epic_web",
+      "url": "https://dev.epicgames.com/documentation/unreal-engine/fluid-simulation-in-unreal-engine---overview?lang=en-US",
+      "title": "Fluid Simulation Overview",
+      "checked": "2026-09-08",
+      "finding": "Epic distinguishes shallow-water surface heightfields from splash-oriented 2D FLIP and more expensive 3D liquids. This supports separate local wave/pooling simulation and visual plumes, not full-river CFD."
+    },
+    {
+      "id": "W05",
+      "kind": "official_epic_web",
+      "url": "https://dev.epicgames.com/documentation/en-us/unreal-engine/API/Plugins/WaterAdvanced/UShallowWaterSubsystem",
+      "title": "UShallowWaterSubsystem",
+      "checked": "2026-09-08",
+      "finding": "Official 5.8 API corroborates RegisterImpact, concrete subclass, grid queries and water material setup."
+    },
+    {
+      "id": "W06",
+      "kind": "official_epic_web",
+      "url": "https://dev.epicgames.com/documentation/unreal-engine/simulating-waves-using-the-water-waves-asset-in-unreal-engine?lang=en-US",
+      "title": "Simulating Waves Using The Water Waves Asset",
+      "checked": "2026-09-08",
+      "finding": "Water Waves documents a Gerstner model and extensibility. Macro wave rendering does not itself establish local impact response, bathymetry updates or retained water volume."
+    },
+    {
+      "id": "W07",
+      "kind": "official_epic_web",
+      "url": "https://dev.epicgames.com/documentation/unreal-engine/scalability-and-best-practices-for-niagara",
+      "title": "Scalability and Best Practices for Niagara",
+      "checked": "2026-09-08",
+      "finding": "Use pooling, controlled instance/emitter counts, bounds and measured GPU/CPU choices; GPU particle simulation still has CPU system/emitter overhead."
+    },
+    {
+      "id": "W08",
+      "kind": "official_epic_web",
+      "url": "https://dev.epicgames.com/documentation/en-us/unreal-engine/performance-budgeting-using-effect-types-in-niagara-for-unreal-engine",
+      "title": "Performance Budgeting Using Effect Types",
+      "checked": "2026-09-08",
+      "finding": "Effect Types support budget-, distance- and instance-based scalability."
+    },
+    {
+      "id": "W09",
+      "kind": "official_epic_web",
+      "url": "https://dev.epicgames.com/documentation/en-us/unreal-engine/measuring-performance-in-niagara",
+      "title": "Measuring Performance in Niagara",
+      "checked": "2026-09-08",
+      "finding": "Measure representative gameplay and simultaneous instances, not isolated effects; supports Unreal Insights based acceptance rather than a hardware-only frame-rate promise."
+    },
+    {
+      "id": "W10",
+      "kind": "official_epic_web",
+      "url": "https://dev.epicgames.com/documentation/en-us/unreal-engine/API/Runtime/Engine/UProjectileMovementComponent",
+      "title": "UProjectileMovementComponent",
+      "checked": "2026-09-08",
+      "finding": "Official 5.8 API documents gravity scale, world/local initial velocity, swept movement, substeps, GetGravityZ, ComputeMoveDelta and StopSimulating. Header Engine\\Source\\Runtime\\Engine\\Classes\\GameFramework\\ProjectileMovementComponent.h, module Engine. Only web evidence used here; no flight source or additional Engine-module native source inspected."
+    }
+  ],
+  "implementation_contract": {
+    "verified_direction": {
+      "buildings": "Create and cook closed, prefractured Geometry Collections offline/editor-side. Runtime uses UGeometryCollectionComponent and bounded hit/field commands; it does not manufacture cooked fracture data during play.",
+      "terrain": "One ProceduralMesh component per small terrain chunk, one collision section per component, fixed vertex/index topology. Precreate collision before gameplay; deform vertices and use UpdateMeshSection_LinearColor. All-positions collision gathering is why a city-wide component is unsuitable.",
+      "important_caveats": [
+        "Do not call SetRestCollection on an already damaged live building as a routine update; it resets its dynamic state.",
+        "Anchor calls before PhysicsProxy creation can silently do nothing; prefer anchors authored into the asset.",
+        "Local hit damage uses center-of-mass radius sampling, not exact clipping of a blast sphere against mesh triangles.",
+        "bUseAsyncCooking does not move every terrain vertex update off the game thread.",
+        "Header/source evidence establishes feasibility, not successful packaging or performance."
+      ]
+    }
+  },
+  "acceptance_tests": [],
+  "open_risks": [
+    "Installed 5.8 native APIs and editor fracture export/build boundaries still to verify.",
+    "No runtime behavior or performance has been measured in this research-only task."
+  ]
+}

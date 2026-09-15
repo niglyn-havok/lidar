@@ -1,0 +1,124 @@
+{
+  "status": "complete-source-and-tests-ready-for-parent-build",
+  "dataStatus": "final-metre-wall-UV-dataset-hash-and-native-UV-bounds-verified",
+  "owner": "city-runtime",
+  "actorClass": "/Script/DublinFlight.DublinCityWorld",
+  "sourcePath": "Source/DublinFlight/City/DublinCityWorld.h",
+  "requiredModules": {
+    "public": ["Core", "CoreUObject", "Engine", "ProceduralMeshComponent"],
+    "private": ["Json"]
+  },
+  "properties": {
+    "SourceDataRelativePath": "Data/dublin-city.json",
+    "bAutoBuild": true,
+    "materials": ["RoofMaterial", "WallMaterial", "GroundMaterial", "WaterMaterial", "FoundationMaterial"],
+    "status": ["BuildingCount", "BuildingChunkCount", "TerrainChunkCount", "WaterTriangleCount", "bCityReady", "LastBuildError", "Attribution"]
+  },
+  "callInEditor": "BuildCity",
+  "schemaVersion": 1,
+  "coordinateConvention": "+X east, +Y south, +Z up; centimeters; origin E315989 N234393",
+  "initialCollision": "synchronous; bCityReady only after initial geometry and collision creation returns",
+  "scope": "real city appearance and collision only; destruction not implemented",
+  "editorIntegration": {
+    "actor": "Create ADublinCityWorld at identity transform in the real Dublin map; it refuses translated, rotated or scaled survey geometry.",
+    "construction": "bAutoBuild=true loads and creates geometry on construction. For material batches, temporarily disable bAutoBuild, assign all five material properties, then enable it and call BuildCity once.",
+    "reload": "Transient generated components rebuild on saved editor-map registration; native data rebuilds at BeginPlay if PIE duplication did not preserve it. Explicit component markers let cleanup reclaim PIE copies even if the transient tracking array resets. No tick, per-frame disk IO or background task.",
+    "imagery": "Coordinator assigns ground/roof material assets sampling /Game/Textures/T_DublinOrtho on UV0. Runtime does not wait for or create this texture. Roof UV0 is exact crop world UV; wall/foundation UV0 and all UV1 retain source UV. Defaults are explicitly provisional engine materials, not faithful texturing.",
+    "facade": "Assign coordinator-owned /Game/Materials/M_DublinFacade to WallMaterial. Wall UV0 remains source metre UV with no normalization or aerial projection. Coordinate/winding and UV agreement sent directly to city-generation agent before integration.",
+    "foundation": "Keep FoundationMaterial neutral or use a separate cap material. MaterialId2 bottom-cap source UV0 is global normalized top-down UV, NOT metre wall UV. Native runtime preserves it unchanged. Do not assign metre-dependent M_DublinFacade to foundation unless its UV interpretation is explicitly adapted.",
+    "water": "Assign coordinator-owned /Game/Materials/M_DublinWater to WaterMaterial. The separate source water surface has collision disabled; material normal detail does not imply impacts or water disturbance simulation.",
+    "packaging": "Coordinator must stage Content/Data as UFS additional non-asset files for packaged runs; standard FileManager reads the staged JSON. No Build.cs, Config or uproject edits made here.",
+    "tests": "Parent builds DublinFlightEditor, executes DublinFlight.City.* and checks saved-map reload, repeated BuildCity, ground/building blocking, nonblocking water, material appearance and midair gameplay. On first loading the lifecycle-fix binary, reopen the saved Dublin map to clear any legacy unmarked transient components; AutoBuild then stamps newly generated geometry. Expected city actor component count is280:144 terrain+134 building+1 water+1 root, unchanged across repeated PIE starts and rebuilds."
+  },
+  "files": [
+    "Source/DublinFlight/City/DublinCityData.h",
+    "Source/DublinFlight/City/DublinCityData.cpp",
+    "Source/DublinFlight/City/DublinCityGeometry.h",
+    "Source/DublinFlight/City/DublinCityGeometry.cpp",
+    "Source/DublinFlight/City/DublinCityWorld.h",
+    "Source/DublinFlight/City/DublinCityWorld.cpp",
+    "Source/DublinFlight/City/DublinCityTests.cpp"
+  ],
+  "nativeAccessors": {
+    "GetSourceData": "const FDublinCityData*; immutable full source terrain, water and building records, including double Confidence in [0,1], Id, Name, HeightMethod, PivotCm, geometry and material IDs",
+    "GetTerrainChunks": "const TArray<FDublinCityChunk>&; independent mutable runtime buffers internally, immutable source-node index map and source-triangle map retained",
+    "GetBuildingChunks": "const TArray<FDublinCityChunk>&; 3 material sections with source building per triangle, source triangle and source vertex maps"
+  },
+  "limits": {
+    "jsonBytes": 104857600,
+    "jsonNesting": 32,
+    "buildings": 5000,
+    "sourceVertices": 2000000,
+    "sourceTriangles": 2000000,
+    "renderedVertices": 4000000,
+    "buildingChunkVertices": 200000,
+    "groundChunkMeters": 64,
+    "buildingChunkMeters": 64,
+    "maximumGroundChunks": 144,
+    "maximumBuildingChunks": 144,
+    "maximumTotalComponents": 289,
+    "waterVertices": 250000,
+    "waterTriangles": 250000
+  },
+  "contractClarifications": [
+    "Actual confidence values are numeric. Parser requires finite numeric [0,1] and retains double; it does not coerce strings or booleans.",
+    "MaterialId1 WALL UV0 is metres. MaterialId2 FOUNDATION bottom-cap UV0 is normalized top-down, not metres. Each is preserved from source and uses its own material slot.",
+    "Terrain retains the complete 385x385 immutable node lattice but preserves supplied triangle omissions for river and bank masks. Cells may have 0, 1 or 2 clockwise triangles; overlapping/duplicate/cross-cell triangles are rejected, never silently filled or flipped.",
+    "64m spatial groups over a 768m square require up to 12x12=144 chunks, not 64. Observed real data occupies 134 building groups. Kept requested 64m spatial granularity and capped144 rather than silently enlarging groups to96m.",
+    "Generated components are transient actor-owned instances carrying the reserved DublinFlight.City.GeneratedMesh.v1 tag. Rebuild reclaims tracked owned instances plus untracked duplicated meshes only when exact owner/outer, procedural-mesh class, Instance creation method, CityRoot attachment, reserved tag and generated-role name all match. Unrelated components are never removed; a matching name alone is insufficient.",
+    "All building sections are prepared without collision, then enabled together and synchronously cooked once per component. Ready additionally requires a successful nonempty body setup and registered physics state.",
+    "JSON path forbids absolute paths, traversal, ambiguous components, device names, alternate streams, non-json extensions and descendant symlinks/reparse points.",
+    "No fracture, removal gameplay, weapons, craters, water disturbance or 60 FPS claim."
+  ],
+  "validation": {
+    "status": "static-checks-passed-native-execution-pending-parent",
+    "sourceChecks": "Seven scoped source files; consistent CRLF; generated include last; expected actor API and six unique automation registrations; no tick, arbitrary reflection/execution bridge or personal paths.",
+    "engineApiChecks": "Installed UE5.8 headers/source verified CreateMeshSection UV0+UV1, SetProcMeshSection collision refresh, body setup success flags/triangle geometries and Kismet tangent API. Parent compile exposed that FFileStatData has no reparse field; corrected using supported IsSymlink API.",
+    "integrationCompileFix": {
+      "file": "Source/DublinFlight/City/DublinCityData.cpp",
+      "change": "Removed unsupported FFileStatData.bIsReparsePoint access. Every descendant now requires IsSymlink==NonSymlink; Symlink and Unimplemented both fail explicitly.",
+      "installedWindowsEvidence": "Engine/Source/Runtime/Core/Private/Windows/WindowsPlatformFile.cpp: FWindowsPlatformFile::IsSymlink calls GetFileAttributesW and returns Symlink whenever FILE_ATTRIBUTE_REPARSE_POINT is present, covering junctions as well as symbolic links.",
+      "validation": "Source-only installed-API and fail-closed guard checks; no build or editor execution by this agent. Parent rebuild required."
+    },
+    "integrationLifecycleFix": {
+      "symptomReportedByParent": "Original five city tests passed and bCityReady was true for1044 buildings. PIE actor had559 components instead of280: both duplicated279 generated components and freshly rebuilt279 components survived.",
+      "cause": "Generated instance components survived PIE duplication while the transient tracking array did not; BeginPlay rebuilt geometry without being able to reclaim the untracked copies.",
+      "fix": "Stamp every generated mesh with an explicit reflected component tag. Before rebuilding, collect tracked exact-owned meshes and strictly marked actor-owned duplicate meshes into one deduplicated destruction set; remove them before generating replacement geometry.",
+      "ownershipGuards": ["GetOwner()==this", "GetOuter()==this", "exact UProceduralMeshComponent class", "CreationMethod==Instance", "GetAttachParent()==CityRoot", "reserved generated-mesh marker", "DublinTerrain_/DublinBuildings_/DublinWater role name"],
+      "regression": "DublinFlight.City.Lifecycle.ReclaimsUntrackedDuplicates creates a tiny independent world, duplicates a generated component, clears the tracking array, and verifies both generated copies are reclaimed while the root, an unmarked matching-prefix mesh, and a foreign-owned tracked mesh survive. Repeated simulated rebuilds must not accumulate components.",
+      "migration": "Parent stops PIE before rebuild, loads the new binary and reopens the saved Dublin map before the next PIE. This clears legacy unmarked transient components even if hot reinstancing also lost their old tracking array. Thereafter normal BuildCity/BeginPlay reclaim marked copies automatically. Untagged arbitrary components are intentionally not reclaimed by name.",
+      "validation": "Static ownership/marker/fixture checks only for this revision. Parent must rebuild, execute the sixth city test and verify actual PIE count280 across repeated starts."
+    },
+    "winding": "Tiny clockwise fixture has upward normal and matches installed Kismet source formula. Native test calls UKismetProceduralMeshLibrary::CalculateTangentsForMesh to verify against engine; not yet executed.",
+    "generatedDataSnapshotDate": "2026-09-08",
+    "generatedDataSnapshot": {
+      "note": "Final regenerated metre-wall-UV dataset verified locally by exact SHA256 and finite native UV bounds/counts. Geometry counts unchanged from full contract parity check. Native source preserves metre UV unchanged; no source update needed.",
+      "jsonBytes": 13562503,
+      "sha256": "8495828b2d9d8bf433b1c2ea38f6cd4f3fd916e22d936f19ce44ff7c917551d8",
+      "wallUVUnits": "metres; U cumulative ring boundary distance, V height above local bottom, including Spire",
+      "largestAbsoluteUV": 801.427078,
+      "buildingCount": 1044,
+      "buildingChunks": 134,
+      "terrainChunks": 144,
+      "sourceVertices": 180104,
+      "sourceTriangles": 299703,
+      "renderedVertices": 222983,
+      "largestBuildingChunkVertices": 2736,
+      "terrainOmittedCells": 10266,
+      "terrainSingleTriangleBankCells": 330,
+      "waterTriangles": 77,
+      "nativeContractParityStaticCheck": "PASS"
+    },
+    "automationTests": [
+      "DublinFlight.City.Parser.ShapeAndBounds",
+      "DublinFlight.City.Parser.SafeRelativePath",
+      "DublinFlight.City.Coordinates.KnownSurveyAndClockwise",
+      "DublinFlight.City.Geometry.ChunkMappingAndMaterials",
+      "DublinFlight.City.Geometry.FixedTerrainTopology",
+      "DublinFlight.City.Lifecycle.ReclaimsUntrackedDuplicates"
+    ],
+    "compilerRun": false,
+    "editorRun": false,
+    "delegationUsed": false
+  }
+}

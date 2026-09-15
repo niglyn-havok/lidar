@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "verified_date": "2026-09-08",
+  "status": "bounded_primary_source_investigation_complete_no_verified_gap_filler",
+  "partial_rendering_may_proceed": true,
+  "full_coverage": false,
+  "final_complete_visual_gate_passed": false,
+  "archive_bytes_already_acquired": 1053351093,
+  "archive_budget_bytes": 2000000000,
+  "remaining_archive_budget_bytes": 946648907,
+  "additional_archive_bytes_downloaded": 0,
+  "research_evidence_file": "generated-data\\imagery\\gap-source-investigation.json",
+  "gap_bounds_and_source_pixels_file": "generated-data\\imagery\\partial-import-contract.json",
+  "decision": "Proceed with licensed partial imagery plus explicitly generic neutral roof/ground material. No alternative currently has both verified exact-gap coverage and compatible reuse within the remaining archive budget.",
+  "options": [
+    {
+      "rank": 1,
+      "name": "NYU 2015 alternate 20 cm ECW mosaic",
+      "status": "promising_but_membership_and_gap_coverage_unverified",
+      "rights": "Original 2015 collection is CC BY 4.0.",
+      "primary_sources": [
+        "https://serv.cusp.nyu.edu/projects/ALSDublin15/ALSDublin15.html",
+        "https://archive.nyu.edu/handle/2451/38684"
+      ],
+      "known_fact": "Official survey documentation lists a 20 cm ECW mosaic under Other datasets / Camera parameters.",
+      "candidate_archive_url": "https://archive.nyu.edu/bitstream/2451/38684/26/nyu_2451_38684_misc_other.zip",
+      "verified_head_bytes": 366295340,
+      "within_remaining_budget": true,
+      "inference": "misc_other.zip may contain the documented mosaic, but neither its ZIP membership nor extra coverage is verified.",
+      "bounded_probe": "A 64 KiB suffix Range request returned HTTP 200 and Content-Length 366295340, not 206. Response closed with zero archive-body bytes read.",
+      "next_viability_gate": "Obtain an authoritative archive file listing and mosaic extent/validity preview or an exact-gap crop. Do not spend 366 MB merely assuming the alternate mosaic fills the same clipped survey boundary."
+    },
+    {
+      "rank": 2,
+      "name": "NYU original 2015 georeferenced RGB photogrammetry",
+      "status": "published_bundle_exceeds_budget_and_is_not_ready_ortho",
+      "rights": "CC BY 4.0 collection.",
+      "primary_sources": [
+        "https://serv.cusp.nyu.edu/projects/ALSDublin15/ALSDublin15.html",
+        "https://archive.nyu.edu/handle/2451/38684"
+      ],
+      "archive_url": "https://archive.nyu.edu/bitstream/2451/38684/29/nyu_2451_38684_misc_rgb.zip",
+      "verified_head_bytes": 10868898928,
+      "within_remaining_budget": false,
+      "limitation": "The source describes georeferenced, non-orthorectified frames. A small gap-specific subset would need verified footprints, camera parameters and rectification against appropriate geometry; no such exact subset was identified in the bounded investigation."
+    },
+    {
+      "rank": 3,
+      "name": "NYU original 2015 oblique photogrammetry",
+      "status": "fits_budget_but_not_verified_ortho_gap_fill",
+      "rights": "CC BY 4.0 collection.",
+      "primary_sources": [
+        "https://serv.cusp.nyu.edu/projects/ALSDublin15/ALSDublin15.html",
+        "https://archive.nyu.edu/handle/2451/38684"
+      ],
+      "archive_url": "https://archive.nyu.edu/bitstream/2451/38684/27/nyu_2451_38684_misc_oblique.zip",
+      "verified_head_bytes": 938572637,
+      "within_remaining_budget": true,
+      "limitation": "Oblique JPEGs are not a top-down registered ortho replacement. Exact coverage, calibration and reconstruction viability are unverified; consuming virtually the whole remaining budget is not justified."
+    },
+    {
+      "name": "Additional neighboring NYU 500 m orthophoto tiles",
+      "status": "cannot_fill_interior_core_gaps_by_georeferenced_mosaicking",
+      "rights": "CC BY 4.0 source collection.",
+      "primary_sources": [
+        "https://serv.cusp.nyu.edu/projects/ALSDublin15/ALSDublin15.html"
+      ],
+      "local_evidence": "The four acquired TIFF/TFW pairs cover disjoint exact 500 m tiles and already cover every numeric coordinate in the 768 m core. The four white components are inside those tile extents. Additional grid-adjacent tiles have zero overlap with the core and cannot replace these interior pixels.",
+      "additional_tiles_downloaded": 0
+    },
+    {
+      "name": "Tailte Eireann Dublin aerial imagery",
+      "status": "high_quality_candidate_requires_specific_rights_not_cleared_open_data",
+      "primary_sources": [
+        "https://tailte.ie/map-shop/professional-map-products/aerial-imagery-maps-and-data/",
+        "https://tailte.ie/map-shop/map-licences-and-copyright/",
+        "https://tailte.ie/services/open-data/"
+      ],
+      "known_fact": "Official product documentation advertises 15 cm imagery for greater Dublin and directs buyers to purchase aerial imagery extracts.",
+      "rights": "The open-data page licenses data actually released as open data; it is not evidence that purchased orthophotography is CC BY. Mapping/aerial products have separate copyright licence and reproduction-permit terms.",
+      "next_viability_gate": "Confirm an exact core/gap extract and explicit offline game-texture derivative/redistribution permission or an orthophoto-specific open licence. No imagery export or purchase performed."
+    },
+    {
+      "name": "Smart Dublin Docklands 2018 textured 3D data",
+      "status": "not_selected_reuse_restriction_and_gap_coverage_unverified",
+      "primary_sources": [
+        "https://data.smartdublin.ie/dataset/3d-data-hack-dublin-resources",
+        "https://data.gov.ie/en_GB/dataset/3d-data-hack-dublin-resources/resource/3606fe10-fc29-4fc2-91cd-7c7af437f0c6"
+      ],
+      "rights": "Publisher states CC BY-NC 4.0. The national portal labels the record CC BY-NC-ND while its description says BY-NC. Neither establishes unrestricted commercial derivative reuse.",
+      "limitation": "Textured Docklands 3D data is not a verified ortho covering these four centre-city gaps. No texture archive downloaded."
+    },
+    {
+      "name": "NYU/UCD 2007 Dublin imagery",
+      "status": "historical_lead_unverified",
+      "primary_sources": [
+        "https://wp.nyu.edu/urbanmodeling/our-work/our-data/",
+        "https://doi.org/10.7925/DRS1.UCDLIB_30462"
+      ],
+      "known_fact": "The NYU group lists 2007 forward/mapping imagery in ECW and SDIA formats.",
+      "limitation": "DOI resolution reached a UCD record returning HTTP 404. Exact coverage, pixel spacing and current reuse terms were not verified; 2007 introduces additional temporal mismatch. No archive acquired."
+    }
+  ],
+  "public_catalog_search_limit": "Two narrow metadata-only CKAN searches (orthophoto OR aerial imagery, at most 12 rows each) returned zero matches. This is a bounded search result, not proof that no compatible Irish orthophoto exists.",
+  "prohibited_sources_not_used": [
+    "Esri rights-uncleared exports",
+    "Bing exports",
+    "Google exports",
+    "Invented or generatively filled imagery"
+  ],
+  "confidence_summary": "The four large native components total 12,374,367 all-band-white 5 cm pixels. They are boundary-connected, geometrically clipped, include IR=255 and cross scene features. Only 23 other all-band-white core pixels remain as tiny possible saturation. Large white components are high-confidence source gaps, not white roofs; the publisher did not supply an explicit validity mask."
+}

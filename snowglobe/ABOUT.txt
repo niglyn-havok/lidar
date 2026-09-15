@@ -1,0 +1,142 @@
+DUBLIN / A CITY HELD IN GLASS
+===========================
+
+DELIVERABLES
+
+Dublin - OConnell Bridge - Snow Globe.blend
+    Editable Blender 5.2 scene. All required image textures are packed.
+    Hero camera, 3200 x 3800 output and 256-sample Cycles rendering.
+
+Dublin - A City Held in Glass.png
+    High-resolution, 16-bit hero print with title and source credits.
+
+Dublin - City Detail.png
+    High-resolution, 16-bit close view of the measured city.
+    The studio strips are excluded from glossy/transmission visibility in
+    this view so reflections do not obscure the urban surface.
+
+Dublin - Snow Globe - 12s Orbit.mp4
+    Twelve-second, 360-degree H.264 orbit: 1080 x 1280, 24 fps, 288 frames.
+    Starts at the hero preview's camera pose and keeps its elevation,
+    orthographic scale and framing. The camera motion is linear and loops.
+    The two reflection strips follow the camera to keep highlights off the
+    city; the globe, sun and remaining studio lights stay stationary.
+
+Dublin - Snow Globe - 12s Orbit.blend
+    Separate editable animation scene. The original still-image scene is
+    preserved. Frame 289 is the loop-closing keyframe; render frames 1-288.
+    Recoverable PNG frames, viewpoint proofs and encoding metadata are in
+    the orbit directory. The video is silent.
+
+Dublin - Snow Globe - 12s Landscape Orbit.mp4
+    Text-free laptop-screen version: 1920 x 1080 (16:9), 24 fps,
+    288 frames / 12 seconds. Same elevation and full circular orbit.
+    Framing is expanded to keep the entire globe and base visible.
+    The title/credit compositor and all base lettering are removed.
+    Source attribution remains in this document and the video metadata.
+
+Dublin - Snow Globe - 12s Landscape Orbit.blend
+    Separate editable landscape animation. The portrait version is unchanged.
+    Frame files, proof views and encoding metadata are in orbit-landscape.
+
+GEOGRAPHY AND GEOMETRY
+
+Centre: O'Connell Bridge, Irish National Grid E315989 N234393, EPSG:29903.
+Approximate WGS84: 53.34728074 N, 6.25907452 W.
+Circle radius: 760 metres. Diameter: 1,520 metres.
+Model scale: one Blender unit represents 100 surveyed metres.
+Vertical coordinates: Ordnance Survey Malin Head.
+No vertical exaggeration has been applied.
+
+The city uses the 1-metre measured-return surface already derived from the
+supplied LAZ files in the neighbouring artwork directory. Within this
+circle, 1,813,875 of 1,814,517 sampled cells contain measured returns
+(99.9646 percent). Small gaps retain nearest-measured-cell interpolation.
+The original LAZ files have not been modified.
+
+This is a LiDAR height-field reconstruction, not an architectural CAD model:
+roof profiles, massing, streets and canopies follow measured elevations.
+Facade window rhythm is procedural artistic detail, not a photographic
+survey of individual facades. Slender features can be underrepresented by
+the 1-metre grid. The Spire is restored as a tapered needle using the raw
+measured tip elevation of 124.609 metres.
+
+COLOUR AND LAND COVER
+
+Esri World Imagery is reprojected from Web Mercator into the Irish National
+Grid and mapped in geographic XY coordinates. Rooftops and streets use the
+aerial photograph. Vegetation is separated using green-channel ratios and
+local LiDAR relief; 22,000 small canopy clusters add foliage silhouettes.
+The Liffey is segmented inside a river corridor, with bridges excluded and
+LiDAR heights used to reject false water on high structures.
+
+LiDAR capture: March 26, 2015.
+Imagery retrieved: September 8, 2026.
+The imagery's capture date is not asserted. It may differ from the LiDAR.
+Current developments visible in the photograph may consequently differ
+from the 2015 building heights.
+
+Water colour and ripple shading are physically inspired artistic choices;
+they are not measured river colour. Clouds, sparse suspended ice crystals,
+atmosphere, display base and studio illumination are artistic additions.
+
+GLASS AND RENDERING
+
+The globe is a closed, smooth, two-surface shell with IOR 1.46 and a model
+wall thickness of 0.035 units. Camera rays use transmission, refraction,
+Fresnel reflection and subtle absorption. Transparent shadow rays
+approximate expensive glass caustics. Interior glossy visibility is reduced
+to suppress distracting multiple reflections. It is a photographic
+visualization, not an unbiased optical simulation.
+
+The final scene is organised into six collections: measured city, glass,
+plinth, atmosphere, studio and cameras. The hero camera is active.
+Disable Render > Post Processing > Compositing for a clean, unlettered image.
+The alternate city-detail camera is in collection 06.
+
+SOURCE ATTRIBUTION
+
+LiDAR:
+2015 Aerial Laser and Photogrammetry Survey of Dublin City.
+Debra F. Laefer, Saleh Abuwarda, Anh-Vu Vo, Linh Truong-Hong, Hamid Gharibi.
+Licensed under Creative Commons Attribution 4.0 International.
+https://creativecommons.org/licenses/by/4.0/
+https://serv.cusp.nyu.edu/projects/ALSDublin15/json/all_bitstreams.json
+The neighbouring manifest.json records the individual tile source records,
+download URLs and checksums. This work modifies the point data into a
+cropped, denoised, coloured surface with the artistic additions above.
+
+Aerial imagery:
+Source: Esri, Vantor, Earthstar Geographics, and the GIS User Community.
+https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer
+The service response and returned export extent are retained in assets.
+The imagery retains its providers' rights; the LiDAR's CC BY licence does
+not imply that the imagery or the entire combined scene is CC BY.
+
+REBUILD
+
+Python preparation scripts require numpy, scipy, Pillow, requests and pyproj.
+prepare_assets.py downloads and rectifies the aerial image.
+prepare_city.py extracts and classifies the cached LiDAR surface.
+create_layout.py makes the transparent title/credits overlay.
+
+Run build_globe.py, then finalize_scene.py inside a new, dedicated Blender
+5.2 instance via blender-control MCP. build_globe.py replaces the scene in
+that instance: do not execute it over an unrelated unsaved project.
+The scripts resolve data relative to their own directory.
+
+For the video, load the original still scene in a dedicated instance, then
+run setup_orbit.py through MCP. start_orbit_render.py launches a recoverable
+animation render; RENDER_MODE="proof" renders four reduced-size viewpoints.
+After the final render completes, run encode_orbit.py with system Python
+(requires imageio-ffmpeg as well as Pillow and numpy). It checks every input
+frame, encodes H.264, decodes the complete video, and checks timing and the
+loop seam before publishing the final MP4.
+
+For the landscape variant, start with the portrait orbit scene, then run
+setup_landscape_orbit.py through MCP. Set ORBIT_VARIANT="landscape" when
+running start_orbit_render.py. Encode with:
+    python encode_orbit.py --landscape
+
+provenance.json and scene-manifest.json record the crop and scene contents.
+Preview renders are retained in checkpoints as the visual iteration record.

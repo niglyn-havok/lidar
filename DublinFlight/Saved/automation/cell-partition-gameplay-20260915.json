@@ -1,0 +1,31 @@
+{
+	"tests": [
+		{
+			"name": "DublinFlight.Destruction.PIE.RecoveredBuildingDamage",
+			"state": "Fail",
+			"duration": 15.259605407714844,
+			"errors": [
+				"Actual GC leaves moved at least 25cm after the support bomb",
+				"Actual GC leaves fell at least 25cm below their pre-bomb world positions",
+				"Leaf-pair distances change: separated fragments, not just a falling rigid building",
+				"The bomb actually moves a previously stationary authored support leaf",
+				"Downward fragment motion was observed across multiple independent world frames"
+			],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Weapons.PIE.ActualCannonBombInputs",
+			"state": "Fail",
+			"duration": 5.2956223487854004,
+			"errors": [
+				"Expected 'Actual held LMB launches multiple shells' to be true."
+			],
+			"warnings": []
+		}
+	],
+	"passed": 0,
+	"failed": 2,
+	"skipped": 0,
+	"total": 2,
+	"duration": 20.555227279663086
+}

@@ -1,0 +1,73 @@
+{
+  "schema": "DublinFlight.TerrainAndWaterVerificationHandoff.v1",
+  "status": "ready_for_parent_build_and_native_PIE_run",
+  "updated_utc": "2026-09-15T11:36:00Z",
+  "scope": "terrain_and_water_only",
+  "owned_source": "Source\\DublinFlight\\Tests\\DublinDestructionPIETests.cpp",
+  "test": "DublinFlight.Destruction.PIE.TerrainAndWater",
+  "full_test_preserved": "DublinFlight.Destruction.PIE.ActualCityDamage",
+  "runtime_evidence_file": "Saved\\Automation\\destruction-pie-handoff.json",
+  "runtime_evidence_field": "last_terrain_water_verification",
+  "preserved_full_runtime_evidence_field": "last_runtime_verification",
+  "native_test_invocation": {
+    "independent_console": "Automation RunTests DublinFlight.Destruction.PIE.TerrainAndWater",
+    "full_regression_console": "Automation RunTests DublinFlight.Destruction.PIE.ActualCityDamage",
+    "preconditions": "Open saved /Game/Maps/Dublin in the editor. Keep the existing saved fracture library and explicit partial-preview setting for the valid 12-building sample, or full readiness. The new entrypoint starts its own native PIE with FStartPIECommand(false) after automation teardown; do not depend on previously running PIE.",
+    "bootstrap_timeout_seconds": 60,
+    "fixture_wall_timeout_seconds": 120,
+    "nominal_simulation_seconds": 7,
+    "readiness": "Identical bounded native bootstrap and Scene.Initialize; no flight-HUD, OS-focus or mouse-capture prerequisite was added."
+  },
+  "implementation": [
+    "Explicit EVerificationScope defaults to ActualCityDamage, preserving the original entrypoint and full cannon/repeated-shot/support-bomb/motion/crater/water flow and failure behavior.",
+    "TerrainAndWater selects the same real source scene, never submits cannon or support-bomb impacts, and begins directly with the real dry-ground bomb and phase 3. It is independent of support-bomb leaf motion.",
+    "Reuses unchanged CheckCrater and ObserveWater helpers and unchanged phase 3/4 assertions. No duplicated physics implementation, mocked source, manually ticked world or sleep.",
+    "Ground selection remains an actual collision-backed terrain triangle outside both building and exact-source river masks. Water uses the existing exact-source wet, bridge-free corridor and live rendered grid vertices, without requiring a water collider.",
+    "The existing crater assertions check actual retained terrain vertices, actual live PMC vertices and an independent world collision ray. They run after at least 1 world second / 2 advancing observations, and again at the end of the water window to verify the deformed collision/render surface persists.",
+    "Water sampling uses GetWaterSurfaceZ and live near/far render vertices on advancing world frames. Existing accepted-impact ApplyImpact then original EmitImpact ordering and FX budget/activation assertions are unchanged.",
+    "Own runtime evidence is persisted at fixture creation, ground-phase entry, water-phase entry and completion. Only last_terrain_water_verification is replaced by the independent run; SaveEvidence preserves the full last_runtime_verification and unrelated handoff fields.",
+    "Independent evidence explicitly marks building motion NOT_ASSESSED and omits cannon/leaf-motion metrics and leaf observations, avoiding misleading zeros. Selection IDs are fixture diagnostics, not building-damage proof.",
+    "The existing input/projectile cleanup and PrePIEEnded delegate cleanup are retained; no new timers, commands, editor lifecycle calls or production changes."
+  ],
+  "unchanged_assertion_thresholds": {
+    "requested_game_crater_depth_cm": 250,
+    "crater_depth": "Depth > 100cm and absolute difference from requested game-tuned depth < 100cm.",
+    "crater_collision_to_render_tolerance_cm": 10,
+    "crater_live_vertex_tolerance_cm": 0.1,
+    "source_water_baseline_tolerance_cm": 0.05,
+    "water_far_probe_distance_cm": 2800,
+    "water_far_probe_clearance": "Distance must exceed water impact radius + 800cm.",
+    "near_peak_min_cm": 0.5,
+    "early_far_peak_max_cm": 0.05,
+    "early_far_window_seconds": 0.25,
+    "early_frame_requirement": "At least one actually advancing world observation inside the existing 0.25-second window.",
+    "far_peak_min_cm": 0.15,
+    "arrival_detection_threshold_cm": 0.15,
+    "far_after_near_min_seconds": 0.1,
+    "water_observation_window": "At least 6 world seconds and 10 advancing world observations.",
+    "note": "Timing is the existing source's 0.25-second early window and >0.1-second arrival separation, not an assumed 150ms gate; no threshold was weakened."
+  },
+  "validation": {
+    "static_checks": "PASS: preserved helper/selector and complete visible-scenario block SHA256 hashes; balanced C++ delimiters; two unique registered native PIE tests and two standard FStartPIECommand(false) calls; no manual-tick/sleep/focus-setting/HUD calls; UTF-8 without BOM, CRLF-only source; valid handoff JSON.",
+    "preserved_byte_identical_blocks": [
+      "ChunkMesh",
+      "SelectBuildings",
+      "SelectGround",
+      "SelectWater",
+      "CheckCannonLocality",
+      "ObserveMotion",
+      "CheckCrater",
+      "ObserveWater",
+      "CheckControl",
+      "EVisibleScenario through all Idle/Sample/Maximal/Stop console command definitions"
+    ],
+    "source_sha256": "B8A8CD884AA5D91C860468FD50E6F9818A0F911810B53614120964F1B4882D63",
+    "build": "not_run_parent_owned",
+    "PIE": "not_run_parent_owned",
+    "runtime_result": "NOT_RUN",
+    "full_run": "NOT_RUN_BY_THIS_AGENT; existing failed phase-2 support-motion evidence is untouched",
+    "prohibited_operations": "No builds, editor calls/launches, production edits, issue filing, Python remote execution, delegation or peer broadcast."
+  },
+  "objective_status": "No terrain, water, building-physics, visual, or full-objective success is claimed.",
+  "parent_next_action": "Build once using the parent-owned editor/build workflow, run the exact independent filter, inspect last_terrain_water_verification and its errors/actual measurements; rerun ActualCityDamage after the separate City physics fix. Independent sample success must not be counted as full destruction acceptance."
+}

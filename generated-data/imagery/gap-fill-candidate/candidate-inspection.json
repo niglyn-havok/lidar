@@ -1,0 +1,2479 @@
+{
+  "schema_version": 1,
+  "status": "not_a_pixel_candidate_decoder_unavailable",
+  "archive_sha256": "05bfbf619a2a801c021c1d3fdac052ab7176520306f7d1741b7c0a99c6da3032",
+  "ecw_members": [
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0005.ecw",
+      "bytes": 149446,
+      "sha256": "ecb940409a755321b796291c2989df71daedab57235a198ae978b54f4e617610",
+      "crc32": "99838614"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0007.ecw",
+      "bytes": 133856,
+      "sha256": "5619c50eb70f3b87135d61ff1cde39da1dfa6914bed7d1595fb384e6dc55966d",
+      "crc32": "2f17e885"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0008.ecw",
+      "bytes": 129023,
+      "sha256": "49f7f0429c1dc57900e2c92bd0e4531ec9dc3aa52573a6de7358150c00a03c59",
+      "crc32": "cd7c393a"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0009.ecw",
+      "bytes": 143872,
+      "sha256": "382be546cc2b19aff34619c60c9b77a26e8f6bdf0ae16718490013b129d1cead",
+      "crc32": "f0f59740"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0010.ecw",
+      "bytes": 141078,
+      "sha256": "cc482b70a2cf670f85eede097044503a1ba7e9b7e4ac74e59f4fce23093e59db",
+      "crc32": "bb9475b4"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0011.ecw",
+      "bytes": 137557,
+      "sha256": "9549125912be5fadab4bd3e8c7137cb0e01bc201148efeb12b6c43633ef81aee",
+      "crc32": "fa897842"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0012.ecw",
+      "bytes": 150188,
+      "sha256": "032b482837f7c6c8930feff948acfad8b6870dd8636bd031112888f381f9ba84",
+      "crc32": "1720e51e"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0013.ecw",
+      "bytes": 144668,
+      "sha256": "99d9ee7dd4a227b8b358e076998bd1ccb7aa30ef3294aede22c530bbf2dbec9b",
+      "crc32": "b10385af"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0014.ecw",
+      "bytes": 160630,
+      "sha256": "a38419cd5572a3bff3d8e4775213a1c24206c85d7afa688f0eaafa5794cdb9cd",
+      "crc32": "5ce2421d"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0015.ecw",
+      "bytes": 148302,
+      "sha256": "7d4fbdbd2a95523fa93a5751e8aa6ed71b8c1ea7d4e01f65e603084c7b5492a0",
+      "crc32": "3cb8ae83"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0016.ecw",
+      "bytes": 143427,
+      "sha256": "2a2532c0e7767793b6e21938e34d370a72fbccb126877fc0d62dd4138ab66f9a",
+      "crc32": "8fb84423"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0017.ecw",
+      "bytes": 143083,
+      "sha256": "4bf6fd96c6447be9dbe6101c85cd867b6b2194b41bcda457a484dc516ca6cabe",
+      "crc32": "0b2c5e0a"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0018.ecw",
+      "bytes": 161334,
+      "sha256": "f6bd04f6fcfb37925fcec2291b02931dd9ca55874860df2eed114bc1fc1112bd",
+      "crc32": "a1d3f9ba"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0019.ecw",
+      "bytes": 143026,
+      "sha256": "c4b44da175f55421d5fb90bcff6b85d98248d437108bdae0cb30d401376c9a35",
+      "crc32": "71ec3267"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0020.ecw",
+      "bytes": 153408,
+      "sha256": "c7f135ff932aa9dfdf23b356331454c0e6ba8f47cc0bdcaa1538894d87a43e1d",
+      "crc32": "2dce0075"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0021.ecw",
+      "bytes": 137592,
+      "sha256": "226fc8fee1269f834e612bb64327c5d5827db42161ebba71e756160359293f71",
+      "crc32": "b7fe98e6"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0022.ecw",
+      "bytes": 145613,
+      "sha256": "1840628dfba00783a0d1c244e98f88f1a0584b673d8d66419f96e5d2a738feb2",
+      "crc32": "1576fe95"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0023.ecw",
+      "bytes": 137191,
+      "sha256": "f3d663786dce998c8820833f6262a7def828a0937b7627bf7bbeec1a7f3b79cc",
+      "crc32": "d2200a4a"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0024.ecw",
+      "bytes": 136127,
+      "sha256": "76c99dade7c219873b9de16f1ce71948a617dcf03dfcfa95270dfb85784e08e2",
+      "crc32": "ff11f313"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0025.ecw",
+      "bytes": 116052,
+      "sha256": "dd2a83f633e2a6e57c7eee845cc7d2042232e19cd92004fe8b28d90ef0044fe9",
+      "crc32": "ae479721"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0026.ecw",
+      "bytes": 104922,
+      "sha256": "060456bdbd73d43642fd2b5bf8ad8d3cb2a23c6ff447611f00ff3616111511f4",
+      "crc32": "ad7f6319"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0027.ecw",
+      "bytes": 99758,
+      "sha256": "c4e90b27aa6b07d288a216165f7aab772e2bd3a29784d3a43ea8b4688d075ed3",
+      "crc32": "035b7519"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0028.ecw",
+      "bytes": 116441,
+      "sha256": "5e181a9ca6ebb400d9589cc935c275b96bf671bdc4362817fdc2d1c7f8781cea",
+      "crc32": "aa9d009a"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0029.ecw",
+      "bytes": 140580,
+      "sha256": "b41d445eb54eb94bff61a8e7ab81e9e32bb90f4ea9dd9fbec95a8cbe97ef9d17",
+      "crc32": "4ccba394"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0030.ecw",
+      "bytes": 153980,
+      "sha256": "6df3c4fd51ba6aab1230ac32455073057d045542c6b29d0cbea2528c43b081ab",
+      "crc32": "549df1d0"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0031.ecw",
+      "bytes": 149559,
+      "sha256": "26f4f37073298267b4a7eee0fc91134408c4bb4d64b56e7a18d9746c6c8b3ac7",
+      "crc32": "a8515667"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0032.ecw",
+      "bytes": 131859,
+      "sha256": "4fffc33234593a4c7df29da792bedbce49977043cc240fac355baddbcbe5e829",
+      "crc32": "65fd4973"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0033.ecw",
+      "bytes": 105356,
+      "sha256": "0f0232a965798e1a88488bb1987be18484d5dcf1154e8b93c45198d54f499e3d",
+      "crc32": "40736c92"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0034.ecw",
+      "bytes": 116355,
+      "sha256": "70a20bd26d370ea82ae355496c5c2f8702923d08bd432c34bc16ab414ea701ec",
+      "crc32": "93ad9d2d"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0035.ecw",
+      "bytes": 144230,
+      "sha256": "12eec994bc61a343d687759f70be3188dc2cb46b81b3fd6bcff3bdf7b4056a3f",
+      "crc32": "7836ee05"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0036.ecw",
+      "bytes": 153695,
+      "sha256": "edde00bfaf14a78c6ebb8c77d479286d9dcc14642c0fab85ac5c839586b8aab7",
+      "crc32": "6494f370"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0037.ecw",
+      "bytes": 144990,
+      "sha256": "90c82f6daf70324a38f7e4de8605a734d5afda932a9a8bef5eab354dcfe26f71",
+      "crc32": "d4de3644"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0038.ecw",
+      "bytes": 138546,
+      "sha256": "8719391c1b8d8c9046aea245c96eaaea7029b28b0713f75ec573c323e58d49b6",
+      "crc32": "33d28e54"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0039.ecw",
+      "bytes": 138591,
+      "sha256": "ac75c1b025fbce8fb5873af963c901c0490ca53f60be6f5617308f205b3fde0e",
+      "crc32": "4844de66"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0040.ecw",
+      "bytes": 149903,
+      "sha256": "df9504bb5a996a516b368ac20f1752a4c28d9fed9c92a96fd69da65c2400e222",
+      "crc32": "23497042"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0041.ecw",
+      "bytes": 144985,
+      "sha256": "7df2974735872adb7fe70b9d38b179ecff3d1e167d8c3c1bc7aee953afc35e45",
+      "crc32": "c3893ec6"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0042.ecw",
+      "bytes": 142080,
+      "sha256": "cb36596f004d5c39b1a8bc5f7c26af6c9e82f46268e1ae12fe38e9b27ef4e9db",
+      "crc32": "ff247cd3"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0043.ecw",
+      "bytes": 125520,
+      "sha256": "9a15c05df3e60ee236a05ef990ac7a478617f7aba219d759d55d92b39c4260a7",
+      "crc32": "a0d0807b"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0045.ecw",
+      "bytes": 146501,
+      "sha256": "04a27b1231da582bb751d25c949d5e50c2a0f3050a7ce717c9583ce2cd569b40",
+      "crc32": "cd2631e5"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0046.ecw",
+      "bytes": 114206,
+      "sha256": "ff758b66272375671dae013a7db71cc7aecb15f03c2a3a730dae3b72f5cd5dd2",
+      "crc32": "65901f88"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0050.ecw",
+      "bytes": 149253,
+      "sha256": "4eb72b490b88cac884f1f6559fe69b5bedcc821548fff33fa752bd18659c470f",
+      "crc32": "3bf6183e"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0051.ecw",
+      "bytes": 147839,
+      "sha256": "895c9e7f5bfcde2cdc0a532eef785a3536b008824dd0c3e63266b64ae6a95d31",
+      "crc32": "551ff55d"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0052.ecw",
+      "bytes": 138762,
+      "sha256": "7232d3c2a39d50b6f275225287cb72d077cbf02e6908c9c092fbe81e3bd7a391",
+      "crc32": "43da920c"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0053.ecw",
+      "bytes": 144691,
+      "sha256": "e5819ed7177828ae579baa442486fb5a5dcb9062bfe9282da11b8f6556fa34d9",
+      "crc32": "3866adf1"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0054.ecw",
+      "bytes": 132500,
+      "sha256": "a98db97c88d24aa36e2ec8184088c9f5335261e61dedf73bc88f33d3ae1232cf",
+      "crc32": "62b44e5c"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0055.ecw",
+      "bytes": 130366,
+      "sha256": "6c5a850d85b499ca67ef8258e162899e91a6275661f4eabe8fc5dd3b2851d4d0",
+      "crc32": "6c59be01"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0056.ecw",
+      "bytes": 162731,
+      "sha256": "3ecbfb68818b30524c487c3708b8e74c372f43e472c4dabfa0e6c65690ae7b42",
+      "crc32": "1c3c12db"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0057.ecw",
+      "bytes": 132921,
+      "sha256": "9c66e516c7222fd8096afe18897251a74cb0c1cb1de9fb6b9fa156d1ab7f6354",
+      "crc32": "ebd14165"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0058.ecw",
+      "bytes": 146086,
+      "sha256": "c78424c40cec258547e8d0238cf074f4b1194a927e2a374f4e592c56ed262895",
+      "crc32": "0ad5888a"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0059.ecw",
+      "bytes": 136190,
+      "sha256": "f6ba54688269b5b66f29005f7288fb53550d7809033bd3c0b8bca204a63f8d13",
+      "crc32": "fe0b0c15"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0060.ecw",
+      "bytes": 143043,
+      "sha256": "668cf38b700eebb6abaaaa9566883b6875eb5ad046f6c30c178a4ad7edac450e",
+      "crc32": "bcf7e03c"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0061.ecw",
+      "bytes": 138867,
+      "sha256": "20a8a278fda0e4c509857944f363c981b461e17f0db2b4411eded47574f88b75",
+      "crc32": "f6e5f399"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0062.ecw",
+      "bytes": 139427,
+      "sha256": "8c81fcbef2340fa48056c69519825c649d950221bb243412724b1102bfb784c5",
+      "crc32": "b7c08874"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0063.ecw",
+      "bytes": 138144,
+      "sha256": "0c1f94899b705e101f44f4c2973ec670fcf573af65d06e054a2925b8cd4bca1f",
+      "crc32": "e50ed576"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0064.ecw",
+      "bytes": 153172,
+      "sha256": "f67eb29240a46dcb8824f3d64fdb190af704b71e80cb766c3007e874818ad654",
+      "crc32": "52bef2ba"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0065.ecw",
+      "bytes": 154762,
+      "sha256": "9f071e319ff941322ad93297c2e132b7e8ab57ea9c5eeef90b105db7f8eafaff",
+      "crc32": "99dfad1e"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0066.ecw",
+      "bytes": 142601,
+      "sha256": "d5b19c38ae3cd74094ded42afcf8ebc649e5111b10476b2bf6dbcc9ec649f5be",
+      "crc32": "baa8a6cb"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0067.ecw",
+      "bytes": 150636,
+      "sha256": "b9295b773c4690d51191eccab6ab5a22fcb14526970ad85096aefdbc1a4c614f",
+      "crc32": "b191ba4a"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0085.ecw",
+      "bytes": 143199,
+      "sha256": "51c3727f3dcab0ce0a08430e7acd93a629322a5fb3ff0ae606fefcd0d0e095ef",
+      "crc32": "22133432"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0086.ecw",
+      "bytes": 154222,
+      "sha256": "ae6c176cb94a42ecc0e905d4142e007390d7f998951df65a04903e49034dbac1",
+      "crc32": "21e5c392"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0091.ecw",
+      "bytes": 128030,
+      "sha256": "f3f9d412fda9a6c530c2b837951444db177a855d90809047d897fbcf560dbdc0",
+      "crc32": "11fccd87"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0092.ecw",
+      "bytes": 133516,
+      "sha256": "2aea587f564e8daeceaded55c5f436ce2bc71665185fb4ccc7b4be0dd9f16a03",
+      "crc32": "5767c6fc"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0093.ecw",
+      "bytes": 148352,
+      "sha256": "1fb3ad244cad90077f15fff695d3c3b68c5a43934abae0c4d9a192920debeeef",
+      "crc32": "c28ac46b"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0094.ecw",
+      "bytes": 148693,
+      "sha256": "db55fa917bb6c41c2d155b839bc2a51535f7212ad5926798835eb4580e4ae6f7",
+      "crc32": "1e437db6"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0095.ecw",
+      "bytes": 144215,
+      "sha256": "237f10576643fc00c0586cdcc0d795d8143691b2b8d0e9bbb5459595d0561324",
+      "crc32": "d7b2073f"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0096.ecw",
+      "bytes": 150797,
+      "sha256": "8b6c24263ab4d331bcf8d16319bde9c52263eabd0cd5e4dda48049e0ce672fd1",
+      "crc32": "1dc5bc0f"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0097.ecw",
+      "bytes": 145424,
+      "sha256": "fc32429bc9de63aab1edfaec4bf9c996e9349115231b5127fa371bb278edc4c6",
+      "crc32": "9087452d"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0098.ecw",
+      "bytes": 138854,
+      "sha256": "4a638c0d0abf31b54a27c18faaf1415c6d2a3e721946b103ed119a501c69cea1",
+      "crc32": "7b7160c8"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0099.ecw",
+      "bytes": 142029,
+      "sha256": "e1c90fd6cbc9fb3f17bc64cf8b4809329f6c109216c6daa846156b6761a8d24e",
+      "crc32": "940adec8"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0101.ecw",
+      "bytes": 125668,
+      "sha256": "47e81a6142eaf6f7e92e95cca594ceabf8d7ef73581fab5cef8c0c04eaf9e159",
+      "crc32": "2b242831"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0102.ecw",
+      "bytes": 69591,
+      "sha256": "b229eb2547ff6d939d65409bed10618893f3cc824a922c60d9f58cddc8c735d3",
+      "crc32": "ba8b897d"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0103.ecw",
+      "bytes": 144964,
+      "sha256": "51cc19e6035862f20c088c543817bb6b72c79d911b0874cdf31aaafd2520c4e0",
+      "crc32": "88086a2c"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0104.ecw",
+      "bytes": 137457,
+      "sha256": "dd3677b3b24a766836d4ed5179cfb970b7fe982d56510adad532dd0942504c86",
+      "crc32": "b277f7cb"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0105.ecw",
+      "bytes": 149843,
+      "sha256": "1ffc864c34b44c71fcf6a0a71dc12df81bd9cd136200b54705b37370a548db13",
+      "crc32": "7484e0de"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0106.ecw",
+      "bytes": 137890,
+      "sha256": "82827ae40e5480b2f20f05b2ea2d66aa7a89e6b61e3427ee23a4093bfb90dc3b",
+      "crc32": "817394c6"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0107.ecw",
+      "bytes": 122353,
+      "sha256": "5a41ec583ea95a608bc33798bf31c05d5086249f1bc0adc80b577c496b30e61b",
+      "crc32": "0fac2d32"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0108.ecw",
+      "bytes": 153172,
+      "sha256": "6b03f58587e131888595a7cfd1dd33c19c230d5028e99d19e3eafbe37eb35242",
+      "crc32": "bb55da21"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0109.ecw",
+      "bytes": 157263,
+      "sha256": "7a9c2fe2826f895090bd801cc6982366e4c1b151675c420d2919879d5f1ea08f",
+      "crc32": "d9dd36df"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0110.ecw",
+      "bytes": 144666,
+      "sha256": "c286dbee90cfb2b318b38dced4eec714d5d2bccf91866459243cd9defda27f48",
+      "crc32": "612aad3a"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0111.ecw",
+      "bytes": 127295,
+      "sha256": "5069e49e7567fdc44e3117cfcdbc51ae051ece7d10cf66e9ecca41c0fab85524",
+      "crc32": "c39eb499"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0112.ecw",
+      "bytes": 143975,
+      "sha256": "6a75fedd09232f65d3751b05839f065fdfa79dfb5f070522bba14ec3f1e16736",
+      "crc32": "76fb114e"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0113.ecw",
+      "bytes": 140841,
+      "sha256": "f9cf35707ee805c194439e0efe87326e632ecd9e906cfb76d30814ad1f80f5dc",
+      "crc32": "5c142323"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0114.ecw",
+      "bytes": 135849,
+      "sha256": "61f53f1830cf8266cbcfa67bafc8aee3407177a32d7cf7a1174c36352b6611e7",
+      "crc32": "1dcae9b6"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0115.ecw",
+      "bytes": 132032,
+      "sha256": "1c4d3a46b3c0b1467faf8c2f45f39adb4f984681e70de40c2f28569c0e0a176a",
+      "crc32": "5fa1777f"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0116.ecw",
+      "bytes": 135177,
+      "sha256": "88bd818cb62b933eb590c8c56b30157173cd3da5dbd78c41d43f695be2c03c9b",
+      "crc32": "0f202bf4"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0117.ecw",
+      "bytes": 143028,
+      "sha256": "4f8d094baa5b3fc114abf0d56fa4af3d9f5ae7e292de58267f48eedf2f806f6d",
+      "crc32": "2fc8008d"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0118.ecw",
+      "bytes": 143438,
+      "sha256": "396337a8cb0cadf63baf5b7d56509f42e39b04d4f4523420c6d3b9364e502fca",
+      "crc32": "5558b59c"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0119.ecw",
+      "bytes": 148337,
+      "sha256": "1a169a4feb6c7a91f8d50d664e72fea0363b6e87a7d2e8c1ed06d81e463fa201",
+      "crc32": "dc7a1cbd"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0120.ecw",
+      "bytes": 139369,
+      "sha256": "1872e527721449f1cf0b3ab26006add6058a63a4a7b2bc18b354d702164f0c73",
+      "crc32": "69f0e4eb"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0121.ecw",
+      "bytes": 135088,
+      "sha256": "96c9a07dc815795449ae5ccd6dcad7efa71cda9653a351f3d7ed26f97a898128",
+      "crc32": "0be85b22"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0122.ecw",
+      "bytes": 128751,
+      "sha256": "32cdbb11bb7ced1a5a2ebbe7646316d8d840bca10a8fbeebccb6ad839d2f42fe",
+      "crc32": "fef996c7"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0123.ecw",
+      "bytes": 134919,
+      "sha256": "1b41dba604b289e80ac2f47fd2c45f88304470aebb22b07a9f1c91db27f65312",
+      "crc32": "4bcf2ff4"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0124.ecw",
+      "bytes": 122971,
+      "sha256": "01bec5865de50eef72adb8b313effddd9444fcaed04312d5d1f4160b7fb0af9d",
+      "crc32": "9b0f9906"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0125.ecw",
+      "bytes": 125391,
+      "sha256": "30d035d09a0b141443e779c626f07e8f57e58d90133753dd06a70ea2422866e4",
+      "crc32": "5c6be44a"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0126.ecw",
+      "bytes": 136725,
+      "sha256": "e8eccb9523af51f7cd198c7db85413edaf9cdde0507f4392668c03d30575cd39",
+      "crc32": "8be130a3"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0127.ecw",
+      "bytes": 121388,
+      "sha256": "0e86748ff2bb315518975497e572e68313b08912929397c05871e7a190b593dc",
+      "crc32": "c905af19"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0128.ecw",
+      "bytes": 139121,
+      "sha256": "d518f4036be9fc49c595e908ee0b2362cffe5f01de75d2d54f5bf00ac2f1b6ca",
+      "crc32": "9813a5dc"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0132.ecw",
+      "bytes": 146487,
+      "sha256": "ba4cfabb3fff383a117aba6a499db974ebeaad56a398025c2a4e102b7c7854c7",
+      "crc32": "245230e2"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0133.ecw",
+      "bytes": 134615,
+      "sha256": "100617d2eec81e96c854cb8914584e17861fe0d6e6ae869c1d3e9cf953c0cd5e",
+      "crc32": "a3c2ede2"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0134.ecw",
+      "bytes": 131842,
+      "sha256": "8da6660d3d1c508728b85b5c67d192f8dd569a25e3318f5de705c0a321ef47b3",
+      "crc32": "595b0b6c"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0135.ecw",
+      "bytes": 148166,
+      "sha256": "6c04c7b6ff76bf2412a739cca77d565dcf0366342d6876b39846115e0c8c16b0",
+      "crc32": "df81bf44"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0136.ecw",
+      "bytes": 138900,
+      "sha256": "64e01be749e2af3d5fabc2e4b13aac98555850d612c54259df634184d5f8b258",
+      "crc32": "1f52e276"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0137.ecw",
+      "bytes": 81334,
+      "sha256": "48e17f5a4e67d437b6814be5b39b92800e2d890447a45ff16ac781913991118f",
+      "crc32": "c47f17dd"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0138.ecw",
+      "bytes": 105061,
+      "sha256": "84fcfed76bf0894ee425821beb984c28bd03330d3c112bd4147e58093464f611",
+      "crc32": "749e8f74"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0139.ecw",
+      "bytes": 102759,
+      "sha256": "26a2ffff2493e55053fc63afe18c49a1d2ff1466eec507eb2c558c366c96bba4",
+      "crc32": "6d615312"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0140.ecw",
+      "bytes": 145833,
+      "sha256": "cba92ced45895ec577cd842c1b507cfa7c0f0dd50477841985396a0d8185c955",
+      "crc32": "7c6410ee"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0141.ecw",
+      "bytes": 107773,
+      "sha256": "20d9c0fa2a79acb9c6439405396fb2d5d1a4f5fc2ce58f057a460ee3629c0202",
+      "crc32": "33498565"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0142.ecw",
+      "bytes": 80166,
+      "sha256": "8ace1f190454db5537053970d969ecaee0554537ac34e57df61d88f5bb2ed725",
+      "crc32": "80bdcce0"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0143.ecw",
+      "bytes": 121385,
+      "sha256": "98166bdb289e22b9e74da46d1a198c632d843c1ac86eb8921a9c6f74e49e2b29",
+      "crc32": "2b590fb5"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0144.ecw",
+      "bytes": 122021,
+      "sha256": "8f48923344dea67db0f4f2baf0cdde0737d19ad18085b8eaad1e4551a5b9cda9",
+      "crc32": "b75435c3"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0145.ecw",
+      "bytes": 140480,
+      "sha256": "7f05d69a8fe117f1745ad634b4f28d2663245413f72b601077d67418c7981e3b",
+      "crc32": "31519996"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0146.ecw",
+      "bytes": 153047,
+      "sha256": "41e799a276338286f8553fb3abadaa5e40017ef0e104daefc0078058e96e7764",
+      "crc32": "409ef8f1"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0147.ecw",
+      "bytes": 144832,
+      "sha256": "677d4c14498e30a89a218bd362274cb63007459d5b9868c1fea757459499eb90",
+      "crc32": "afacabca"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0148.ecw",
+      "bytes": 150272,
+      "sha256": "ccc051045f034c6369336f44415ea7ea82a2f6f70cfa765608650db240406b7c",
+      "crc32": "e558372f"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0149.ecw",
+      "bytes": 150428,
+      "sha256": "b2d813d038ea3ebead4d312f9fa8c791a3e0a1f4b670841c4d6a11c2b2943262",
+      "crc32": "78926715"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0150.ecw",
+      "bytes": 137579,
+      "sha256": "4db54aaac7cf7169a94efb67988572b5264a246ab394e6a5636c88d14114bb1a",
+      "crc32": "7b7997bf"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0151.ecw",
+      "bytes": 148106,
+      "sha256": "cb902b6c86723db1deca0884c5f72d20b9bb70090ecbc1f2f912bfecde2dda9f",
+      "crc32": "645fa34a"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0152.ecw",
+      "bytes": 130326,
+      "sha256": "d5d4a0459a5034d6d88687a908d958e00b71cc32a5ffa3fc367cf46d1f1ed530",
+      "crc32": "1aa297b5"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0153.ecw",
+      "bytes": 136012,
+      "sha256": "c7cc7ad032c3967b0ff10f001b8b9e3cda3de17fb6a4c424e7aa012b18160c0d",
+      "crc32": "639e8707"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0154.ecw",
+      "bytes": 135946,
+      "sha256": "90db3bd2afc4b44f153942ba0f914460c70d90dd13472c96826db62c7dc8271e",
+      "crc32": "f59acee9"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0155.ecw",
+      "bytes": 147999,
+      "sha256": "3d1f51d4e189d4649814367b7254858e6705ab08cbac4f7c434c554d4cd050f9",
+      "crc32": "4d4585c0"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0156.ecw",
+      "bytes": 129004,
+      "sha256": "c61893640a7450992696007567b40379698e779b9d6b5ac512a7b6a8829072b9",
+      "crc32": "13aa4818"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0157.ecw",
+      "bytes": 120094,
+      "sha256": "613d011246243d4e483328ad78dd859bf246bfe8bdc10a7add7d0e8353adf683",
+      "crc32": "73334ed8"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0158.ecw",
+      "bytes": 148712,
+      "sha256": "7e139b7bb77c50e7936eab7b144a81448c2ee05a1499343e84736d2244935fc9",
+      "crc32": "823dc3e0"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0159.ecw",
+      "bytes": 107869,
+      "sha256": "023648a84b065887c7dc87334cbe069e653da7e62ad60281c192f2ea0f871bab",
+      "crc32": "303850bb"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0160.ecw",
+      "bytes": 99133,
+      "sha256": "7a07ebc0c8fca0e42e9579f951c19f357912be36b406c4d0b029fe2c169fae65",
+      "crc32": "ff231add"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0161.ecw",
+      "bytes": 84115,
+      "sha256": "2bda129607d88dddbf996983aa705fa4b563dbc13a100934eb989f69d8fc2273",
+      "crc32": "73e2b428"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0162.ecw",
+      "bytes": 135409,
+      "sha256": "8a18932894f7c4244ed5502ae3ae10ecda4c3b8347e2f03280be9286f34d97d2",
+      "crc32": "5927aced"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0163.ecw",
+      "bytes": 134429,
+      "sha256": "d3ec92827fbce1b2a219c4fa963241c87dceb8b9ce1a2b58d37ee8f03d05f892",
+      "crc32": "c7e724de"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0164.ecw",
+      "bytes": 93542,
+      "sha256": "1289a3910117341dff01b03897c2027f5ddd5053d7012e3cb722525d7cc28836",
+      "crc32": "c10751f7"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0165.ecw",
+      "bytes": 141441,
+      "sha256": "32554d909f6215532a30dc6fef14c2d82b43502eb58400d2904af686e9658bc9",
+      "crc32": "475100e6"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0166.ecw",
+      "bytes": 134638,
+      "sha256": "a301f9f69727fd33490bfde6cdf31ee57fb2f30bcf9d0da447433478a26d5ef8",
+      "crc32": "16e3547f"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0167.ecw",
+      "bytes": 147800,
+      "sha256": "fb6afe770e06e7988adb1514284b29dbb8afc347bf7c5ffe0de1138c7858ff2a",
+      "crc32": "86caef70"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0168.ecw",
+      "bytes": 148449,
+      "sha256": "8aeba42c9708db7205a327606c18a1cdfa0a99a6316a99f985351480d53ed20b",
+      "crc32": "c252668f"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0169.ecw",
+      "bytes": 144876,
+      "sha256": "cb0c46c0251f79d0a1a5f569f4d84a3b71ffc087cd4fc861e48ebbcb79b48f02",
+      "crc32": "aa3ef6c6"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0170.ecw",
+      "bytes": 140326,
+      "sha256": "b9ee717bbb5bc1b5577a786e4e328190b9721f6ecb90e7ad1851149e986e38dc",
+      "crc32": "ecc67567"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0171.ecw",
+      "bytes": 146044,
+      "sha256": "a598f1fb1bb7d8990f4cbf7ed0fc38c87ad5364c3b38386c94e32673c8c43489",
+      "crc32": "11dfb79b"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0172.ecw",
+      "bytes": 139386,
+      "sha256": "2f7a1bca5bada15215e07aad0e74a115bed9a82f9beb65e947fd55ecffa7c8bd",
+      "crc32": "22f58e88"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0173.ecw",
+      "bytes": 142837,
+      "sha256": "e7591f022ded722d16a661e9d4919b50ead89653481f3de94e2396047c5d6c30",
+      "crc32": "c6db9c9b"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0174.ecw",
+      "bytes": 147503,
+      "sha256": "72c70cf842c69fe410343772d90c92c6b64114be55ff92dd2d3e982333364bda",
+      "crc32": "ed8afcd7"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0175.ecw",
+      "bytes": 148926,
+      "sha256": "be121ed586478767a7b7a4b149ec6168cfc2f384840c3377b98007422c49a749",
+      "crc32": "b0fe4af7"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0176.ecw",
+      "bytes": 133500,
+      "sha256": "737bcebb4033df89545781f1907492c2e165af1d22454b21fd8837286123b746",
+      "crc32": "206dd8dc"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0177.ecw",
+      "bytes": 143918,
+      "sha256": "e9e3bee6fd4f7fdfedde16cf3f712099a5d4300f4e08d67eecffb51cc2335916",
+      "crc32": "92e2f32a"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0178.ecw",
+      "bytes": 123636,
+      "sha256": "4b87ae7cfb80a84c21d479026754914e9b4abdac6dbc193b896b0d98073e989c",
+      "crc32": "ba7ce4c8"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0179.ecw",
+      "bytes": 137676,
+      "sha256": "a3c9fabf0b24d5d1314f3b7ea0a3c9f28ff3207a7b017d0448e9954f328792b7",
+      "crc32": "3337ebd4"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0180.ecw",
+      "bytes": 135520,
+      "sha256": "9c5bfc7ebe9ee2e05b451ff20cd72df87b8ae193824480fc890259fd80b78193",
+      "crc32": "e60b87d3"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0181.ecw",
+      "bytes": 115039,
+      "sha256": "4b36449fd0a1ed7ac686f301cf609696dd266d6cde4c1864391e37bdaff599d8",
+      "crc32": "512bc633"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0182.ecw",
+      "bytes": 133720,
+      "sha256": "19eb68bbd82824ee9d5617a79737c6fb27713613ca7e0ec4cb42d0aa0cf2056d",
+      "crc32": "9e5a18bf"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0183.ecw",
+      "bytes": 134391,
+      "sha256": "ceaf337ae4fdf0eb3211ad5337a1c5a2581bc14f908221b2bfb0997ab0089b64",
+      "crc32": "76aedec5"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0184.ecw",
+      "bytes": 134735,
+      "sha256": "7b0e8f9ea0b3c4d49ec95949efda9848309fa0ae3900a0ee22486fae484e3aa8",
+      "crc32": "48961661"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0185.ecw",
+      "bytes": 127849,
+      "sha256": "e5f3c0531e02b3c597f8da31771b235926e58ce55e7bb273051bcd9e7c6f99d9",
+      "crc32": "87779407"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0186.ecw",
+      "bytes": 128469,
+      "sha256": "e937ff98a25b81fa843efe5b767ce9d7b584b39fbc0c2e49f76a43efc1078a2c",
+      "crc32": "c87f7399"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0187.ecw",
+      "bytes": 112255,
+      "sha256": "b37e6f84488147ea52f5d7f7eb7440aa853bcf7e5a18a70f6b6fa3be3a2d3ac5",
+      "crc32": "814e8b88"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0188.ecw",
+      "bytes": 108626,
+      "sha256": "69c37c9a187c7d67da839a4a554ee0954fbe0fbf506f65d6b852ae4dfab97f71",
+      "crc32": "f695c5cd"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0191.ecw",
+      "bytes": 109302,
+      "sha256": "05a1f5dfefb28ca4b6726438c403e19aa1ea4da79a0c14ca867769f71c1f3bc4",
+      "crc32": "9713c08f"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0201.ecw",
+      "bytes": 135555,
+      "sha256": "9a05e9777267417ea20a1dede7c8bd806b53c5107b7603b33f8a742173389ce1",
+      "crc32": "3e4f53ec"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0202.ecw",
+      "bytes": 148321,
+      "sha256": "cd0e85848435118fad5f437c05f61f1127f1f56c131fdb2f03176f46ac724089",
+      "crc32": "ac09dad8"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0203.ecw",
+      "bytes": 137142,
+      "sha256": "cc15de43735ec7c5b0c40dd7688490b8a25afa2da933c7d68a22fbcc1f39eb56",
+      "crc32": "ddfa9f34"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0204.ecw",
+      "bytes": 143560,
+      "sha256": "59f90bef68622ffbff294e840b63dcf2ca3193d957720c848b411b1db8ddcd63",
+      "crc32": "6f8679e6"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0205.ecw",
+      "bytes": 140112,
+      "sha256": "fae30453978ae88d6fe4ab3fea96bfd50f6630a4967614e299d02e1d8636a4fa",
+      "crc32": "25cce95f"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0206.ecw",
+      "bytes": 140801,
+      "sha256": "bd03cbb7779d5742b406bd11a04ba48584b2d76784338260e2c7b1d8b88ed04a",
+      "crc32": "571a7a37"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0207.ecw",
+      "bytes": 137703,
+      "sha256": "5386032191adc7d7b64cd6c9d599011eac927af5fcac7a111b5adb7c6d78a343",
+      "crc32": "6b94defc"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0208.ecw",
+      "bytes": 154172,
+      "sha256": "91da7ed1a7dfe99f86a4654addc095a3b4fe1eb089ece601a2d2bbd023c175d9",
+      "crc32": "e71c05a0"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0209.ecw",
+      "bytes": 129978,
+      "sha256": "699cd05df0e7cd32b09714919a26330798c3e5a3d3dc816a7a4d71eb3d066383",
+      "crc32": "710dbc74"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0210.ecw",
+      "bytes": 125546,
+      "sha256": "4bb5681009580e156b06fec8af4d90a763e3b3a1693f972e778bb49d68c53e09",
+      "crc32": "e4111850"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0211.ecw",
+      "bytes": 151364,
+      "sha256": "998bcb447fadd4ddbdf10fa5a47c7aff21363158b6a37006214fc84bd07222d4",
+      "crc32": "803f97dd"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0212.ecw",
+      "bytes": 130030,
+      "sha256": "78d92f1072b722f465bf72a8572d3f195f739c4abaf61d62177c14b96059378c",
+      "crc32": "0751d6f9"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0213.ecw",
+      "bytes": 117125,
+      "sha256": "ef656c6713e4c3ba0cfd83efd376e1810e21b3a6ef695737eca155aaf0197c4d",
+      "crc32": "dd9121be"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0217.ecw",
+      "bytes": 162481,
+      "sha256": "924da8e8f89b603016e923af9b5349459b8d9edbabf748e36a0b0992f1a345a6",
+      "crc32": "bd05c68f"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0218.ecw",
+      "bytes": 142160,
+      "sha256": "536d0a09af09114550e7faa18fe3d3d74be65310a6ac00710746f491ba3c326b",
+      "crc32": "1ac59d8d"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0219.ecw",
+      "bytes": 148985,
+      "sha256": "7d221b791b9c7ae5bcee2b03fa48e4e1f5765f30c7432f85ae8f5f933956244b",
+      "crc32": "24c2fa04"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0221.ecw",
+      "bytes": 141872,
+      "sha256": "9c72d83c4f875119057612c386348be58a94cc6899e3345d1ce493fd0ee0ec0e",
+      "crc32": "69c05aa7"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0228.ecw",
+      "bytes": 144003,
+      "sha256": "23880ceafda39ca38b470713ee21d1995e07a5227b27be5f85ccdb16af54d0f1",
+      "crc32": "0d70efde"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0236.ecw",
+      "bytes": 157039,
+      "sha256": "ddddb3d2218ee3277a08d25c616fdac278e891125db185d04e90df908c90301c",
+      "crc32": "45765975"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0237.ecw",
+      "bytes": 155717,
+      "sha256": "76a77a9fb8179b9aad1eeabe965116bb7e7f14981628f136bf343a9e24fe27bc",
+      "crc32": "66dd307b"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0238.ecw",
+      "bytes": 160320,
+      "sha256": "415310296b665405505a3a3aa6eaa8782c4d901281f432db939f2f1ea5e17d19",
+      "crc32": "99731571"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0239.ecw",
+      "bytes": 172369,
+      "sha256": "b3870a11ba11b57a0f6c1cbe2596688c2338e634720e4dbe4670a72ffd56b408",
+      "crc32": "f9cddee2"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0240.ecw",
+      "bytes": 153426,
+      "sha256": "a43653ac47fb43a1baa26263cf639b1e5327c18f531c5776c09dcc036ce2a1fd",
+      "crc32": "3a62da78"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0241.ecw",
+      "bytes": 149006,
+      "sha256": "7752cea490d6af0db45fc2e3cdbc89cbf989cce1c60ace1c123806cb2ef23a52",
+      "crc32": "7baf094b"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0248.ecw",
+      "bytes": 141860,
+      "sha256": "deb42552764e6f15f33744e8b750c5bf38bab17add16973a7d2766f882bb1794",
+      "crc32": "c98447f7"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0249.ecw",
+      "bytes": 145142,
+      "sha256": "883c485e438f6f5405162c73170c88cda6351e556572af37deffbce17ee56ca4",
+      "crc32": "af965586"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0250.ecw",
+      "bytes": 151481,
+      "sha256": "53f25c21ea8568f749ef6cf97b7125829c6e87589a37b48ef2fb7172972ddb6f",
+      "crc32": "ea77afe4"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0251.ecw",
+      "bytes": 138625,
+      "sha256": "8a3762262490190ac61ed73696538588410f758cabb194ff05ab777ca2b59217",
+      "crc32": "16888ab9"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0252.ecw",
+      "bytes": 151929,
+      "sha256": "082265fba1fe2305acfa41fa8b30463aae880a87e8d4c8fcc2b132fee840304d",
+      "crc32": "80969b5b"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0253.ecw",
+      "bytes": 154301,
+      "sha256": "5f4338ab623ac35cce2273d699d4197a8b2aa0db1b34a0b532d217283aef038a",
+      "crc32": "a2ee3503"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0262.ecw",
+      "bytes": 139835,
+      "sha256": "ed49ae3fdd7b462b5a5055e66793b31187dc8caaf4e203612fd80c8e36415569",
+      "crc32": "75ea4136"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0263.ecw",
+      "bytes": 134264,
+      "sha256": "c447c5e61486d408d1cc0f110def96d0d243c0703b39c7c4e6df02ce3975c4a2",
+      "crc32": "a973ff30"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0270.ecw",
+      "bytes": 139780,
+      "sha256": "701d771c8ed239b6c9f4453a9c5d2cff6ad87b1e8719862ec119558662ccb607",
+      "crc32": "c10afaa4"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0277.ecw",
+      "bytes": 157850,
+      "sha256": "93ad9e57a75af441ac2e9d7b64493f884e6293ba8d10767f32eb8cac090669f4",
+      "crc32": "82cd7625"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0280.ecw",
+      "bytes": 174202,
+      "sha256": "550cf0550d3c53b9a926a361fe982af2bf70c663b65e69a4f762be45dcc321c5",
+      "crc32": "68f4f871"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0281.ecw",
+      "bytes": 174545,
+      "sha256": "40dd1b88d33fffd1aad27f7e84f8c9036bd1e7d0a4775c08101a2105caaa1aca",
+      "crc32": "8a40baf4"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0282.ecw",
+      "bytes": 160387,
+      "sha256": "d7d08de58be570ce8dae3322a12801de688e1fa3dca62acdaeb540b498afbc60",
+      "crc32": "09f4f0ad"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0283.ecw",
+      "bytes": 152833,
+      "sha256": "f9dee6ca10f322c998d7659930ed4510d82c97f221734dfccbcce7c8e862ac72",
+      "crc32": "462c0ca5"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0284.ecw",
+      "bytes": 131227,
+      "sha256": "282f126e124b3dc24cbcb2b08e935083e3f6be4fde24d1810eb2989769c27ca0",
+      "crc32": "ff6f45f4"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0285.ecw",
+      "bytes": 165242,
+      "sha256": "8a3d20b9cf39836ec1a63d9ad0a8c2ff66ac8e25e0c3d1685a174ec1ad1b4613",
+      "crc32": "d20e660d"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0289.ecw",
+      "bytes": 141430,
+      "sha256": "d5260e97e1b590058a38b67497da1e50d87c95bb891476abe5a7d8488d0c30ca",
+      "crc32": "71bdcfcf"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0290.ecw",
+      "bytes": 156516,
+      "sha256": "b49d3b9bfb4bfa1ca103d7fea1b100b752a8e4a57a13736f7006b608ae47328c",
+      "crc32": "9865fa30"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0291.ecw",
+      "bytes": 86988,
+      "sha256": "737872a3ecce0651c154562c9008e124c99401a3b1abcf369c88cce2f2d6c0ed",
+      "crc32": "c040a256"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0292.ecw",
+      "bytes": 122674,
+      "sha256": "9a0a40035c751c3c73840c6af8f4a911d920de8b977870b300e054cb0dbcadf5",
+      "crc32": "ef8f4759"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0293.ecw",
+      "bytes": 152986,
+      "sha256": "eade8d8f5009e7369a19abd381e4a56a1a477314f69dff927a462f86759dfb54",
+      "crc32": "1c7b8f23"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0295.ecw",
+      "bytes": 152193,
+      "sha256": "e9d72c084c3deacb9f76362edc336cd168d35f3d21a0f6e12ec8a8128b5137dd",
+      "crc32": "b8026736"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0296.ecw",
+      "bytes": 171477,
+      "sha256": "137766357134d4a96d3d716508b72fab25ea99c4bf04da7bff54e204e13fea0c",
+      "crc32": "ed01aac3"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0297.ecw",
+      "bytes": 156735,
+      "sha256": "5fcd0bbb3a127b8d0b0ca9f81c73da26f649bb9d4511cadbbe8c6a5e31698dd3",
+      "crc32": "20717fe8"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0298.ecw",
+      "bytes": 171718,
+      "sha256": "1ab5e79a2391637a7cf60d6a4268a8054d471e264084c90e1522c96cbd38c447",
+      "crc32": "7900991a"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0299.ecw",
+      "bytes": 145867,
+      "sha256": "260520490828b33328914361a8169156954b1edf806a1e302f34fab4b372b854",
+      "crc32": "6af14af6"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0312.ecw",
+      "bytes": 148982,
+      "sha256": "95b788fe325884f849f8d98d21e1bdf38ce5ae91194948dbf76da2cecc7ba745",
+      "crc32": "61f5e5c9"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0313.ecw",
+      "bytes": 145170,
+      "sha256": "97e46d6e9c5d5c7f5bc0e5a9ac37a0bac8b8771d3b60af2ed1e265cdf3105391",
+      "crc32": "87062d4f"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0314.ecw",
+      "bytes": 158800,
+      "sha256": "5fd98ec6237ca326d95d7552e22d41fb2a811c22ef9e761cea15f0cc79f73040",
+      "crc32": "7b8772e7"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0315.ecw",
+      "bytes": 152930,
+      "sha256": "6cd6e82e1daf35ca66cb1e0c901a8a81ec45ae71de2c2d261d4e58e47d0375d2",
+      "crc32": "3c2078a4"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0316.ecw",
+      "bytes": 160561,
+      "sha256": "a0ca00ec5b7bc20bd0a3b016893d359b5f68f11576b80a452b3e58733e380671",
+      "crc32": "561701a6"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0317.ecw",
+      "bytes": 139032,
+      "sha256": "95d4642eb090bd5af4fc0448e4675259ea90a9bcfc2e6279f1f2919b665b3dad",
+      "crc32": "b115aec6"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0318.ecw",
+      "bytes": 159744,
+      "sha256": "0080a318d77d067a52f404f47fe2ab23ec83b4fa9b4c2545016312a56ea7ae0f",
+      "crc32": "fb7d5e5d"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0319.ecw",
+      "bytes": 172349,
+      "sha256": "de5279b5b3e1dabad400c46c73fe8ded3129c38b7813d37582bacf84907ba6fd",
+      "crc32": "298b3b90"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0320.ecw",
+      "bytes": 144064,
+      "sha256": "34cf68239ed244e241a9175da0a05ac7625c701944ab072e544b9b5823777c98",
+      "crc32": "d2fa0d1d"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0321.ecw",
+      "bytes": 140576,
+      "sha256": "7b99972e4d7cbdc906f90115b995ebb06d7553b6ed8fcf64ddc1e781c08479b1",
+      "crc32": "72e3053f"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0322.ecw",
+      "bytes": 145867,
+      "sha256": "4a7c573568f1bb9e3c384d9d2c62d20f56b71ebc9fb8a1e64dc9654a13cafcdc",
+      "crc32": "3fe97f18"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0323.ecw",
+      "bytes": 144380,
+      "sha256": "1ba9115c60b871055e4871ef654ecb0cedbb1cd42391d815c91598c007e97ad2",
+      "crc32": "b3172aac"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0324.ecw",
+      "bytes": 140212,
+      "sha256": "0685dbd50c6edde6fdd78118e701bab578fa533ea19cc03ed93290b7924de3c2",
+      "crc32": "3a32b33e"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0325.ecw",
+      "bytes": 151453,
+      "sha256": "b0bb3f5e9bc61579454f6108e740c6cad0e696fbc0fbfd6ab521ddaade70a746",
+      "crc32": "5cd80dd0"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0326.ecw",
+      "bytes": 152809,
+      "sha256": "e1d5d2a9a9a112dc06dfb5508e8e2f72f3f98e6b64a912f30e99f1fd9b38914a",
+      "crc32": "b3ba4d3b"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0327.ecw",
+      "bytes": 145617,
+      "sha256": "39ad4578489cb4435d5cb281587d711a8dc245b475b7c22d3b1f6d277900cd91",
+      "crc32": "af092bb6"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0328.ecw",
+      "bytes": 140133,
+      "sha256": "e9589a2d2808370a249abd3c00e1679dad07ffbc8003b430ccd54572411f996c",
+      "crc32": "a88149f4"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0329.ecw",
+      "bytes": 126757,
+      "sha256": "46556d4224ec4acd5b12041b5e312fe79f1e07cb8900c9672e4b282a34399748",
+      "crc32": "22c047ab"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0330.ecw",
+      "bytes": 134133,
+      "sha256": "b2ed7bb13dc22e8636200a1c738dd66491f5796b7027c4ca89fd67697ee6e4ea",
+      "crc32": "74ff9e8a"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0331.ecw",
+      "bytes": 148933,
+      "sha256": "532ecb24905f92f6c856d5ef72c23c06ba9fba2142ffb5e9e30e9b4710ee16f4",
+      "crc32": "365cd11e"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0332.ecw",
+      "bytes": 161303,
+      "sha256": "551861c8b3e98f48230972c7963b957e8c4a091824a36d01c242a53d90e5388c",
+      "crc32": "c7d395b5"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0333.ecw",
+      "bytes": 142722,
+      "sha256": "1f33626cd274b1e9f6f779e9213ca85611bba846da587e90c06a7f0b6911b2da",
+      "crc32": "20a9624d"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0334.ecw",
+      "bytes": 168798,
+      "sha256": "57ea07cd9cc5e1a2bc3cb8fb5ed47e3bb6afc6a5ba5aa2ea38366d623766bfcc",
+      "crc32": "d611985f"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0337.ecw",
+      "bytes": 162992,
+      "sha256": "e421e27cfcc64d1597e926b8e184d96b8802bbe1c3a66e461bd81cb1438fccb7",
+      "crc32": "d5466831"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0338.ecw",
+      "bytes": 148632,
+      "sha256": "c2e1af2c4403023e773fecd64332630e9cbd963230375be013b87445613ef701",
+      "crc32": "abb34bba"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0339.ecw",
+      "bytes": 165011,
+      "sha256": "bbcbe7ab03b17cc6b68b4e927b98eac32979526f0cff1cdf578f8470ac75b642",
+      "crc32": "9710fc0e"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0340.ecw",
+      "bytes": 158496,
+      "sha256": "f337d8d2befa02fdaa396ee187fed383879a1d52ed5cda2e4873db2e3a8bf0ee",
+      "crc32": "729314ce"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0341.ecw",
+      "bytes": 148084,
+      "sha256": "8c59f4bcc8cf0db9d20bfca9787679c19f5393ab0de02421ca87c0e5d78f43cd",
+      "crc32": "894de324"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0342.ecw",
+      "bytes": 165636,
+      "sha256": "dbd7b03bec3200caa56c415f7fedeea1ffedf188339f9a5c45fec881750e11b0",
+      "crc32": "36599f00"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0343.ecw",
+      "bytes": 146867,
+      "sha256": "2dc4c736a6f0aa5420fc6e85dd31dab22a196c46cf1ca4bd8a5738a5c67fae22",
+      "crc32": "4e739466"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0344.ecw",
+      "bytes": 152062,
+      "sha256": "356cdcb536826573ac566fd58a3167ea966617de3a109d4b4410788828f0b7ae",
+      "crc32": "260c207b"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0345.ecw",
+      "bytes": 13262,
+      "sha256": "3e8271d6c8d81a329d636b4451b0d76fec1887e79e8c20d24a41675abb95a63b",
+      "crc32": "ad3e4e74"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0348.ecw",
+      "bytes": 139025,
+      "sha256": "c71857797dfe9a241f5115650674a4ad1af1e45f7e9fa5d276e4fc20cf62f6da",
+      "crc32": "6a441e25"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0349.ecw",
+      "bytes": 140862,
+      "sha256": "e8d824293f240ae0f213c43ac22c7739c620041084a2cc2c394d12189c617b47",
+      "crc32": "a1560e94"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0350.ecw",
+      "bytes": 141238,
+      "sha256": "33ee5741a65b68156471b9ac93462fb513d4ec3ac2f94b6585f00170ff566fb2",
+      "crc32": "a3f65aa1"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0351.ecw",
+      "bytes": 147918,
+      "sha256": "2ac2b989ec1446b1cf87e708f85ea7a1e9d79aaf29300be1da02f6b93bf0b322",
+      "crc32": "815e8fed"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0352.ecw",
+      "bytes": 126897,
+      "sha256": "8f8dfa7a1419bd99a63b9860033a706e939d5a3b7edf00c2fd07a86231ddc1fa",
+      "crc32": "711b38de"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0353.ecw",
+      "bytes": 139050,
+      "sha256": "d698139d499a5fe4fa3e4f3ea76a5d4a6dd0eaca355e59f724e215200f8a714c",
+      "crc32": "f5d06cba"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0354.ecw",
+      "bytes": 163080,
+      "sha256": "7649746ec2bc95cbceb84c3eea77eda8d5582959b3b452c9bda2442687116e0d",
+      "crc32": "9b39ab40"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0355.ecw",
+      "bytes": 170516,
+      "sha256": "8d1e81cfe322d886a962bcbf9308cb9e102d5ed015a437a785c6e9455035ec51",
+      "crc32": "36619991"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0357.ecw",
+      "bytes": 156443,
+      "sha256": "9736d53a6e503e29a2022da37d428be59e000a3477661476376a6bc20d323fed",
+      "crc32": "7eb4d48e"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0358.ecw",
+      "bytes": 148702,
+      "sha256": "7bfb3d9d7e9496ab0c1da45dae4eac51b30072bc1b541b46cc13ab36bd6d990d",
+      "crc32": "58cb194a"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0359.ecw",
+      "bytes": 156289,
+      "sha256": "95326372ba1c520f3f91480d886fad65afab617bfef89f721bc596a54d7be787",
+      "crc32": "ee228973"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0363.ecw",
+      "bytes": 156359,
+      "sha256": "3ffe2e78de1ffee6e481dcbe7317d07ca50aee6c42e6c6bd385edc4f134b5c58",
+      "crc32": "fe89c04a"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0364.ecw",
+      "bytes": 155401,
+      "sha256": "d065e13123941b27f19c3392c52433f602030566dd7321f65b56f616a310e9f1",
+      "crc32": "c4dfcb6a"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0365.ecw",
+      "bytes": 140532,
+      "sha256": "4f6b449a8abe3cd30a251072ff15e8441028ccf11ed3206036c881cece473932",
+      "crc32": "6ad2913b"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0366.ecw",
+      "bytes": 152770,
+      "sha256": "e1263bc14fa2d47d7a6c1971e950455da5b3e271477cbceb7569f9cf442da3b8",
+      "crc32": "41f1977e"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0367.ecw",
+      "bytes": 166919,
+      "sha256": "653aeaecac3d79ed3125d02f46f6874783f80014b4a6d698c3228d2c04f60050",
+      "crc32": "72930d5f"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0368.ecw",
+      "bytes": 148863,
+      "sha256": "a2b5ffd1b88976da22be74b3e84f0ac977859be384a8ed42893106a4a1319608",
+      "crc32": "9e628c7b"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0369.ecw",
+      "bytes": 143823,
+      "sha256": "cc55a85916e3fe5aef32839bb34427834bf2e510cf263707411b1052cda0c59b",
+      "crc32": "dd149943"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0370.ecw",
+      "bytes": 142762,
+      "sha256": "89cc23cfdd6608cec04822f64993ece27471c0a57a3046b2ae040d32d01bf2e8",
+      "crc32": "aad6941f"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0371.ecw",
+      "bytes": 154889,
+      "sha256": "1755197762361fb77831bd12d33fcd592f807cdae8acf9d47854f266c92b9510",
+      "crc32": "a382e14c"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0372.ecw",
+      "bytes": 157079,
+      "sha256": "df0cb4e105d6db23ad803aadd62a25ac95a7822863067719f78346ae0397196a",
+      "crc32": "389de618"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0374.ecw",
+      "bytes": 145377,
+      "sha256": "1b65394a96ba76f28f7724f5e802842e3c405482da3701fd3a84c4bfee64e4f9",
+      "crc32": "ca0e6ea5"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0375.ecw",
+      "bytes": 154156,
+      "sha256": "6f986b8429a0c5ab9b304cb94d95f303fe19293c031703daf5122dac6805e793",
+      "crc32": "75753244"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0376.ecw",
+      "bytes": 151137,
+      "sha256": "d21e38e8fa4b49d2f372fd53d7c493bcc2d14eb16eb3bba635e733894d8b0ecb",
+      "crc32": "eb953a87"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0377.ecw",
+      "bytes": 163286,
+      "sha256": "1000815fdce7689a30ea28574ec76829d53ea41c4ae3c2603d065277c3d065dc",
+      "crc32": "9419eb6c"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0378.ecw",
+      "bytes": 162412,
+      "sha256": "fc7a785439e08fe3a6bb739088b05683ad12e67c0c60670cbc3d502f0e2fc82a",
+      "crc32": "922f85fa"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0379.ecw",
+      "bytes": 126098,
+      "sha256": "d4b87712b1e1056413485c3dd6b426ed76590b7a0c3a0c30370803e8c553db9b",
+      "crc32": "532117e1"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0380.ecw",
+      "bytes": 130943,
+      "sha256": "ea8361a73f36bc0d6546b79f0a6c4d42df5f6691c61c7b5058a82d75067cc607",
+      "crc32": "9b774644"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0381.ecw",
+      "bytes": 129010,
+      "sha256": "61a51651ecc04312c5a80085c603833b9988473ef8bcaac3aed501c318fa63ca",
+      "crc32": "8b5cccbd"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0384.ecw",
+      "bytes": 152735,
+      "sha256": "b11331302ae1654c68e2c369167aec3d02dea37d97abc5a41c3be08fa8c5c926",
+      "crc32": "a42176af"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0385.ecw",
+      "bytes": 156037,
+      "sha256": "7d2b47409fedcb5831617723ec3ed9f6a579aea2ed026312d16a7750a77677ce",
+      "crc32": "1d01428d"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0386.ecw",
+      "bytes": 111207,
+      "sha256": "53915b6fbe0b50d773d34118afc83d2c2455426a1b86a286244f5b221c3f3799",
+      "crc32": "3ffacc3d"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0387.ecw",
+      "bytes": 119959,
+      "sha256": "6eea99ff8e639017e224d5a51c71eb04c8d3ca5ca3365e4a06fac003cbb6965f",
+      "crc32": "0851199d"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0388.ecw",
+      "bytes": 132457,
+      "sha256": "1684ab9f868228dd17020f7427f05208a5b3d770169e455c5aacafbd1ea2b7a8",
+      "crc32": "3dbc7445"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0389.ecw",
+      "bytes": 138315,
+      "sha256": "daf8ce8bc8c2b0476a2b754b9c0f0bcaf7f4859b18e4acced5882551da81f24f",
+      "crc32": "0d646234"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0390.ecw",
+      "bytes": 138514,
+      "sha256": "d8d332969ad4b410ad6d8b4947844e2fe130f4311582a44a83350b06c6b9db0e",
+      "crc32": "744c7322"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0392.ecw",
+      "bytes": 133284,
+      "sha256": "37f387e369082c6feb3d3e59a4543b61bff1c527bf6501db22cbe63ba1b7312d",
+      "crc32": "99995c5b"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0393.ecw",
+      "bytes": 128023,
+      "sha256": "bcec52ed917e64ae42e96979204848658d2ba6c5b1a8795df81924d4d4c1e744",
+      "crc32": "5e24cf5f"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0394.ecw",
+      "bytes": 159867,
+      "sha256": "a1d63fff274c1a804bc02b8124a5b09c2905ba6200df22ed5e8cafb4b9f20c00",
+      "crc32": "ff7325d5"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0395.ecw",
+      "bytes": 151585,
+      "sha256": "1af27568563d6989d0c8bd840302cc893e5fcb7f811300de6d82d0c4b462dbfe",
+      "crc32": "da89b200"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0396.ecw",
+      "bytes": 138911,
+      "sha256": "38e42ee9e75eb2c3ff2f81d2da4b081b3c50a320429173eb9935ffa42b68beac",
+      "crc32": "70447546"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0397.ecw",
+      "bytes": 157478,
+      "sha256": "64729254d951f0288d764f7987cb242022cb120a068fe118d6802ea2c0e16e91",
+      "crc32": "b871e28b"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0400.ecw",
+      "bytes": 130072,
+      "sha256": "c650124c490d3f8bbf37591f21226f7c704e63e5b0903d80ee654b07c10ef869",
+      "crc32": "3435c256"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0401.ecw",
+      "bytes": 125504,
+      "sha256": "ea0431b35ad74427e4ad2a4b266f981ab9e185a96ab65ae798f13704c3682258",
+      "crc32": "1d90d0f7"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0402.ecw",
+      "bytes": 76671,
+      "sha256": "2a808fdd905d74c16ca23130e8c91e3472d4285fb760f9c40034fde4bf862d45",
+      "crc32": "d89e648e"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0403.ecw",
+      "bytes": 147751,
+      "sha256": "1faff4a838d3ba8d7b65f9242054d5739629701553bd972d469238a9598024fd",
+      "crc32": "b632fe7a"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0404.ecw",
+      "bytes": 141726,
+      "sha256": "aab3471532a23718c6450922320c128a97d3b1584b043f94740230cfe7170a23",
+      "crc32": "51190a90"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0405.ecw",
+      "bytes": 142056,
+      "sha256": "2aed62de15989b078b5ed64aca23923ce27922b763fa246d80f113809e46f564",
+      "crc32": "c4f33d38"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0406.ecw",
+      "bytes": 143695,
+      "sha256": "52b262879945cfc9c89e17db6606e47ebbed815245c09c074f7104d5f35e4f96",
+      "crc32": "bb0a9b84"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0411.ecw",
+      "bytes": 150714,
+      "sha256": "646faaea80a38a8f5b4d2be8ffbe7c7729ef0e48ef454a6c4dac5e854cf44055",
+      "crc32": "8f20e1c7"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0412.ecw",
+      "bytes": 154873,
+      "sha256": "3793a8d1bf43d634393072a15e7b157527a4044f26258e56f91cbea950503fdf",
+      "crc32": "27ff5f56"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0413.ecw",
+      "bytes": 149465,
+      "sha256": "8a9f3a58b3530af1f83a6d2b754a0ce652028ef1ff7bbe510c9c174bec56fed6",
+      "crc32": "0b7bd943"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0414.ecw",
+      "bytes": 122081,
+      "sha256": "0c2246e1f5c05e83b13eb234f285f030ade5fe35202ae53cc5ee00a8046f82be",
+      "crc32": "4d80ea27"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0415.ecw",
+      "bytes": 148490,
+      "sha256": "83c17cdca12a4ef0fc9cc9bd6ad2c88d0fa4afe93fa8176a51d71ea90f0d11e3",
+      "crc32": "c2d6b436"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0418.ecw",
+      "bytes": 147959,
+      "sha256": "79906167e9f0131ccc3c25b5f17d759837ad3c76353f1609e6344617c4d62e84",
+      "crc32": "0ff306f3"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0419.ecw",
+      "bytes": 142906,
+      "sha256": "643fd56ecc3d9f633b0e94e0a522f6f7ce060b0231454a576b3580263381471f",
+      "crc32": "4353e3f8"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0422.ecw",
+      "bytes": 140987,
+      "sha256": "2b2273337a18b39cacd0686b13e13c931c34c343ec615ae5c6464fd7eb5fd994",
+      "crc32": "046ccc6f"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0423.ecw",
+      "bytes": 146306,
+      "sha256": "fb54750d305320213caf28b280a762d2baac33a4e08eeac6ee8f370237f83107",
+      "crc32": "7e1ea286"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0424.ecw",
+      "bytes": 144440,
+      "sha256": "7096beedee859be5066c6f14bdcf516a2067ec766661352fde4e7bb4e3481188",
+      "crc32": "300c4d0a"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0425.ecw",
+      "bytes": 132823,
+      "sha256": "8b4068bc4d5f9d4ac93bfaf781429e1d293dcd78dd46671d919bb3953c9921e2",
+      "crc32": "cb603c3a"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0431.ecw",
+      "bytes": 139046,
+      "sha256": "5fd8148f2feecdf54ddb2bd511f728965259426ff7592609b0afdeb7d4b48eae",
+      "crc32": "4a280793"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0432.ecw",
+      "bytes": 104447,
+      "sha256": "33c6659630e92c4132f44a31fd2769abf7b98a05ecda77c6b2246f361e81ad03",
+      "crc32": "10b5219e"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0433.ecw",
+      "bytes": 121772,
+      "sha256": "ed5f601448c8e37b422b10dab6b3a5fbb7338e355ad8d8b740df4e6ee7c5e62a",
+      "crc32": "fb1e75ca"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0434.ecw",
+      "bytes": 124193,
+      "sha256": "3458ffd743a57393464a01aca6ff107c1b3e7c5fa33e85bd8b073b70eabd5d5c",
+      "crc32": "a7f8e7b5"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0435.ecw",
+      "bytes": 146900,
+      "sha256": "8588ac62b735bb895dcf9013e487b95eb69ff2599ce1586f557a2fe67a7bad38",
+      "crc32": "ba612cce"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0436.ecw",
+      "bytes": 143734,
+      "sha256": "fe4f81e0da44dfa77ab476f52446346dc9e093bf7fec9f66b55a1f42405aecff",
+      "crc32": "0a109f10"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0437.ecw",
+      "bytes": 143750,
+      "sha256": "2bfcad04728044eb88d2bcaf883fd5e4ea799253feb2705b2ee54d4cdccbfe90",
+      "crc32": "31baf3d4"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0438.ecw",
+      "bytes": 140265,
+      "sha256": "931f7cc34f5df066353390225a4c1d930d2f17ead2710d00a99bbc9313d44cdf",
+      "crc32": "79eb24fa"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0442.ecw",
+      "bytes": 132076,
+      "sha256": "73119b5b5805441401f6b68a13f29a488eb46ea4190e07356dafd5a3294d0b8c",
+      "crc32": "f548e9ce"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0443.ecw",
+      "bytes": 136386,
+      "sha256": "db6f3ad42b01e8d21f1d376501663207815a3c99c89e49da659986defbc76f8c",
+      "crc32": "a27d319d"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0444.ecw",
+      "bytes": 156965,
+      "sha256": "03c787f8e45a7aff1f26d68b5646fef1e6595d104cbe98c6f4c39fde2c60e216",
+      "crc32": "48cda2c5"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0445.ecw",
+      "bytes": 140405,
+      "sha256": "4a3c2165a8a681cdc0246efceacf017458be1d18dac2078ec280e62274bd6336",
+      "crc32": "ff2a2745"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0446.ecw",
+      "bytes": 140415,
+      "sha256": "cc6200d061126f9be4b51602db82387f0b4ec110637435bc489876c9cfbc4da1",
+      "crc32": "d69cd394"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0447.ecw",
+      "bytes": 122046,
+      "sha256": "48f51906c8e4ac62b4f14fdfd6fe06e045a37cb0ef80eea5242583a103a69052",
+      "crc32": "4da00922"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0449.ecw",
+      "bytes": 135766,
+      "sha256": "edb33ab8a9780efb34c960a67d683820afabe7c70edbae46821e99e3aa40674f",
+      "crc32": "f68d96b4"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0450.ecw",
+      "bytes": 133455,
+      "sha256": "808c21d675a9bd377a11d40ba04214cc5cebf511a40dbe0953386093368a3003",
+      "crc32": "6ee03474"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0451.ecw",
+      "bytes": 127802,
+      "sha256": "4f2792c5684253467919b5c145d188633eedb341b4475c33da6436e2ca21d42c",
+      "crc32": "bb6f1397"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0452.ecw",
+      "bytes": 146961,
+      "sha256": "039dadf336589689bb8d0e64591f0821524f314d6610b9884ed9e844bcf5278a",
+      "crc32": "6614d939"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0453.ecw",
+      "bytes": 138951,
+      "sha256": "a04ce38438d3a2104a04507fe565378af4c4cc2162534c9ce62faba29b1c4c96",
+      "crc32": "74f4e68d"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0454.ecw",
+      "bytes": 141500,
+      "sha256": "f024a16f7be7c1a603605a516edb6015abf409b27201e17e70506bd8052ff003",
+      "crc32": "0e376dff"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0455.ecw",
+      "bytes": 133016,
+      "sha256": "eb5b17746968abac8fff4ff7ab321ec55cf769390dcc7c4e6121b11ed487444e",
+      "crc32": "2ba32245"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0456.ecw",
+      "bytes": 120310,
+      "sha256": "2d75ae9ca1ffc6a494c8a85d71567ad8be762a5419be84272dabca992422d0ce",
+      "crc32": "3adecb85"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0481.ecw",
+      "bytes": 143445,
+      "sha256": "cf4441221161ab0c0d1192948a8552b6d3ac4bc28461d202dd8ecccdb2ff8c2f",
+      "crc32": "04fc6d9b"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0482.ecw",
+      "bytes": 147597,
+      "sha256": "0c12679aa7f2252c14425821878548d3942e47dccfbe76dcc57eea9da95583a1",
+      "crc32": "ebfeb2f6"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0485.ecw",
+      "bytes": 114572,
+      "sha256": "38bc174ede506cbdcbb2ad1c023fbe03ae877be542920678bcad12a8b58f19a4",
+      "crc32": "e6b47765"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0489.ecw",
+      "bytes": 131551,
+      "sha256": "22373c03dee4c401793f178171ba2c0796ab8e161ff2dc65b332143a2505b25d",
+      "crc32": "3449003e"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0510.ecw",
+      "bytes": 142789,
+      "sha256": "7006b2b5027ca2286f6718bbfeef1bb6321520d55dd95342ed0e1f5d1c6bb516",
+      "crc32": "4fa369c4"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0517.ecw",
+      "bytes": 135581,
+      "sha256": "c8c7552820c6c0d97297b9c4aac6ea1a08c57a050b9942f35fc0b919d74ce4a0",
+      "crc32": "eb1f3dc7"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0523.ecw",
+      "bytes": 148584,
+      "sha256": "69a98acdcca54a3826d73fc775b1e6f2586a47d3daae3dc746bbfaa066bb5e65",
+      "crc32": "2f4c8cbd"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0524.ecw",
+      "bytes": 146197,
+      "sha256": "84f71451f1aba8f04e387b971c76f72f1cb716450c54dd2db72bbdae214855ca",
+      "crc32": "a4debb95"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0538.ecw",
+      "bytes": 161732,
+      "sha256": "e62243ed089197d4a891937313d07008e11668ad7942c1747f13100b34bd4380",
+      "crc32": "ae7bfed3"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0539.ecw",
+      "bytes": 156516,
+      "sha256": "5971a2041f3828e74b877f21696e8e9c0807d83c8f3b1c46f28b0539182fb8f4",
+      "crc32": "204e33e7"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0540.ecw",
+      "bytes": 136638,
+      "sha256": "55b1a28cee2aedda09ff32365473e2f92b6ff8f8a282cef0fcf5bbddf7fc488a",
+      "crc32": "08d18c9b"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0546.ecw",
+      "bytes": 128476,
+      "sha256": "3e0d476e30afc93313fb720ec97de6aaed3ba75adbe73ab6f29e3275be0d63e5",
+      "crc32": "b6c279ae"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0550.ecw",
+      "bytes": 139593,
+      "sha256": "d04a55af00943dcd6e8261429ff7c97238d9f9eb15f95d067c68ee2688af8ac3",
+      "crc32": "0dff036c"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0552.ecw",
+      "bytes": 135929,
+      "sha256": "886ee18075d393c93d38bfafa753cfd4d880e16980286427d2b0ce88bda0b127",
+      "crc32": "2bca4a00"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0553.ecw",
+      "bytes": 147292,
+      "sha256": "c11c16f8c845d401d46e845e3ae7f4ace8438459b65d8a3517d36917f885b67b",
+      "crc32": "5e4ef1bf"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0554.ecw",
+      "bytes": 144723,
+      "sha256": "2ee34e2ad29752bd68798d4671997e277a3ca6ab73ea7eb1f00f13ab63f25f8e",
+      "crc32": "765d429c"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0555.ecw",
+      "bytes": 125139,
+      "sha256": "0a71d81768e0144977daca003027c0336b609b4eeca37f70b2e6537d89da53bf",
+      "crc32": "09e764f8"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0556.ecw",
+      "bytes": 141702,
+      "sha256": "ee3167ba3b56a8a347fa01af6f2493b9a4545b792b42ca5563ac1dde41970c5a",
+      "crc32": "85a3e04e"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0557.ecw",
+      "bytes": 138479,
+      "sha256": "0704bb7afc53eb122cdcacc1137c2eaa0c643491b9e728435368151fca3948a6",
+      "crc32": "a374b218"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0558.ecw",
+      "bytes": 128652,
+      "sha256": "5d16a81372621f8ac12d1f8f9b4d39e32ac556ee937a7fa7d32d59dfffe488d3",
+      "crc32": "7a0676ea"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0559.ecw",
+      "bytes": 103602,
+      "sha256": "7ed66bb00cff6f3317927e2068464e8361edb461885825de94fc1b92e16f6cab",
+      "crc32": "29c9fc4b"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0578.ecw",
+      "bytes": 142995,
+      "sha256": "d60b8f6bea68db70b0a4ee0cde961e0fcf7f83eef05efa63b2ba75edac386b36",
+      "crc32": "36ced619"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0579.ecw",
+      "bytes": 155088,
+      "sha256": "7f302b058cba735d8439d082513e70de2ac6b6a15b57ea21e00ff2801c0fca19",
+      "crc32": "fb6affc0"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0580.ecw",
+      "bytes": 152985,
+      "sha256": "b9537f819da068ffaeaebcc67695d87bda43c34a13baef5deeb3b0a1f2afb11b",
+      "crc32": "660940f9"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0587.ecw",
+      "bytes": 121255,
+      "sha256": "02f61f1cc43f6da5df73b720b0a19f9d3f072ead69f44f7959c43223dd06826a",
+      "crc32": "7ccbba42"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0588.ecw",
+      "bytes": 148688,
+      "sha256": "e0e3afa5dfd36e4718339936cce6d0dde5f70a86eea92d4862f82df4b63b5017",
+      "crc32": "b79b4d7c"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0589.ecw",
+      "bytes": 163667,
+      "sha256": "a4b05f074d8147e81755f54211d9cbbd01ada3362125929dc362244f0e05cf26",
+      "crc32": "1c737002"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0590.ecw",
+      "bytes": 125022,
+      "sha256": "65dba5f51f42c51d3e43576e10ca0378abae993eebe0ef47db748cf972ab17b6",
+      "crc32": "12e73454"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0598.ecw",
+      "bytes": 155936,
+      "sha256": "f39d776c9545be3948930a37b5b1387316469d444842af34ea1e9eab5519aa8f",
+      "crc32": "4b6c33f8"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0599.ecw",
+      "bytes": 149762,
+      "sha256": "385fa350f5a5ec751355cfa929344accf2797cc05218e2a8018a7d7973238417",
+      "crc32": "a5a1322b"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0600.ecw",
+      "bytes": 146284,
+      "sha256": "d327b8e28929d60e1825f8ccefeee1de9af1206424bf8bb84db3c58482a44ca4",
+      "crc32": "1f81a20e"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0601.ecw",
+      "bytes": 71260,
+      "sha256": "ffa373657c324a4ca59ea93a32911db33467297bfa566b233362e5a97ed02f86",
+      "crc32": "48bc23df"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0609.ecw",
+      "bytes": 150191,
+      "sha256": "e6583ada4d77eb37afb643b4c8803be96794af1af4d5e06659881e311fa33e5e",
+      "crc32": "fb70f3df"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0610.ecw",
+      "bytes": 142808,
+      "sha256": "7c42e47fc163068cd228568184b117ce8c621600d474796358863535f4de3e1b",
+      "crc32": "364cb1b4"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0617.ecw",
+      "bytes": 128595,
+      "sha256": "1082a6a3241320b9acc28ff1c127ccf7c6e98e0099d664ce1ec6808fd7f7fbb1",
+      "crc32": "ed21e670"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0621.ecw",
+      "bytes": 149004,
+      "sha256": "d1cd0690b96746613605a698dcd567f15e2ad86825a475ab78997be0c77faa68",
+      "crc32": "583abb7d"
+    },
+    {
+      "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0622.ecw",
+      "bytes": 127630,
+      "sha256": "1237d5bfab0ffe9dc8f71df5b0359b780cb2c59e0ac7330b84f9c4a997ef98df",
+      "crc32": "e43da59a"
+    }
+  ],
+  "ecw_member_count": 356,
+  "ecw_total_bytes": 49764040,
+  "reader_probe": {
+    "member": "other/camera-parameters/mosaic/3489_Dublin_20cm_0005.ecw",
+    "opened": false,
+    "error_type": "UnidentifiedImageError",
+    "error": "Existing Pillow cannot identify the ECW image member."
+  },
+  "other_tiff_groups": [
+    {
+      "member": "other/ground-survey/coverage_check/TPDS/GeoTiff/ColorScale.tif",
+      "group": "other/ground-survey/coverage_check/TPDS/GeoTiff",
+      "group_members": 219,
+      "shape": [
+        290,
+        80,
+        3
+      ],
+      "geotiff_metadata": {
+        "KeyDirectoryVersion": 1,
+        "KeyRevision": 1,
+        "KeyRevisionMinor": 0,
+        "GTModelTypeGeoKey": 1,
+        "GTRasterTypeGeoKey": 1,
+        "ModelPixelScale": [
+          2.0,
+          2.0,
+          0.0
+        ],
+        "ModelTiepoint": [
+          0.0,
+          0.0,
+          0.0,
+          314640.0,
+          233300.0,
+          0.0
+        ]
+      },
+      "distinct_rgb_colours": 36,
+      "first_rgb_colours": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          58
+        ],
+        [
+          0,
+          0,
+          102
+        ],
+        [
+          0,
+          58,
+          144
+        ],
+        [
+          0,
+          102,
+          182
+        ],
+        [
+          0,
+          128,
+          255
+        ],
+        [
+          0,
+          255,
+          0
+        ],
+        [
+          0,
+          255,
+          255
+        ],
+        [
+          58,
+          0,
+          0
+        ],
+        [
+          58,
+          144,
+          219
+        ]
+      ]
+    },
+    {
+      "member": "other/quality-control/tasq/matched/3489_Dublin_Irish_grid_TasqReport.tif",
+      "group": "other/quality-control/tasq/matched",
+      "group_members": 1,
+      "shape": [
+        754,
+        800,
+        3
+      ],
+      "geotiff_metadata": {
+        "KeyDirectoryVersion": 1,
+        "KeyRevision": 1,
+        "KeyRevisionMinor": 0,
+        "GTModelTypeGeoKey": 1,
+        "GTRasterTypeGeoKey": 1,
+        "ModelPixelScale": [
+          4.375,
+          4.375,
+          0.0
+        ],
+        "ModelTiepoint": [
+          0.0,
+          0.0,
+          0.0,
+          314300.0,
+          235900.0,
+          0.0
+        ]
+      },
+      "distinct_rgb_colours": 5,
+      "first_rgb_colours": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          255
+        ],
+        [
+          0,
+          255,
+          0
+        ],
+        [
+          255,
+          0,
+          0
+        ],
+        [
+          255,
+          255,
+          0
+        ]
+      ]
+    },
+    {
+      "member": "other/quality-control/tasq/matched/TasqPlot/pt000001.tif",
+      "group": "other/quality-control/tasq/matched/TasqPlot",
+      "group_members": 577,
+      "shape": [
+        50,
+        50,
+        3
+      ],
+      "geotiff_metadata": {
+        "KeyDirectoryVersion": 1,
+        "KeyRevision": 1,
+        "KeyRevisionMinor": 0,
+        "GTModelTypeGeoKey": 1,
+        "GTRasterTypeGeoKey": 1,
+        "ModelPixelScale": [
+          2.0,
+          2.0,
+          0.0
+        ],
+        "ModelTiepoint": [
+          0.0,
+          0.0,
+          0.0,
+          316500.0,
+          233100.0,
+          0.0
+        ]
+      },
+      "distinct_rgb_colours": 5,
+      "first_rgb_colours": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          255
+        ],
+        [
+          0,
+          255,
+          0
+        ],
+        [
+          255,
+          0,
+          0
+        ],
+        [
+          255,
+          255,
+          0
+        ]
+      ]
+    },
+    {
+      "member": "other/quality-control/tasq/unmatched/3489_Dublin_Irish_grid_TasqReport30.tif",
+      "group": "other/quality-control/tasq/unmatched",
+      "group_members": 1,
+      "shape": [
+        754,
+        800,
+        3
+      ],
+      "geotiff_metadata": {
+        "KeyDirectoryVersion": 1,
+        "KeyRevision": 1,
+        "KeyRevisionMinor": 0,
+        "GTModelTypeGeoKey": 1,
+        "GTRasterTypeGeoKey": 1,
+        "ModelPixelScale": [
+          4.375,
+          4.375,
+          0.0
+        ],
+        "ModelTiepoint": [
+          0.0,
+          0.0,
+          0.0,
+          314300.0,
+          235900.0,
+          0.0
+        ]
+      },
+      "distinct_rgb_colours": 5,
+      "first_rgb_colours": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          255
+        ],
+        [
+          0,
+          255,
+          0
+        ],
+        [
+          255,
+          0,
+          0
+        ],
+        [
+          255,
+          255,
+          0
+        ]
+      ]
+    },
+    {
+      "member": "other/quality-control/tasq/unmatched/TasqPlot30/pt000001.tif",
+      "group": "other/quality-control/tasq/unmatched/TasqPlot30",
+      "group_members": 577,
+      "shape": [
+        50,
+        50,
+        3
+      ],
+      "geotiff_metadata": {
+        "KeyDirectoryVersion": 1,
+        "KeyRevision": 1,
+        "KeyRevisionMinor": 0,
+        "GTModelTypeGeoKey": 1,
+        "GTRasterTypeGeoKey": 1,
+        "ModelPixelScale": [
+          2.0,
+          2.0,
+          0.0
+        ],
+        "ModelTiepoint": [
+          0.0,
+          0.0,
+          0.0,
+          316500.0,
+          233100.0,
+          0.0
+        ]
+      },
+      "distinct_rgb_colours": 5,
+      "first_rgb_colours": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          255
+        ],
+        [
+          0,
+          255,
+          0
+        ],
+        [
+          255,
+          0,
+          0
+        ],
+        [
+          255,
+          255,
+          0
+        ]
+      ]
+    }
+  ],
+  "alternate_tiff_conclusion": "All 1375 TIFF members occur under ground-survey/coverage_check or quality-control/tasq; sampled rasters are coarse report/plot rasters, not a validated alternative natural-colour orthophoto. Do not use diagnostic colours as measured texture.",
+  "extracted_members": [],
+  "decoded_candidate_pixels": 0,
+  "actual_mosaic_crs": null,
+  "actual_mosaic_extent": null,
+  "actual_mosaic_band_order": null,
+  "actual_native_resolution_m": null,
+  "documented_or_filename_resolution_m": 0.2,
+  "nominal_output_spacing_m": 0.1875,
+  "nominal_linear_upsampling_factor_if_native_20cm_verified": 1.0666666666666667,
+  "coverage_claim": "Unknown. Archive membership and filenames do not establish usable extra pixels in any survey gap."
+}

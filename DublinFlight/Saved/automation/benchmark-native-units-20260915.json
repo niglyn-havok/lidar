@@ -1,0 +1,107 @@
+{
+	"tests": [
+		{
+			"name": "DublinFlight.Performance.Benchmark.ConsoleAndStrictTarget",
+			"state": "Success",
+			"duration": 0.015468399971723557,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Benchmark.SharedWarmupAndEnd",
+			"state": "Success",
+			"duration": 0.013674400746822357,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Benchmark.WallScheduleAndMissedAdmissions",
+			"state": "Success",
+			"duration": 0.013105299323797226,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Input.LabelsAndDurations",
+			"state": "Success",
+			"duration": 0.013764798641204834,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Input.ScenarioTargetMinimumFPS",
+			"state": "Success",
+			"duration": 0.014717999845743179,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Metrics.Exact30FPSThreshold",
+			"state": "Success",
+			"duration": 0.014846403151750565,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Metrics.Exact60FPSThreshold",
+			"state": "Success",
+			"duration": 0.014096498489379883,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Metrics.MemoryCap",
+			"state": "Success",
+			"duration": 0.014294702559709549,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Metrics.QuantilesAndOrder",
+			"state": "Success",
+			"duration": 0.013466700911521912,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Metrics.RejectInvalidSamples",
+			"state": "Success",
+			"duration": 0.014119196683168411,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Metrics.ScenarioTargetsAndSpike",
+			"state": "Success",
+			"duration": 0.012751501053571701,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Metrics.SpikeDespiteGoodAverage",
+			"state": "Success",
+			"duration": 0.020085699856281281,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Window.RejectInvalidClock",
+			"state": "Success",
+			"duration": 0.017218299210071564,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Window.WarmupAndFullFrames",
+			"state": "Success",
+			"duration": 0.011030200868844986,
+			"errors": [],
+			"warnings": []
+		}
+	],
+	"passed": 14,
+	"failed": 0,
+	"skipped": 0,
+	"total": 14,
+	"duration": 0.20264008641242981
+}

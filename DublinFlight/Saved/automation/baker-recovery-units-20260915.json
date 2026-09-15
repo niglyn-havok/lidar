@@ -1,0 +1,51 @@
+{
+	"tests": [
+		{
+			"name": "DublinFlight.Destruction.Fracture.AuthoredContactGraph",
+			"state": "Success",
+			"duration": 0.018229901790618896,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Destruction.Fracture.BoundedConservativeRetrySites",
+			"state": "Success",
+			"duration": 0.011980101466178894,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Destruction.Fracture.RegisteredCollisionInitialization",
+			"state": "Success",
+			"duration": 0.19734320044517517,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Destruction.Fracture.RepeatedHitsUseCurrentLeaves",
+			"state": "Success",
+			"duration": 0.019911900162696838,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Destruction.Fracture.RgbaAndCosmeticIdentity",
+			"state": "Success",
+			"duration": 0.012154601514339447,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Destruction.Readiness.RejectsUnavailableAssetsWithoutMutation",
+			"state": "Success",
+			"duration": 0.02214520052075386,
+			"errors": [],
+			"warnings": []
+		}
+	],
+	"passed": 6,
+	"failed": 0,
+	"skipped": 0,
+	"total": 6,
+	"duration": 0.2817649245262146
+}

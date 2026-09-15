@@ -1,0 +1,1010 @@
+{
+  "status": "assets_saved_native_pending_parent_build",
+  "authoringDate": "2026-09-08",
+  "owner": "effects",
+  "entryPoint": "Effects\\DublinImpactEffectsSubsystem.h: void EmitImpact(const FDublinImpact&)",
+  "dependenciesToAdd": [
+    "Niagara"
+  ],
+  "audioMixerDependencyRequired": false,
+  "maxSimultaneousNiagaraSystems": 16,
+  "pooling": "ENCPoolMethod::ManualRelease; cleanup at 5 Hz; native significance admission; 3s cannon / 9s bomb failsafe; no per-frame emitter reconstruction",
+  "systems": [
+    {
+      "path": "/Game/FX/NS_BombExplosion",
+      "parameters": [
+        {
+          "defaultValue": {
+            "struct": {
+              "refPath": "/Script/Niagara.NiagaraFloat"
+            },
+            "value": {
+              "value": 1000
+            }
+          },
+          "description": "Bounded native impact input",
+          "name": "User.ImpactRadius",
+          "type": {
+            "classStructOrEnum": {
+              "refPath": "/Script/Niagara.NiagaraFloat"
+            }
+          }
+        },
+        {
+          "defaultValue": {
+            "struct": {
+              "refPath": "/Script/Niagara.NiagaraFloat"
+            },
+            "value": {
+              "value": 1
+            }
+          },
+          "description": "Bounded native impact input",
+          "name": "User.ImpactStrength",
+          "type": {
+            "classStructOrEnum": {
+              "refPath": "/Script/Niagara.NiagaraFloat"
+            }
+          }
+        },
+        {
+          "defaultValue": {
+            "struct": {
+              "refPath": "/Script/CoreUObject.Vector3f"
+            },
+            "value": {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            }
+          },
+          "description": "World-space accepted surface normal; native component rotates local plumes to this normal",
+          "name": "User.SurfaceNormal",
+          "type": {
+            "classStructOrEnum": {
+              "refPath": "/Script/CoreUObject.Vector3f"
+            }
+          }
+        }
+      ],
+      "systemSettings": {
+        "bFixedBounds": true,
+        "fixedBounds": {
+          "min": {
+            "x": -15000,
+            "y": -15000,
+            "z": -3000
+          },
+          "max": {
+            "x": 15000,
+            "y": 15000,
+            "z": 27000
+          },
+          "isValid": true
+        },
+        "maxPoolSize": 16,
+        "poolPrimeSize": 2,
+        "effectType": "None",
+        "bRequireCurrentFrameData": false
+      },
+      "systemLoop": "Once; duration 1s; inactive Complete lets living particles finish",
+      "emitters": [
+        {
+          "name": "OmnidirectionalBurst",
+          "gpu": true,
+          "count": 96,
+          "lifetimeSeconds": {
+            "Lifetime Min": 0.30000001192092896,
+            "Lifetime Max": 1.2999999523162842
+          },
+          "settings": {
+            "bLocalSpace": true,
+            "calculateBoundsMode": "Fixed",
+            "fixedBounds": {
+              "min": {
+                "x": -15000,
+                "y": -15000,
+                "z": -3000
+              },
+              "max": {
+                "x": 15000,
+                "y": 15000,
+                "z": 27000
+              },
+              "isValid": true
+            },
+            "allocationMode": "FixedCount",
+            "preAllocationCount": 96
+          },
+          "renderers": [
+            {
+              "refPath": "/Script/Niagara.NiagaraSpriteRendererProperties"
+            }
+          ]
+        },
+        {
+          "name": "UpwardMeshBurst",
+          "gpu": true,
+          "count": 24,
+          "lifetimeSeconds": {
+            "Lifetime Min": 1.399999976158142,
+            "Lifetime Max": 2.799999952316284
+          },
+          "settings": {
+            "bLocalSpace": true,
+            "calculateBoundsMode": "Fixed",
+            "fixedBounds": {
+              "min": {
+                "x": -15000,
+                "y": -15000,
+                "z": -3000
+              },
+              "max": {
+                "x": 15000,
+                "y": 15000,
+                "z": 27000
+              },
+              "isValid": true
+            },
+            "allocationMode": "FixedCount",
+            "preAllocationCount": 24
+          },
+          "renderers": [
+            {
+              "refPath": "/Script/Niagara.NiagaraMeshRendererProperties"
+            }
+          ]
+        },
+        {
+          "name": "SimpleSpriteBurst",
+          "gpu": true,
+          "count": 36,
+          "lifetimeSeconds": {
+            "Lifetime": 5.800000190734863
+          },
+          "settings": {
+            "bLocalSpace": true,
+            "calculateBoundsMode": "Fixed",
+            "fixedBounds": {
+              "min": {
+                "x": -15000,
+                "y": -15000,
+                "z": -3000
+              },
+              "max": {
+                "x": 15000,
+                "y": 15000,
+                "z": 27000
+              },
+              "isValid": true
+            },
+            "allocationMode": "FixedCount",
+            "preAllocationCount": 36
+          },
+          "renderers": [
+            {
+              "refPath": "/Script/Niagara.NiagaraSpriteRendererProperties"
+            }
+          ]
+        },
+        {
+          "name": "HotCore",
+          "gpu": true,
+          "count": 6,
+          "lifetimeSeconds": {
+            "Lifetime": 0.2800000011920929
+          },
+          "settings": {
+            "bLocalSpace": true,
+            "calculateBoundsMode": "Fixed",
+            "fixedBounds": {
+              "min": {
+                "x": -15000,
+                "y": -15000,
+                "z": -3000
+              },
+              "max": {
+                "x": 15000,
+                "y": 15000,
+                "z": 27000
+              },
+              "isValid": true
+            },
+            "allocationMode": "FixedCount",
+            "preAllocationCount": 6
+          },
+          "renderers": [
+            {
+              "refPath": "/Script/Niagara.NiagaraSpriteRendererProperties"
+            }
+          ]
+        },
+        {
+          "name": "GroundRing",
+          "gpu": true,
+          "count": 32,
+          "lifetimeSeconds": {
+            "Lifetime": 1.7000000476837158
+          },
+          "settings": {
+            "bLocalSpace": true,
+            "calculateBoundsMode": "Fixed",
+            "fixedBounds": {
+              "min": {
+                "x": -15000,
+                "y": -15000,
+                "z": -3000
+              },
+              "max": {
+                "x": 15000,
+                "y": 15000,
+                "z": 27000
+              },
+              "isValid": true
+            },
+            "allocationMode": "FixedCount",
+            "preAllocationCount": 32
+          },
+          "renderers": [
+            {
+              "refPath": "/Script/Niagara.NiagaraSpriteRendererProperties"
+            }
+          ]
+        }
+      ],
+      "particleBudget": 194,
+      "compileVerification": {
+        "aggregateStatus": "UpToDate",
+        "isCompiling": false,
+        "isStale": false,
+        "errors": [],
+        "warnings": [],
+        "stackErrors": 0,
+        "stackWarnings": 0,
+        "scope": "Observed separately through typed GetSystemCompileState and GetStackIssues after solver ordering repair; informational template version notes retained"
+      },
+      "dependencies": [
+        "/Script/DataHierarchyEditor",
+        "/Engine/BasicShapes/Cube",
+        "/Script/Niagara",
+        "/Script/NiagaraEditor",
+        "/Niagara/ParameterDefinitions/CoreParameters",
+        "/Niagara/Modules/Update/Color/ScaleColor",
+        "/Niagara/Enums/ENiagaraChannelCorrelation",
+        "/Niagara/Enums/ENiagaraEmitterLifeCycleMode",
+        "/Niagara/Enums/ENiagaraEmitterScalabilityMode_Limited",
+        "/Niagara/Enums/ENiagaraInactiveMode",
+        "/Niagara/Enums/ENiagaraRandomnessEvaluation",
+        "/Niagara/Enums/ENiagaraRandomnessMode",
+        "/Niagara/Enums/ENiagaraScaleColorMode",
+        "/Niagara/Enums/ENiagaraShapeTorusMode",
+        "/Niagara/Enums/ENiagaraSphereDistributionMode",
+        "/Niagara/Enums/ENiagaraSystemInactiveMode",
+        "/Niagara/Enums/ENiagaraTorusDistributionMode",
+        "/Niagara/Enums/ENiagara_AttributeSamplingApplyOutput",
+        "/Niagara/Enums/ENiagara_ColorInitializationMode",
+        "/Niagara/Enums/ENiagara_EmitterStateOptions",
+        "/Niagara/Enums/ENiagara_InfiniteLoopDuration",
+        "/Niagara/Enums/ENiagara_LifetimeMode",
+        "/Niagara/Enums/ENiagara_MassInitializationMode",
+        "/Niagara/Enums/ENiagara_PositionInitializationMode",
+        "/Niagara/Enums/ENiagara_SizeScaleMode",
+        "/Niagara/Enums/ENiagara_SpriteRotationMode",
+        "/Niagara/Enums/ENiagara_UVFlippingMode",
+        "/Niagara/ParameterDefinitions/RibbonRenderer",
+        "/Niagara/DynamicInputs/ValueFromCurve/FloatFromCurve",
+        "/Niagara/Enums/Angles/ENiagara_AngleInput",
+        "/Niagara/Enums/Location/ENiagaraRingDiscMode",
+        "/Niagara/Enums/Location/ENiagara_BoxPlaneMode",
+        "/Niagara/Enums/Location/ENiagara_ConeMode",
+        "/Niagara/Enums/Location/ENiagara_CylinderMode",
+        "/Niagara/Enums/Location/ENiagara_LocationShapes",
+        "/Niagara/Enums/Ribbons/ENiagara_UnsetDirectSet",
+        "/Niagara/Enums/Ribbons/ENiagara_UnsetDirectSetRandom",
+        "/Niagara/Enums/Transforms/ENiagara_OffsetMode",
+        "/Niagara/Enums/Transforms/ENiagara_RotationMode",
+        "/Niagara/Enums/Transforms/ENiagara_ScaleMode",
+        "/Niagara/Enums/Transforms/ENiagara_TransformOrder",
+        "/Niagara/Enums/Transforms/ENiagara_TransformType",
+        "/Niagara/Enums/Utility/ENiagara_VelocityMode",
+        "/Niagara/Modules/Emitter/EmitterState",
+        "/Niagara/Modules/Solvers/SolveForcesAndVelocity",
+        "/Niagara/Modules/System/SystemState",
+        "/Niagara/Modules/Spawn/Velocity/AddVelocity",
+        "/Niagara/Modules/Update/Forces/Drag",
+        "/Niagara/Modules/Update/Forces/GravityForce",
+        "/Niagara/Modules/Update/Lifetime/ParticleState",
+        "/Niagara/Modules/Spawn/Initialization/V2/InitializeParticle",
+        "/Niagara/Modules/Spawn/Location/V2/ShapeLocation",
+        "/Niagara/Enums/ENiagaraCurlNoiseQuality",
+        "/Niagara/ParameterDefinitions/MeshRenderer",
+        "/Niagara/ParameterDefinitions/SpriteRenderer",
+        "/Niagara/DynamicInputs/TypeConversions/VectorFromFloat",
+        "/Niagara/Modules/Emitter/SpawnBurst_Instantaneous",
+        "/Niagara/VectorFields/Assets/TilingCurl32",
+        "/Niagara/DynamicInputs/TypeConversions/Vector2DFromFloat",
+        "/Niagara/Modules/Update/Size/ScaleSpriteSize",
+        "/Niagara/Modules/Update/Size/ScaleMeshSize",
+        "/Niagara/Modules/Update/Forces/V2/CurlNoiseForce",
+        "/Game/FX/M_ImpactCloud",
+        "/Game/FX/M_ImpactGlow",
+        "/Game/FX/M_ImpactDebris"
+      ]
+    },
+    {
+      "path": "/Game/FX/NS_CannonImpact",
+      "parameters": [
+        {
+          "defaultValue": {
+            "struct": {
+              "refPath": "/Script/Niagara.NiagaraFloat"
+            },
+            "value": {
+              "value": 200
+            }
+          },
+          "description": "Bounded native impact input",
+          "name": "User.ImpactRadius",
+          "type": {
+            "classStructOrEnum": {
+              "refPath": "/Script/Niagara.NiagaraFloat"
+            }
+          }
+        },
+        {
+          "defaultValue": {
+            "struct": {
+              "refPath": "/Script/Niagara.NiagaraFloat"
+            },
+            "value": {
+              "value": 1
+            }
+          },
+          "description": "Bounded native impact input",
+          "name": "User.ImpactStrength",
+          "type": {
+            "classStructOrEnum": {
+              "refPath": "/Script/Niagara.NiagaraFloat"
+            }
+          }
+        },
+        {
+          "defaultValue": {
+            "struct": {
+              "refPath": "/Script/CoreUObject.Vector3f"
+            },
+            "value": {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            }
+          },
+          "description": "World-space accepted surface normal; native component rotates local plumes to this normal",
+          "name": "User.SurfaceNormal",
+          "type": {
+            "classStructOrEnum": {
+              "refPath": "/Script/CoreUObject.Vector3f"
+            }
+          }
+        }
+      ],
+      "systemSettings": {
+        "bFixedBounds": true,
+        "fixedBounds": {
+          "min": {
+            "x": -2000,
+            "y": -2000,
+            "z": -500
+          },
+          "max": {
+            "x": 2000,
+            "y": 2000,
+            "z": 3600
+          },
+          "isValid": true
+        },
+        "maxPoolSize": 16,
+        "poolPrimeSize": 4,
+        "effectType": "None",
+        "bRequireCurrentFrameData": false
+      },
+      "systemLoop": "Once; duration 1s; inactive Complete lets living particles finish",
+      "emitters": [
+        {
+          "name": "OmnidirectionalBurst",
+          "gpu": true,
+          "count": 24,
+          "lifetimeSeconds": {
+            "Lifetime Min": 0.30000001192092896,
+            "Lifetime Max": 0.800000011920929
+          },
+          "settings": {
+            "bLocalSpace": true,
+            "calculateBoundsMode": "Fixed",
+            "fixedBounds": {
+              "min": {
+                "x": -2000,
+                "y": -2000,
+                "z": -500
+              },
+              "max": {
+                "x": 2000,
+                "y": 2000,
+                "z": 3600
+              },
+              "isValid": true
+            },
+            "allocationMode": "FixedCount",
+            "preAllocationCount": 24
+          },
+          "renderers": [
+            {
+              "refPath": "/Script/Niagara.NiagaraSpriteRendererProperties"
+            }
+          ]
+        },
+        {
+          "name": "UpwardMeshBurst",
+          "gpu": true,
+          "count": 6,
+          "lifetimeSeconds": {
+            "Lifetime Min": 0.30000001192092896,
+            "Lifetime Max": 0.800000011920929
+          },
+          "settings": {
+            "bLocalSpace": true,
+            "calculateBoundsMode": "Fixed",
+            "fixedBounds": {
+              "min": {
+                "x": -2000,
+                "y": -2000,
+                "z": -500
+              },
+              "max": {
+                "x": 2000,
+                "y": 2000,
+                "z": 3600
+              },
+              "isValid": true
+            },
+            "allocationMode": "FixedCount",
+            "preAllocationCount": 6
+          },
+          "renderers": [
+            {
+              "refPath": "/Script/Niagara.NiagaraMeshRendererProperties"
+            }
+          ]
+        },
+        {
+          "name": "SimpleSpriteBurst",
+          "gpu": true,
+          "count": 14,
+          "lifetimeSeconds": {
+            "Lifetime": 1.600000023841858
+          },
+          "settings": {
+            "bLocalSpace": true,
+            "calculateBoundsMode": "Fixed",
+            "fixedBounds": {
+              "min": {
+                "x": -2000,
+                "y": -2000,
+                "z": -500
+              },
+              "max": {
+                "x": 2000,
+                "y": 2000,
+                "z": 3600
+              },
+              "isValid": true
+            },
+            "allocationMode": "FixedCount",
+            "preAllocationCount": 14
+          },
+          "renderers": [
+            {
+              "refPath": "/Script/Niagara.NiagaraSpriteRendererProperties"
+            }
+          ]
+        },
+        {
+          "name": "HotCore",
+          "gpu": true,
+          "count": 2,
+          "lifetimeSeconds": {
+            "Lifetime": 0.0949999988079071
+          },
+          "settings": {
+            "bLocalSpace": true,
+            "calculateBoundsMode": "Fixed",
+            "fixedBounds": {
+              "min": {
+                "x": -2000,
+                "y": -2000,
+                "z": -500
+              },
+              "max": {
+                "x": 2000,
+                "y": 2000,
+                "z": 3600
+              },
+              "isValid": true
+            },
+            "allocationMode": "FixedCount",
+            "preAllocationCount": 2
+          },
+          "renderers": [
+            {
+              "refPath": "/Script/Niagara.NiagaraSpriteRendererProperties"
+            }
+          ]
+        },
+        {
+          "name": "GroundRing",
+          "gpu": true,
+          "count": 12,
+          "lifetimeSeconds": {
+            "Lifetime": 0.5
+          },
+          "settings": {
+            "bLocalSpace": true,
+            "calculateBoundsMode": "Fixed",
+            "fixedBounds": {
+              "min": {
+                "x": -2000,
+                "y": -2000,
+                "z": -500
+              },
+              "max": {
+                "x": 2000,
+                "y": 2000,
+                "z": 3600
+              },
+              "isValid": true
+            },
+            "allocationMode": "FixedCount",
+            "preAllocationCount": 12
+          },
+          "renderers": [
+            {
+              "refPath": "/Script/Niagara.NiagaraSpriteRendererProperties"
+            }
+          ]
+        }
+      ],
+      "particleBudget": 58,
+      "compileVerification": {
+        "aggregateStatus": "UpToDate",
+        "isCompiling": false,
+        "isStale": false,
+        "errors": [],
+        "warnings": [],
+        "stackErrors": 0,
+        "stackWarnings": 0,
+        "scope": "Observed separately through typed GetSystemCompileState and GetStackIssues after solver ordering repair; informational template version notes retained"
+      },
+      "dependencies": [
+        "/Script/DataHierarchyEditor",
+        "/Engine/BasicShapes/Cube",
+        "/Script/Niagara",
+        "/Script/NiagaraEditor",
+        "/Niagara/ParameterDefinitions/CoreParameters",
+        "/Niagara/Modules/Update/Color/ScaleColor",
+        "/Niagara/Enums/ENiagaraChannelCorrelation",
+        "/Niagara/Enums/ENiagaraEmitterLifeCycleMode",
+        "/Niagara/Enums/ENiagaraEmitterScalabilityMode_Limited",
+        "/Niagara/Enums/ENiagaraInactiveMode",
+        "/Niagara/Enums/ENiagaraRandomnessEvaluation",
+        "/Niagara/Enums/ENiagaraRandomnessMode",
+        "/Niagara/Enums/ENiagaraScaleColorMode",
+        "/Niagara/Enums/ENiagaraShapeTorusMode",
+        "/Niagara/Enums/ENiagaraSphereDistributionMode",
+        "/Niagara/Enums/ENiagaraSystemInactiveMode",
+        "/Niagara/Enums/ENiagaraTorusDistributionMode",
+        "/Niagara/Enums/ENiagara_AttributeSamplingApplyOutput",
+        "/Niagara/Enums/ENiagara_ColorInitializationMode",
+        "/Niagara/Enums/ENiagara_EmitterStateOptions",
+        "/Niagara/Enums/ENiagara_InfiniteLoopDuration",
+        "/Niagara/Enums/ENiagara_LifetimeMode",
+        "/Niagara/Enums/ENiagara_MassInitializationMode",
+        "/Niagara/Enums/ENiagara_PositionInitializationMode",
+        "/Niagara/Enums/ENiagara_SizeScaleMode",
+        "/Niagara/Enums/ENiagara_SpriteRotationMode",
+        "/Niagara/Enums/ENiagara_UVFlippingMode",
+        "/Niagara/ParameterDefinitions/RibbonRenderer",
+        "/Niagara/DynamicInputs/ValueFromCurve/FloatFromCurve",
+        "/Niagara/Enums/Angles/ENiagara_AngleInput",
+        "/Niagara/Enums/Location/ENiagaraRingDiscMode",
+        "/Niagara/Enums/Location/ENiagara_BoxPlaneMode",
+        "/Niagara/Enums/Location/ENiagara_ConeMode",
+        "/Niagara/Enums/Location/ENiagara_CylinderMode",
+        "/Niagara/Enums/Location/ENiagara_LocationShapes",
+        "/Niagara/Enums/Ribbons/ENiagara_UnsetDirectSet",
+        "/Niagara/Enums/Ribbons/ENiagara_UnsetDirectSetRandom",
+        "/Niagara/Enums/Transforms/ENiagara_OffsetMode",
+        "/Niagara/Enums/Transforms/ENiagara_RotationMode",
+        "/Niagara/Enums/Transforms/ENiagara_ScaleMode",
+        "/Niagara/Enums/Transforms/ENiagara_TransformOrder",
+        "/Niagara/Enums/Transforms/ENiagara_TransformType",
+        "/Niagara/Enums/Utility/ENiagara_VelocityMode",
+        "/Niagara/Modules/Emitter/EmitterState",
+        "/Niagara/Modules/Solvers/SolveForcesAndVelocity",
+        "/Niagara/Modules/System/SystemState",
+        "/Niagara/Modules/Spawn/Velocity/AddVelocity",
+        "/Niagara/Modules/Update/Forces/Drag",
+        "/Niagara/Modules/Update/Forces/GravityForce",
+        "/Niagara/Modules/Update/Lifetime/ParticleState",
+        "/Niagara/Modules/Spawn/Initialization/V2/InitializeParticle",
+        "/Niagara/Modules/Spawn/Location/V2/ShapeLocation",
+        "/Niagara/Enums/ENiagaraCurlNoiseQuality",
+        "/Niagara/ParameterDefinitions/MeshRenderer",
+        "/Niagara/ParameterDefinitions/SpriteRenderer",
+        "/Niagara/DynamicInputs/TypeConversions/VectorFromFloat",
+        "/Niagara/Modules/Emitter/SpawnBurst_Instantaneous",
+        "/Niagara/VectorFields/Assets/TilingCurl32",
+        "/Niagara/DynamicInputs/TypeConversions/Vector2DFromFloat",
+        "/Niagara/Modules/Update/Size/ScaleSpriteSize",
+        "/Niagara/Modules/Update/Size/ScaleMeshSize",
+        "/Niagara/Modules/Update/Forces/V2/CurlNoiseForce",
+        "/Game/FX/M_ImpactCloud",
+        "/Game/FX/M_ImpactGlow",
+        "/Game/FX/M_ImpactDebris"
+      ]
+    },
+    {
+      "path": "/Game/FX/NS_WaterImpact",
+      "parameters": [
+        {
+          "defaultValue": {
+            "struct": {
+              "refPath": "/Script/Niagara.NiagaraFloat"
+            },
+            "value": {
+              "value": 1000
+            }
+          },
+          "description": "Bounded native impact input",
+          "name": "User.ImpactRadius",
+          "type": {
+            "classStructOrEnum": {
+              "refPath": "/Script/Niagara.NiagaraFloat"
+            }
+          }
+        },
+        {
+          "defaultValue": {
+            "struct": {
+              "refPath": "/Script/Niagara.NiagaraFloat"
+            },
+            "value": {
+              "value": 1
+            }
+          },
+          "description": "Bounded native impact input",
+          "name": "User.ImpactStrength",
+          "type": {
+            "classStructOrEnum": {
+              "refPath": "/Script/Niagara.NiagaraFloat"
+            }
+          }
+        },
+        {
+          "defaultValue": {
+            "struct": {
+              "refPath": "/Script/CoreUObject.Vector3f"
+            },
+            "value": {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            }
+          },
+          "description": "World-space accepted surface normal; native component rotates local plumes to this normal",
+          "name": "User.SurfaceNormal",
+          "type": {
+            "classStructOrEnum": {
+              "refPath": "/Script/CoreUObject.Vector3f"
+            }
+          }
+        }
+      ],
+      "systemSettings": {
+        "bFixedBounds": true,
+        "fixedBounds": {
+          "min": {
+            "x": -15000,
+            "y": -15000,
+            "z": -3000
+          },
+          "max": {
+            "x": 15000,
+            "y": 15000,
+            "z": 27000
+          },
+          "isValid": true
+        },
+        "maxPoolSize": 16,
+        "poolPrimeSize": 2,
+        "effectType": "None",
+        "bRequireCurrentFrameData": false
+      },
+      "systemLoop": "Once; duration 1s; inactive Complete lets living particles finish",
+      "emitters": [
+        {
+          "name": "OmnidirectionalBurst",
+          "gpu": true,
+          "count": 120,
+          "lifetimeSeconds": {
+            "Lifetime Min": 0.8999999761581421,
+            "Lifetime Max": 2.799999952316284
+          },
+          "settings": {
+            "bLocalSpace": true,
+            "calculateBoundsMode": "Fixed",
+            "fixedBounds": {
+              "min": {
+                "x": -15000,
+                "y": -15000,
+                "z": -3000
+              },
+              "max": {
+                "x": 15000,
+                "y": 15000,
+                "z": 27000
+              },
+              "isValid": true
+            },
+            "allocationMode": "FixedCount",
+            "preAllocationCount": 120
+          },
+          "renderers": [
+            {
+              "refPath": "/Script/Niagara.NiagaraSpriteRendererProperties"
+            }
+          ]
+        },
+        {
+          "name": "SimpleSpriteBurst",
+          "gpu": true,
+          "count": 28,
+          "lifetimeSeconds": {
+            "Lifetime": 4.300000190734863
+          },
+          "settings": {
+            "bLocalSpace": true,
+            "calculateBoundsMode": "Fixed",
+            "fixedBounds": {
+              "min": {
+                "x": -15000,
+                "y": -15000,
+                "z": -3000
+              },
+              "max": {
+                "x": 15000,
+                "y": 15000,
+                "z": 27000
+              },
+              "isValid": true
+            },
+            "allocationMode": "FixedCount",
+            "preAllocationCount": 28
+          },
+          "renderers": [
+            {
+              "refPath": "/Script/Niagara.NiagaraSpriteRendererProperties"
+            }
+          ]
+        },
+        {
+          "name": "HotCore",
+          "gpu": true,
+          "count": 24,
+          "lifetimeSeconds": {
+            "Lifetime": 2.799999952316284
+          },
+          "settings": {
+            "bLocalSpace": true,
+            "calculateBoundsMode": "Fixed",
+            "fixedBounds": {
+              "min": {
+                "x": -15000,
+                "y": -15000,
+                "z": -3000
+              },
+              "max": {
+                "x": 15000,
+                "y": 15000,
+                "z": 27000
+              },
+              "isValid": true
+            },
+            "allocationMode": "FixedCount",
+            "preAllocationCount": 24
+          },
+          "renderers": [
+            {
+              "refPath": "/Script/Niagara.NiagaraSpriteRendererProperties"
+            }
+          ]
+        },
+        {
+          "name": "GroundRing",
+          "gpu": true,
+          "count": 32,
+          "lifetimeSeconds": {
+            "Lifetime": 2.5
+          },
+          "settings": {
+            "bLocalSpace": true,
+            "calculateBoundsMode": "Fixed",
+            "fixedBounds": {
+              "min": {
+                "x": -15000,
+                "y": -15000,
+                "z": -3000
+              },
+              "max": {
+                "x": 15000,
+                "y": 15000,
+                "z": 27000
+              },
+              "isValid": true
+            },
+            "allocationMode": "FixedCount",
+            "preAllocationCount": 32
+          },
+          "renderers": [
+            {
+              "refPath": "/Script/Niagara.NiagaraSpriteRendererProperties"
+            }
+          ]
+        }
+      ],
+      "particleBudget": 204,
+      "compileVerification": {
+        "aggregateStatus": "UpToDate",
+        "isCompiling": false,
+        "isStale": false,
+        "errors": [],
+        "warnings": [],
+        "stackErrors": 0,
+        "stackWarnings": 0,
+        "scope": "Observed separately through typed GetSystemCompileState and GetStackIssues after solver ordering repair; informational template version notes retained"
+      },
+      "dependencies": [
+        "/Script/DataHierarchyEditor",
+        "/Script/Niagara",
+        "/Script/NiagaraEditor",
+        "/Niagara/ParameterDefinitions/CoreParameters",
+        "/Niagara/Modules/Update/Color/ScaleColor",
+        "/Niagara/Enums/ENiagaraChannelCorrelation",
+        "/Niagara/Enums/ENiagaraEmitterLifeCycleMode",
+        "/Niagara/Enums/ENiagaraEmitterScalabilityMode_Limited",
+        "/Niagara/Enums/ENiagaraInactiveMode",
+        "/Niagara/Enums/ENiagaraRandomnessEvaluation",
+        "/Niagara/Enums/ENiagaraRandomnessMode",
+        "/Niagara/Enums/ENiagaraScaleColorMode",
+        "/Niagara/Enums/ENiagaraShapeTorusMode",
+        "/Niagara/Enums/ENiagaraSphereDistributionMode",
+        "/Niagara/Enums/ENiagaraSystemInactiveMode",
+        "/Niagara/Enums/ENiagaraTorusDistributionMode",
+        "/Niagara/Enums/ENiagara_AttributeSamplingApplyOutput",
+        "/Niagara/Enums/ENiagara_ColorInitializationMode",
+        "/Niagara/Enums/ENiagara_EmitterStateOptions",
+        "/Niagara/Enums/ENiagara_InfiniteLoopDuration",
+        "/Niagara/Enums/ENiagara_LifetimeMode",
+        "/Niagara/Enums/ENiagara_MassInitializationMode",
+        "/Niagara/Enums/ENiagara_PositionInitializationMode",
+        "/Niagara/Enums/ENiagara_SizeScaleMode",
+        "/Niagara/Enums/ENiagara_SpriteRotationMode",
+        "/Niagara/Enums/ENiagara_UVFlippingMode",
+        "/Niagara/ParameterDefinitions/RibbonRenderer",
+        "/Niagara/DynamicInputs/ValueFromCurve/FloatFromCurve",
+        "/Niagara/Enums/Angles/ENiagara_AngleInput",
+        "/Niagara/Enums/Location/ENiagaraRingDiscMode",
+        "/Niagara/Enums/Location/ENiagara_BoxPlaneMode",
+        "/Niagara/Enums/Location/ENiagara_ConeMode",
+        "/Niagara/Enums/Location/ENiagara_CylinderMode",
+        "/Niagara/Enums/Location/ENiagara_LocationShapes",
+        "/Niagara/Enums/Ribbons/ENiagara_UnsetDirectSet",
+        "/Niagara/Enums/Ribbons/ENiagara_UnsetDirectSetRandom",
+        "/Niagara/Enums/Transforms/ENiagara_OffsetMode",
+        "/Niagara/Enums/Transforms/ENiagara_RotationMode",
+        "/Niagara/Enums/Transforms/ENiagara_ScaleMode",
+        "/Niagara/Enums/Transforms/ENiagara_TransformOrder",
+        "/Niagara/Enums/Transforms/ENiagara_TransformType",
+        "/Niagara/Enums/Utility/ENiagara_VelocityMode",
+        "/Niagara/Modules/Emitter/EmitterState",
+        "/Niagara/Modules/Solvers/SolveForcesAndVelocity",
+        "/Niagara/Modules/System/SystemState",
+        "/Niagara/Modules/Spawn/Velocity/AddVelocity",
+        "/Niagara/Modules/Update/Forces/Drag",
+        "/Niagara/Modules/Update/Forces/GravityForce",
+        "/Niagara/Modules/Update/Lifetime/ParticleState",
+        "/Niagara/Modules/Spawn/Initialization/V2/InitializeParticle",
+        "/Niagara/Modules/Spawn/Location/V2/ShapeLocation",
+        "/Niagara/Enums/ENiagaraCurlNoiseQuality",
+        "/Niagara/ParameterDefinitions/MeshRenderer",
+        "/Niagara/ParameterDefinitions/SpriteRenderer",
+        "/Niagara/Modules/Emitter/SpawnBurst_Instantaneous",
+        "/Niagara/VectorFields/Assets/TilingCurl32",
+        "/Niagara/DynamicInputs/TypeConversions/Vector2DFromFloat",
+        "/Niagara/Modules/Update/Size/ScaleSpriteSize",
+        "/Niagara/Modules/Update/Forces/V2/CurlNoiseForce",
+        "/Game/FX/M_ImpactCloud"
+      ]
+    }
+  ],
+  "supportAssets": [
+    "/Game/FX/M_ImpactCloud",
+    "/Game/FX/M_ImpactGlow",
+    "/Game/FX/M_ImpactDebris",
+    "/Game/FX/T_ImpactCloud"
+  ],
+  "saved": true,
+  "dirtyAfterSave": {
+    "/Game/FX/NS_BombExplosion": false,
+    "/Game/FX/NS_CannonImpact": false,
+    "/Game/FX/NS_WaterImpact": false,
+    "/Game/FX/M_ImpactCloud": false,
+    "/Game/FX/M_ImpactGlow": false,
+    "/Game/FX/M_ImpactDebris": false,
+    "/Game/FX/T_ImpactCloud": false
+  },
+  "cookReferences": "Native subsystem CDO hard UPROPERTY FObjectFinder references all three systems, their materials and original texture. Live mesh debris uses /Engine/BasicShapes/Cube.",
+  "effectTypeIntegration": {
+    "nativeClass": "UDublinImpactEffectType",
+    "serializedReference": "/Script/DublinFlight.Default__DublinImpactEffectType",
+    "currentlyBoundInRunningOldBinary": false,
+    "requiredParentAction": "After native build/restart, the subsystem CDO binds the three systems to its native EffectType and marks ONLY those packages dirty. Save these three /Game/FX Niagara assets with AssetTools.save_assets BEFORE COOKING. Verify effectType via GetSystemData.",
+    "settings": "Distance significance; High (0.25s) update; global/per-system max16; distance180000cm; frustum delay1.5s/no prefrustum cull; unrendered delay2s; budget ramp lowers instances to8 under load. Native cannon culls at35000cm."
+  },
+  "audio": {
+    "source": "Original procedural synthesis in Effects\\DublinImpactAudio.cpp; no external sound assets",
+    "sampleRate": 24000,
+    "channels": 1,
+    "format": "signed16 PCM",
+    "durationsSeconds": {
+      "cannon": 0.45,
+      "bomb": 1.8,
+      "water": 1.5
+    },
+    "maxVoices": 6,
+    "pool": "Six UAudioComponent + six USoundWaveProcedural instances per world; cached PCM per kind; timer stops/drains finished voices",
+    "sampleAmplitudeCap": 0.65,
+    "maxVoiceVolume": 0.24,
+    "conservativeSixVoicePeakBeforeMixing": 0.936,
+    "linearFalloffCm": {
+      "cannon": 18000,
+      "bombAndWater": 120000
+    },
+    "cannonMinimumIntervalSeconds": 0.07
+  },
+  "nativeTests": [
+    "DublinFlight.Effects.FinitePayloadRouting",
+    "DublinFlight.Effects.BoundedBudgetAndScale",
+    "DublinFlight.Effects.OriginalAudioBoundedAndDeterministic",
+    "DublinFlight.Effects.AuthoredAssetContract"
+  ],
+  "nativeValidation": "Source and APIs checked against installed UE5.8 headers; native build/tests NOT run; coordinator owns compilation.",
+  "visualValidation": "NOT performed. No PIE/map/viewport/UI operations. Niagara CaptureAssetImage unsupported. Parent must review actual accepted impacts and profile normal/maximal workloads; NO FPS CLAIM.",
+  "waterBoundary": "Foam plume, ballistic droplets, mist and basal foam only. Real surface-wave geometry belongs to world owner.",
+  "toolLimitations": [
+    {
+      "tool": "DataAssetTools.create",
+      "failure": "NiagaraEffectType cannot be stored in a DataAsset.",
+      "resolution": "Native UDublinImpactEffectType CDO plus required post-build FX save; no alternate execution channel."
+    },
+    {
+      "tool": "EditorAppToolset.CaptureAssetImage",
+      "failure": "Asset type does not support image capture: /Game/FX/NS_BombExplosion.NS_BombExplosion",
+      "resolution": "No preview claimed; parent gameplay review required."
+    },
+    {
+      "tool": "ApplyStackIssueFix/GetStackIssues inside compile batch",
+      "failure": "Cannot collect stack issues while a compile is in flight.",
+      "resolution": "Typed solver move then separate compile/status calls. Final zero errors/warnings."
+    }
+  ]
+}

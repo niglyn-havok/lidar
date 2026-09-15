@@ -1,0 +1,136 @@
+{
+  "duration_seconds": 12,
+  "fps": 24,
+  "frames": 288,
+  "resolution": [
+    1920,
+    1080
+  ],
+  "rotation_degrees": 360,
+  "camera_height": 21,
+  "camera_target_height": 3.5,
+  "orthographic_scale": 31.799999237060547,
+  "removed_lettering": [
+    "BRASS LETTERING | D U B L I N",
+    "BRASS LETTERING | O ' C O N N E L L   B R I D G E"
+  ],
+  "compositing_enabled": false,
+  "text_free": true,
+  "reflection_strips_follow_camera": true,
+  "framing_checks": [
+    {
+      "frame": 1,
+      "object": "GLOBE | closed two-surface optical glass",
+      "normalized_bounds": [
+        [
+          0.23900671666442885,
+          0.12400480400327374
+        ],
+        [
+          0.7609934738306111,
+          0.9390533779307968
+        ]
+      ]
+    },
+    {
+      "frame": 1,
+      "object": "PLINTH | bespoke turned walnut",
+      "normalized_bounds": [
+        [
+          0.2503247548199804,
+          0.07643158512470416
+        ],
+        [
+          0.7496754474631407,
+          0.5213260442169193
+        ]
+      ]
+    },
+    {
+      "frame": 73,
+      "object": "GLOBE | closed two-surface optical glass",
+      "normalized_bounds": [
+        [
+          0.2390067162120394,
+          0.12400479943610787
+        ],
+        [
+          0.7609934733782217,
+          0.9390534186314525
+        ]
+      ]
+    },
+    {
+      "frame": 73,
+      "object": "PLINTH | bespoke turned walnut",
+      "normalized_bounds": [
+        [
+          0.25032475289408057,
+          0.07643157720421634
+        ],
+        [
+          0.749675445537241,
+          0.5213260481213382
+        ]
+      ]
+    },
+    {
+      "frame": 145,
+      "object": "GLOBE | closed two-surface optical glass",
+      "normalized_bounds": [
+        [
+          0.23900676082279293,
+          0.12400484231692432
+        ],
+        [
+          0.7609935094582666,
+          0.9390533651054578
+        ]
+      ]
+    },
+    {
+      "frame": 145,
+      "object": "PLINTH | bespoke turned walnut",
+      "normalized_bounds": [
+        [
+          0.2503247987933769,
+          0.07643162686623306
+        ],
+        [
+          0.7496754832757638,
+          0.5213260660704091
+        ]
+      ]
+    },
+    {
+      "frame": 217,
+      "object": "GLOBE | closed two-surface optical glass",
+      "normalized_bounds": [
+        [
+          0.23900671666442885,
+          0.12400480400327374
+        ],
+        [
+          0.7609934738306111,
+          0.9390533779307968
+        ]
+      ]
+    },
+    {
+      "frame": 217,
+      "object": "PLINTH | bespoke turned walnut",
+      "normalized_bounds": [
+        [
+          0.2503247548199804,
+          0.07643158512470416
+        ],
+        [
+          0.7496754474631407,
+          0.5213260442169193
+        ]
+      ]
+    }
+  ],
+  "samples": 64,
+  "blend_file": "C:\\Code\\tmp\\messing\\dublin-lidar\\snowglobe\\Dublin - Snow Globe - 12s Landscape Orbit.blend"
+}

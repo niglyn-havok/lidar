@@ -1,0 +1,307 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-09-08T17:22:38.009385+00:00",
+  "ready_for_partial_import": true,
+  "full_coverage": false,
+  "final_complete_visual_gate_passed": false,
+  "image_preserved_unchanged": {
+    "dublin-ortho.png": "f3e2aa75e4b5c4a52bd6e2f177bc896d2ddd0d78c082a1ab742536f9c075f606",
+    "dublin-ortho-georeference.json": "03723c3d319213104b3322ab0439bbe3ed218d41052e0ed7485b58d13d9e6729"
+  },
+  "mask_path": "DublinFlight\\Content\\Data\\dublin-ortho-validity.png",
+  "mask_bytes": 30651,
+  "mask_sha256": "5ac7ad823bec5a925e8b347e019d57ba452d3580f938ab2f0a7800740d89407d",
+  "dimensions_wh": [
+    4096,
+    4096
+  ],
+  "mode": "L",
+  "bits_per_pixel": 8,
+  "pixel_spacing_m": 0.1875,
+  "extent_en_m": [
+    315605.0,
+    234009.0,
+    316373.0,
+    234777.0
+  ],
+  "top_origin": true,
+  "alignment": "Exactly the same pixel centres and extent as dublin-ortho.png; no Y flip.",
+  "uv_formulas": [
+    "u=0.5+Xcm/76800",
+    "v=0.5+Ycm/76800"
+  ],
+  "mask_values": {
+    "255": "Use original licensed RGB imagery.",
+    "0": "Use explicitly generic neutral rooftop/ground; not measured colour and not invented replacement imagery."
+  },
+  "mask_derivation": "Threshold validated fractional coverage at exactly 255, then erode valid pixels by a 3x3 footprint (one output texel, 18.75 cm) only around internal invalid/partial coverage. This suppresses bilinear RGB white fringes.",
+  "edge_policy": {
+    "mask_srgb": false,
+    "mask_filter": "nearest / point",
+    "mask_mipmaps": "disabled",
+    "mask_address_u_v": "clamp",
+    "compression": "Lossless single-channel data; preserve exact 0/255.",
+    "shader": "Point-sample mask at shared UV; branch/step at 0.5. No interpolated mask, no feathering, no temporal/dither blend.",
+    "rgb_sampling": "Point or bilinear LOD0, clamp. The one-texel mask guard covers bilinear LOD0 support; higher RGB mip levels/anisotropic footprints are NOT certified by this mask.",
+    "outside_core": "Do not stretch or repeat the 768 m texture; use neutral material outside the exact extent."
+  },
+  "valid_output_pixels_before_guard": 15894794,
+  "valid_output_pixels_after_guard": 15889502,
+  "extra_neutral_boundary_guard_pixels": 5292,
+  "shader_imagery_fraction_after_guard": 0.9470881223678589,
+  "conservative_native_usable_fraction": 0.9475504981146918,
+  "gaps": [
+    {
+      "gap_id": "gap-1",
+      "core_native_pixel_bounds_xyxy": [
+        0,
+        0,
+        2908,
+        2970
+      ],
+      "irish_grid_bounds_wsen_m": [
+        315605.0,
+        234628.5,
+        315750.4,
+        234777.0
+      ],
+      "native_connected_component_pixels": 5904071,
+      "area_m2": 14760.1775,
+      "source_tiles": [
+        {
+          "tile": "315500_234500",
+          "source_pixel_bounds_xyxy": [
+            2100,
+            4460,
+            5008,
+            7430
+          ],
+          "gap_native_pixels": 5904071
+        }
+      ],
+      "output_fully_void_component": {
+        "output_pixels": 418918,
+        "bounds_pixel_edges_xyxy": [
+          0,
+          0,
+          774,
+          792
+        ],
+        "bounds_en_m": [
+          315605.0,
+          234628.5,
+          315750.125,
+          234777.0
+        ],
+        "touches_core_boundary": true
+      },
+      "bounds_convention": "Half-open pixel-edge bounds [left,top,right,bottom], zero-based, north-first. Rectangles enclose the gap; not every enclosed pixel is void.",
+      "confidence": "High for this large boundary-connected component; not a publisher-provided nodata declaration.",
+      "evidence": [
+        "Every component sample is exactly [255,255,255,255], including infrared.",
+        "The region is spatially continuous, crosses many expected roofs/streets and touches the core boundary.",
+        "Sharp clipped survey-footprint boundaries are visible in the unmodified ortho preview, not roof outlines.",
+        "Component covers 5904071 native 5 cm samples; small saturated roof pixels are classified separately.",
+        "Official NYU documentation states that peripheral tiles can be only partially covered."
+      ]
+    },
+    {
+      "gap_id": "gap-2",
+      "core_native_pixel_bounds_xyxy": [
+        12731,
+        0,
+        15360,
+        2209
+      ],
+      "irish_grid_bounds_wsen_m": [
+        316241.55,
+        234666.55,
+        316373.0,
+        234777.0
+      ],
+      "native_connected_component_pixels": 4809884,
+      "area_m2": 12024.71,
+      "source_tiles": [
+        {
+          "tile": "316000_234500",
+          "source_pixel_bounds_xyxy": [
+            4831,
+            4460,
+            7460,
+            6669
+          ],
+          "gap_native_pixels": 4809884
+        }
+      ],
+      "output_fully_void_component": {
+        "output_pixels": 341360,
+        "bounds_pixel_edges_xyxy": [
+          3395,
+          0,
+          4096,
+          588
+        ],
+        "bounds_en_m": [
+          316241.5625,
+          234666.75,
+          316373.0,
+          234777.0
+        ],
+        "touches_core_boundary": true
+      },
+      "bounds_convention": "Half-open pixel-edge bounds [left,top,right,bottom], zero-based, north-first. Rectangles enclose the gap; not every enclosed pixel is void.",
+      "confidence": "High for this large boundary-connected component; not a publisher-provided nodata declaration.",
+      "evidence": [
+        "Every component sample is exactly [255,255,255,255], including infrared.",
+        "The region is spatially continuous, crosses many expected roofs/streets and touches the core boundary.",
+        "Sharp clipped survey-footprint boundaries are visible in the unmodified ortho preview, not roof outlines.",
+        "Component covers 4809884 native 5 cm samples; small saturated roof pixels are classified separately.",
+        "Official NYU documentation states that peripheral tiles can be only partially covered."
+      ]
+    },
+    {
+      "gap_id": "gap-3",
+      "core_native_pixel_bounds_xyxy": [
+        7287,
+        0,
+        10494,
+        937
+      ],
+      "irish_grid_bounds_wsen_m": [
+        315969.35,
+        234730.15,
+        316129.7,
+        234777.0
+      ],
+      "native_connected_component_pixels": 1503093,
+      "area_m2": 3757.7325,
+      "source_tiles": [
+        {
+          "tile": "315500_234500",
+          "source_pixel_bounds_xyxy": [
+            9387,
+            4460,
+            10000,
+            5397
+          ],
+          "gap_native_pixels": 439834
+        },
+        {
+          "tile": "316000_234500",
+          "source_pixel_bounds_xyxy": [
+            0,
+            4460,
+            2594,
+            5279
+          ],
+          "gap_native_pixels": 1063259
+        }
+      ],
+      "output_fully_void_component": {
+        "output_pixels": 106248,
+        "bounds_pixel_edges_xyxy": [
+          1944,
+          0,
+          2795,
+          249
+        ],
+        "bounds_en_m": [
+          315969.5,
+          234730.3125,
+          316129.0625,
+          234777.0
+        ],
+        "touches_core_boundary": true
+      },
+      "bounds_convention": "Half-open pixel-edge bounds [left,top,right,bottom], zero-based, north-first. Rectangles enclose the gap; not every enclosed pixel is void.",
+      "confidence": "High for this large boundary-connected component; not a publisher-provided nodata declaration.",
+      "evidence": [
+        "Every component sample is exactly [255,255,255,255], including infrared.",
+        "The region is spatially continuous, crosses many expected roofs/streets and touches the core boundary.",
+        "Sharp clipped survey-footprint boundaries are visible in the unmodified ortho preview, not roof outlines.",
+        "Component covers 1503093 native 5 cm samples; small saturated roof pixels are classified separately.",
+        "Official NYU documentation states that peripheral tiles can be only partially covered."
+      ]
+    },
+    {
+      "gap_id": "gap-4",
+      "core_native_pixel_bounds_xyxy": [
+        0,
+        5100,
+        335,
+        6038
+      ],
+      "irish_grid_bounds_wsen_m": [
+        315605.0,
+        234475.1,
+        315621.75,
+        234522.0
+      ],
+      "native_connected_component_pixels": 157319,
+      "area_m2": 393.2975,
+      "source_tiles": [
+        {
+          "tile": "315500_234000",
+          "source_pixel_bounds_xyxy": [
+            2100,
+            0,
+            2435,
+            498
+          ],
+          "gap_native_pixels": 118829
+        },
+        {
+          "tile": "315500_234500",
+          "source_pixel_bounds_xyxy": [
+            2100,
+            9560,
+            2274,
+            10000
+          ],
+          "gap_native_pixels": 38490
+        }
+      ],
+      "output_fully_void_component": {
+        "output_pixels": 10985,
+        "bounds_pixel_edges_xyxy": [
+          0,
+          1363,
+          88,
+          1609
+        ],
+        "bounds_en_m": [
+          315605.0,
+          234475.3125,
+          315621.5,
+          234521.4375
+        ],
+        "touches_core_boundary": true
+      },
+      "bounds_convention": "Half-open pixel-edge bounds [left,top,right,bottom], zero-based, north-first. Rectangles enclose the gap; not every enclosed pixel is void.",
+      "confidence": "High for this large boundary-connected component; not a publisher-provided nodata declaration.",
+      "evidence": [
+        "Every component sample is exactly [255,255,255,255], including infrared.",
+        "The region is spatially continuous, crosses many expected roofs/streets and touches the core boundary.",
+        "Sharp clipped survey-footprint boundaries are visible in the unmodified ortho preview, not roof outlines.",
+        "Component covers 157319 native 5 cm samples; small saturated roof pixels are classified separately.",
+        "Official NYU documentation states that peripheral tiles can be only partially covered."
+      ]
+    }
+  ],
+  "large_gap_native_pixels": 12374367,
+  "small_white_or_saturated_native_pixels": 23,
+  "confidence_limit": "Large components are high-confidence survey gaps. Tiny all-band-white pixels could be real saturation; conservatively neutral, never inferred imagery.",
+  "credit_text": "2015 Aerial Laser and Photogrammetry Survey of Dublin City â€” Debra F. Laefer, Saleh Abuwarda, Anh-Vu Vo, Linh Truong-Hong, Hamid Gharibi. Survey: 26 March 2015. Source: NYU Faculty Digital Archive. CC BY 4.0.",
+  "credits_placement": "Consumer HUD/about later; preserve creator/source/CC BY 4.0 links and modification notice.",
+  "coverage_warning_not_engine_blocker": "Partial rendering is approved with this mask and explicitly generic neutral materials. Missing source coverage is not an engine/tools failure.",
+  "validation": {
+    "passed": true,
+    "binary_values": [
+      0,
+      255
+    ],
+    "no_valid_pixel_comes_from_partial_or_void_mask": true,
+    "original_image_and_georeference_unchanged": true,
+    "large_gap_count": 4
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "status": "source-and-tests-ready-for-parent-integration-build-and-bake",
+  "owner": "city-world-destruction",
+  "sharedContract": {
+    "header": "Source/DublinFlight/DublinImpact.h",
+    "methods": ["bool ADublinCityWorld::ApplyImpact(const FDublinImpact&)", "bool ADublinCityWorld::GetWaterSurfaceZ(const FVector&, float&) const"],
+    "effectsDependency": false
+  },
+  "requiredModules": {
+    "public": ["GeometryCollectionEngine", "Chaos", "FieldSystemEngine"],
+    "editorOnlyPrivate": ["PlanarCut", "Voronoi", "MeshDescription", "StaticMeshDescription", "GeometryCore", "UnrealEd", "AssetRegistry"]
+  },
+  "requiredPlugins": ["PlanarCut"],
+  "pluginEvidence": "Installed PlanarCut.uplugin declares module PlanarCut; UnrealEditor-PlanarCut.dll exists. Plugin name is PlanarCut, not its directory name PlanarCutPlugin.",
+  "bakeOutputRoot": "/Game/Dublin/Fracture",
+  "constraints": [
+    "No builds/editor calls/delegation by this agent.",
+    "Immutable source geometry; all damage state belongs to city actor.",
+    "Geometry collections must be real fractured source geometry, never empty success placeholders.",
+    "Full-city fracture readiness requires every accepted source volume.",
+    "Single-source-building-per-editor-tick bake budget; explicit progress/errors/cancel/resume between buildings.",
+    "Runtime bounded activation queue, persistent sleeping debris, no removed-building restoration.",
+    "Terrain preserves exact sparse shoreline topology; water is reduced-order simulation, not CFD."
+  ],
+  "sourceFilesAdded": [
+    "Source/DublinFlight/City/DublinCityDestruction.h",
+    "Source/DublinFlight/City/DublinCityDestruction.cpp",
+    "Source/DublinFlight/City/DublinCityDestructionWorld.cpp",
+    "Source/DublinFlight/City/DublinCityFractureLibrary.h",
+    "Source/DublinFlight/City/DublinCityFractureLibrary.cpp",
+    "Source/DublinFlight/City/DublinCityFractureBaker.cpp",
+    "Source/DublinFlight/City/DublinCityDestructionTests.cpp"
+  ],
+  "sourceFilesExtended": [
+    "Source/DublinFlight/City/DublinCityWorld.h",
+    "Source/DublinFlight/City/DublinCityWorld.cpp"
+  ],
+  "bakeWorkflow": {
+    "entry": "Existing ADublinCityWorld: BeginFractureBake CallInEditor or bBakeRequested=true. Editor world only; refuses baking while GEditor.PlayWorld exists.",
+    "sample": "Default BakeLimit=12, bBakeAllBuildings=false. Set BakeBuildingIds for explicit real source IDs, otherwise takes first12 source records.",
+    "full": "Clear BakeBuildingIds and set bBakeAllBuildings=true, then request baking. Do not confuse first12 completion with full1044 completion.",
+    "optionsBatch": "Keep bAutoBuild=false while batching bake options to avoid repeated city construction. bBakeRequested is checked independently of bAutoBuild. Keep editor viewport realtime for editor actor ticks.",
+    "cancel": "Set bCancelBake=true; current synchronous building cut/save finishes, then queue stops. Completed asset packages and library entries are already saved.",
+    "resume": "Request the same selection again. Current bake-content-digest-matching records with loadable render data skip. Failed/missing records retry. GeometryDigest covers source identity/positions/indices/UV/pivot/material slots; SourceDigest additionally covers every supplied RGBA byte. Cosmetic-only changes leave geometry identity stable but invalidate outdated baked attributes and require rebaking those records.",
+    "sourceRefresh": "Each explicit editor bake request reloads validated live JSON once via BuildCity before selecting work. It does not reuse previously loaded white-color data after a derivative update and performs no per-building/per-frame JSON rereads.",
+    "progress": ["bBakeInProgress", "BakeCompleted", "BakeTotal", "BakeCurrentSourceId", "BakeErrorCount", "BakeErrors"],
+    "library": "/Game/Dublin/Fracture/DA_DublinFractureLibrary.DA_DublinFractureLibrary",
+    "assets": "/Game/Dublin/Fracture/GC_<source-digest>",
+    "persistence": "Each successful collection and each processed library row saves explicitly. Parent saves the city actor/map afterwards so the FractureLibrary reference is retained for cooking.",
+    "pipeline": "Actual closed source triangles -> MeshDescription vertices welded by position plus RGBA seam identity, per-corner hard-edge normals/source UV/linear vertex color -> exported AppendMeshDescription -> up-to64 deterministic Voronoi sites -> exported CutMultipleWithPlanarCells -> unique cluster root and rigid leaves -> proximity -> bottom support anchors and initial dynamic state -> simulation/render generation -> package save.",
+    "vertexColors": "Preserve optional source RGB sRGB bytes and alpha style-code bytes. Decode RGB into MeshDescription linear floats using FLinearColor(FColor), keep alpha linear, and explicitly SetConvertVertexColorsToSRGB(true) so collection render packing returns the same source bytes as intact PMCs. Style1..8 remains alpha1/255..8/255. Color-only seams must remain distinct because the installed engine conversion splits normals/UVs but does not include color in its split key. PlanarCut uses four-channel color attributes. New interior surfaces remain neutral-material surfaces, not invented facade evidence.",
+    "materialContract": "Fixed slots:0=RoofMaterial (aerial/top-down UV),1=WallMaterial (exterior metre UV and source RGBA),2=FoundationMaterial (original bottom caps),3=FoundationMaterial again for NEW CUT/INTERIOR FACES. The parent-assigned neutral MI_DublinFoundation therefore shades cuts; M_DublinFacade is never assigned to the interior slot. Missing foundation material falls back to engine neutral.",
+    "materialCacheCheck": "Bake reuse also checks current roof/wall/foundation/interior material bindings. Old cached binding mismatches force rebaking even when source geometry/attributes are unchanged. The source material array is reset before append so the explicit cutter interior index is always slot3. Engine-appended debug material slots may follow the four owned slots.",
+    "nanite": "SetEnableNanite(true) with fallback enabled, then verify HasNaniteData. If absent, rebuild non-Nanite data and retain an explicit per-record warning; do not claim Nanite for that record."
+  },
+  "runtime": {
+    "readiness": "bAllBuildingsFractureReady requires current validated records and existing asset packages for all accepted source volumes. bDestructionReady defaults to that gate. Explicit bAllowPartialBakePreview permits a sample; any impact touching an unbaked volume is still rejected before mutation.",
+    "failure": "ApplyImpact validates finite inputs and game bounds, sets LastDestructionError and logs explicit errors. Not-ready/missing-data/full-queue hits return false without geometry mutation.",
+    "activation": "Intact spatial chunk renderer remains until a ready collection loads, registers with a physics proxy and support anchors, and its owning intact chunk successfully rewrites collision. Only that source building's faces are removed; collision rewrite failure rolls back.",
+    "damage": "User-defined local strain thresholds, propagation depth0/factor0, damage propagation disabled, collision-induced damage disabled. Directly hit support anchors can release. Engine nearest-child fallback handles small cannon radii without global cluster crumble calls; bounded per-collection radial impulse follows.",
+    "queue": "At most64 impact batches. Each stores its entire bounded source-building selection (at most5000) so large yields do not silently drop buildings. One building activation/hit is serviced per30Hz actor tick. Exposes both queued impacts and total deferred building hits.",
+    "physicsBudgets": "Maximum24 awake collection instances and1536 authored leaf pieces counted conservatively. Already-active targets reuse their instance. Sleeping instances can wake within those limits.",
+    "rubble": "Removal-on-sleep and removal-on-break explicitly disabled. Sleeping collections retain their transformed geometry/collision permanently for the play session. Dynamic-only sleep fields preserve kinematic anchors; sleeping-only wake fields avoid releasing untouched supports.",
+    "sleepPolicy": "Four half-second quiet polls below2cm movement after3seconds without a hit; forced sleep after30seconds is counted separately. Component ticks stop for sleeping rubble. Never respawns intact geometry.",
+    "persistentTerrain": "Global mutable heights keyed by exact immutable source-node index, smooth bowl/rim entirely inside requested radius, cumulative bounded displacement. Update only affected chunk buffers and existing collision; preserve every supplied sparse shoreline triangle and shared-border position/normal.",
+    "water": "Actual source water triangles clipped against a4m lattice for fixed-topology render resampling. A masked finite-difference damped wave field propagates an impact velocity pulse with reflecting bank boundaries. Query uses original exact XY triangles plus simulated height. No water collision.",
+    "waterBudgets": "193x193 bounded storage, wet-node-only updates, four substeps per1/30second step, at most4catch-up steps per actor tick, wave speed900cm/s and CFL0.01875 per substep. Amplitude bounded to300cm, velocity pulse bounded, sleeps flat below thresholds.",
+    "cityLifecycle": "No rebuilding/erasing a damaged city during a play session. Existing strict generated-PMC duplicate cleanup retained; generated GC cleanup has its own reserved ownership marker. Actor tick runs only while baking, queued work, awake rubble, or active waves."
+  },
+  "runtimeCounters": [
+    "bDestructionReady", "bAllBuildingsFractureReady", "FractureReadyBuildingCount", "LastDestructionError",
+    "AcceptedImpactCount", "QueuedImpactCount", "QueuedBuildingHitCount", "bImpactQueueBlocked",
+    "ActiveFractureCollections", "ActiveFracturePieces", "SleepingFractureCollections", "FracturedBuildingCount",
+    "MovedFragmentCount", "ForcedSleepCount", "CraterChangedNodeCount", "LastCraterChunkCount",
+    "WaterMaxDisplacementCm", "WaterActiveNodeCount", "WaterSimulationTriangleCount"
+  ],
+  "limitations": [
+    "No actual fracture assets were baked by this agent. Full building destructibility is not yet verified or claimed.",
+    "Authored pieces are Voronoi-cut closed survey volumes, not modeled hollow rooms, reinforcement, real structural engineering or arbitrary runtime cutting.",
+    "Wave solver is a bounded game approximation with damping, amplitude limits and finite-grid restoring term, not CFD.",
+    "Settled rubble is kept as sleeping collections rather than merged meshes; total persistent rubble storage can grow to the accepted-volume count even though awake physics is capped.",
+    "Bake cancellation happens between source buildings; an individual synchronous cut/cook/save is not preempted.",
+    "Forced sleep and bounded simulation catch-up are performance approximations with exposed state. 60 normal/light and30 maximal FPS remain parent-measured targets, not passed claims."
+  ],
+  "validation": {
+    "status": "static-checks-passed-native-build-tests-bake-and-PIE-pending-parent",
+    "exactInstalledApisVerified": [
+      "AppendMeshDescription", "CutMultipleWithPlanarCells", "FVoronoiDiagram", "FPlanarCells",
+      "Clustering root/hierarchy helpers", "Proximity UpdateProximity", "Anchoring InitialDynamicState/Anchored schema",
+      "SetEnableNanite/HasNaniteData", "CreateSimulationData/RebuildRenderData", "SetRestCollection/GetPhysicsProxy",
+      "GetRootIndex/ApplyExternalStrain/SetAnchoredByBox", "Damage model and propagation setters",
+      "Radial fields, dynamic/sleeping metadata filters", "Explicit removal-on-sleep/break flags",
+      "MeshDescription color splitting and FLinearColor transfer", "SetConvertVertexColorsToSRGB and render ToFColor conversion",
+      "PlanarCut four-channel color attributes"
+    ],
+    "staticChecks": "Shared signatures unchanged; real native bake calls present; atomic activation guard and rollback present; ownership guards retained; finite budgets present;14owned City source files have consistent line endings and no merge markers.",
+    "independentWaveNumericReference": {
+      "farProbeAt2SecondsCm": 1.283484529027991,
+      "peakCm": 15.180529893722623,
+      "maximumAt42SecondsCm": 0.004257023981402658,
+      "note": "Independent numeric reference only, not execution of native tests."
+    },
+    "testsAdded": [
+      "DublinFlight.Destruction.Impact.BoundsLocalityAndStrain",
+      "DublinFlight.Destruction.Ground.PersistentCraterAndBorderContinuity",
+      "DublinFlight.Destruction.Water.PropagationDampingAndRiverMask",
+      "DublinFlight.Destruction.Buildings.SelectiveMeshRemovalAndIdentity",
+      "DublinFlight.Destruction.Readiness.RejectsUnavailableAssetsWithoutMutation",
+      "DublinFlight.Destruction.Fracture.RgbaAndCosmeticIdentity"
+    ],
+    "parentGates": [
+      "Build with required modules/plugin; run DublinFlight.City.* and DublinFlight.Destruction.*.",
+      "Bake and inspect12explicit real volumes first; verify nonempty saved collections, support anchors, render/collision and actual falling fragments in partial preview.",
+      "Expand bake to all1044; inspect every error and require full readiness before claiming complete building destructibility.",
+      "Verify cannon leaves local damage, unhit same-chunk buildings remain, repeated hits do not restore intact geometry, and sleeping rubble remains collidable.",
+      "Verify crater world collision depth and chunk borders in PIE, exact river mask, propagating water surface and projectile segment crossing.",
+      "Measure60FPS normal/light and30FPS maximal workload with queue/active/sleep counters, save screenshots/assets/map."
+    ],
+    "buildRun": false,
+    "editorOrBakeRun": false,
+    "delegationUsed": false
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "center_irish_grid": [
+    315989,
+    234393
+  ],
+  "crs": "EPSG:29903",
+  "radius_metres": 760,
+  "diameter_metres": 1520,
+  "cell_metres": 1,
+  "model_units_per_metre": 0.01,
+  "measured_cells_inside_globe": 1813875,
+  "cells_inside_globe": 1814517,
+  "coverage_fraction": 0.999646186836497,
+  "water_cells": 76208,
+  "vegetation_cells": 180517,
+  "canopy_cells": 78905,
+  "height_percentiles_metres": [
+    -0.21400000154972076,
+    5.296000003814697,
+    11.529999732971191,
+    28.183000564575195,
+    34.61000061035156,
+    76.00499725341797
+  ],
+  "geometry_source": "../artwork/surface.npz, derived from supplied LAZ tiles",
+  "color_source": "Esri World Imagery, locally reprojected from EPSG:3857 to EPSG:29903",
+  "landcover_method": "Aerial color segmentation; river constrained to Liffey corridor, bridges excluded. Canopy requires both green color and local LiDAR relief.",
+  "spire_reconstruction": "Tapered 3m-diameter needle at Irish Grid 315903.5,234672.5, tip 124.609m Malin Head from raw LiDAR; local street 6.45m.",
+  "caveats": [
+    "LiDAR captured March 26, 2015; imagery capture date not asserted and may differ.",
+    "Nearest measured-cell interpolation retained in survey gaps.",
+    "Facade microdetail, clouds, lighting and globe are artistic.",
+    "Water shading is physically inspired, not measured river color."
+  ]
+}

@@ -1,0 +1,201 @@
+{
+  "schema_version": 1,
+  "status": "complete_ready_for_parent_integration_compile",
+  "started_at": "2026-09-08T19:06:22.1312371+01:00",
+  "completed_at": "2026-09-08T19:29:32.8844095+01:00",
+  "phase": "Weapon runtime, pawn/HUD integration, unit and real-input PIE tests persisted; static checks passed; all new builds/tests unrun",
+  "authoritative_contracts": [
+    "checkpoint-12-destruction-slice.md",
+    "Source\\DublinFlight\\DublinImpact.h"
+  ],
+  "baseline": "Parent reports the previous flight/native/PIE slice passed before these weapons changes.",
+  "modified": [
+    "Source\\DublinFlight\\DublinFlightPawn.h",
+    "Source\\DublinFlight\\DublinFlightPawn.cpp",
+    "Source\\DublinFlight\\DublinFlightHUD.cpp"
+  ],
+  "added": [
+    "Source\\DublinFlight\\Weapons\\DublinProjectile.cpp",
+    "Source\\DublinFlight\\Weapons\\DublinProjectile.h",
+    "Source\\DublinFlight\\Weapons\\DublinWeaponComponent.cpp",
+    "Source\\DublinFlight\\Weapons\\DublinWeaponComponent.h",
+    "Source\\DublinFlight\\Weapons\\DublinWeaponModel.cpp",
+    "Source\\DublinFlight\\Weapons\\DublinWeaponModel.h",
+    "Source\\DublinFlight\\Weapons\\Tests\\DublinWeaponPIETests.cpp",
+    "Source\\DublinFlight\\Weapons\\Tests\\DublinWeaponTests.cpp"
+  ],
+  "untouched": [
+    "City, Performance, Effects and common DublinImpact.h were not modified.",
+    "Build.cs, config and assets were not modified.",
+    "Existing flight simulation and existing flight tests were not modified.",
+    "No builds, editor calls, issue operations, PythonRemoteExecution or delegation were performed."
+  ],
+  "runtime": {
+    "cannon": "Held LMB fires 7 Hz default, clamped 6-8 Hz; one launch per tick, no hitch catch-up burst. World-swept sphere projectile, forward speed 35000 cm/s plus aircraft velocity, 650 cm forward muzzle outside the 470 cm aircraft sphere. Local impact radius 200 cm and depth 50 cm.",
+    "bomb": "B or RMB drop the same real sphere/UProjectileMovementComponent bomb; inherits full aircraft velocity, gravity scale 1, swept movement, forced 1/120 s substeps with 32 iterations. Spawn 540 cm below aircraft; no instant ground AOE. 1.5 s default shared cooldown, safely clamped 0.5-10 s.",
+    "yield": "Visible EditAnywhere/BlueprintReadWrite BombYieldTonsTNT default 1; [ halves, ] doubles; finite clamp 0.1-1000. Game-only power curve with editable base radius/depth/strength, exponent and maximums. Hard bounds: radius 100-5000 cm, depth 10-2000 cm, strength 0.1-50. Monotonic game tuning, not real explosives engineering.",
+    "budgets": "32 active projectiles by default, hard maximum 64. Cannon lifespan 4 s, bomb lifespan 20 s; expired/destroyed weak references removed each tick; component EndPlay and test cleanup destroy owned survivors. Projectiles ignore aircraft and each other.",
+    "water": "Cached city actor queried through GetWaterSurfaceZ at descending trajectory-segment surface crossings, with footprint confirmation and a bounded 100 cm/512-step search. Water crossing takes precedence over a later solid stop below the river. Underwater muzzle/drop starts resolve at the surface. Water remains nonblocking physics.",
+    "dispatch": "Exactly-once gate shared by Tick water crossing and OnProjectileStop. Sends a finite normalized-normal FDublinImpact with kind, local radius/depth/strength/yield and seed. City ApplyImpact false increments rejection, logs/stores failure and does NOT emit accepted-impact FX. Accepted impacts request EmitImpact on the world subsystem.",
+    "visual_projectile": "Existing Engine/EngineMaterials/EmissiveMeshMaterial is used as-is for a visible primitive tracer, without inventing an Emissive material parameter. No new material assets were authored; parent must inspect visual result.",
+    "counters": [
+      "CannonShots",
+      "BombsDropped",
+      "AcceptedImpacts",
+      "AcceptedCannonImpacts",
+      "AcceptedBombImpacts",
+      "AcceptedWaterImpacts",
+      "RejectedImpacts",
+      "EffectsRequests",
+      "GetActiveProjectileCount",
+      "CurrentWeapon",
+      "LastFailure"
+    ],
+    "lifetime": "Weak cached city/projectile/component references; one city-actor lookup at component BeginPlay. Cleanup suppresses fire, releases input and removes active projectiles. Accepted/FX counters are not proof of visual destruction."
+  },
+  "pawn_hud": {
+    "controls": "Native weapon bindings added without reusing Space/C, WASD, G or Home. G/Home, unpossession and input loss suppress held cannon; release/re-press re-arms.",
+    "camera": "Chase boom pitch bias changed from -8 to -18 degrees, clamped as before; actor rotation, heading, CalcCamera input orientation and GetViewRotation aim remain independent. New PIE assertion checks camera calculation does not mutate aim.",
+    "hud": "Compact weapon/yield/shot/active/accepted/rejected/ready/last-failure panel, visible weapon controls, smaller FPS panel with giant disclaimer removed; central reticle retained.",
+    "credits": "Small permanent (c) OpenStreetMap contributors; Survey Laefer et al., CC BY 4.0 line. F1 toggles inline full Content\\Data\\ATTRIBUTION.txt text; no browser launch. Missing file produces an explicit in-game/log fallback.",
+    "aircraft": "Existing interim silhouette retained; no final-art claim."
+  },
+  "dependencies": {
+    "modules": [
+      "Core",
+      "CoreUObject",
+      "Engine",
+      "InputCore",
+      "ApplicationCore",
+      "UnrealEd for editor-only PIE tests"
+    ],
+    "build_cs": "No new weapon-specific modules beyond existing flight/editor test dependencies. Retain conditional UnrealEd private dependency for Target.bBuildEditor. Parent must integrate any independent City/Effects dependencies before building.",
+    "city_header": "City\\DublinCityWorld.h",
+    "city_api": [
+      "bool ADublinCityWorld::ApplyImpact(const FDublinImpact&)",
+      "bool ADublinCityWorld::GetWaterSurfaceZ(const FVector&, float&) const",
+      "Existing public bCityReady and BuildingCount are consumed."
+    ],
+    "effects_header": "Effects\\DublinImpactEffectsSubsystem.h",
+    "effects_api": "UDublinImpactEffectsSubsystem derives from a world subsystem and exposes void EmitImpact(const FDublinImpact&). Included by its fixed header; parent compiles after parallel owner is ready.",
+    "pending_header_files_at_static_check": [],
+    "data": "Content\\Data\\ATTRIBUTION.txt must remain available; existing city Content\\Data staging applies to packaged builds.",
+    "assets": [
+      "/Engine/BasicShapes/Sphere.Sphere",
+      "/Engine/EngineMaterials/EmissiveMeshMaterial.EmissiveMeshMaterial"
+    ]
+  },
+  "test_invocation": {
+    "native": "Automation RunTests DublinFlight.Weapons.Unit",
+    "pie": "Automation RunTests DublinFlight.Weapons.PIE.ActualCannonBombInputs",
+    "setup": [
+      "Parent integrates fixed City/Effects APIs and performs serialized build.",
+      "Open /Game/Maps/Dublin as current editor map. Do not rely on preexisting PIE; the fixture queues native FStartPIECommand(false) after AutomationController session teardown.",
+      "Fixture waits up to 60 s for possessed local pawn, native viewport capture and a READY real city.",
+      "City destruction/fracture preparation must support the targets: rejected impacts fail the acceptance test rather than faking successful FX.",
+      "Parent owns background throttling preferences and visual/performance capture."
+    ],
+    "timing": "Bounded 60 s startup, 30 s per phase and 180 s total; real elapsed PIE frames, no manual physics ticking.",
+    "coverage": [
+      "Held/released flight cannon cadence, live swept projectile and owner/muzzle checks",
+      "B flight bomb inheritance and actual falling velocity/position",
+      "RMB cannot bypass shared B cooldown",
+      "Actual G and mouse axis input aim toward city; camera calculation preserves actor/view aim",
+      "God cannon reaches accepted real city collision without moving stationary aircraft",
+      "Bracket yield changes, Space/C remain god movement and do not drop bombs",
+      "God RMB bomb inherits zero stationary velocity and falls to accepted city impact",
+      "F1 inline attribution open/close",
+      "Cleanup releases every key/axis, suppresses cannon, destroys owned pending projectiles, parks surviving pawn in GOD"
+    ],
+    "limitations": "Acceptance counters prove calls/kinematics/input only, not fragment separation, crater mesh/collision, water-wave or Niagara visuals. Parent must inspect these and measure frame time. AutomationController may end PIE after the test; screenshot persistence is not guaranteed."
+  },
+  "validation": {
+    "static_passed": true,
+    "static_checks": [
+      "11 owned source files: balanced delimiters, conflict-marker check, UTF-8 without BOM and CRLF",
+      "Seven unique DublinFlight.Weapons labels with separate Unit and PIE groups",
+      "Quoted includes resolved against local project/UE5.8 headers, except any explicitly pending fixed Effects contract",
+      "Installed UE5.8 ProjectileMovement, key-name and native editor automation API signatures reviewed"
+    ],
+    "static_issues": [],
+    "builds_run": [],
+    "tests_run": [],
+    "tests_unrun": [
+      "DublinFlight.Weapons.PIE.ActualCannonBombInputs",
+      "DublinFlight.Weapons.Unit.BallisticGravityAndInheritedVelocity",
+      "DublinFlight.Weapons.Unit.YieldFiniteClampAndMonotonicGameCurve",
+      "DublinFlight.Weapons.Unit.CooldownAndNoCatchupBurst",
+      "DublinFlight.Weapons.Unit.OwnerImmunityAndExactlyOnceImpact",
+      "DublinFlight.Weapons.Unit.NonblockingWaterTrajectoryCrossing",
+      "DublinFlight.Weapons.Unit.GodMovementInputHasNoWeaponConflicts"
+    ],
+    "visual_acceptance": "UNRUN",
+    "performance": "UNMEASURED: requested 60 FPS normal/light and 30 FPS maximal destruction remain parent acceptance gates."
+  },
+  "remaining_parent_work": [
+    "Integrate City ApplyImpact/GetWaterSurfaceZ and Effects subsystem, then serialize UHT/compile/link.",
+    "Run six native unit tests and the separate actual-input weapons PIE fixture; all seven new tests are unrun.",
+    "Re-run prior flight regression after pawn/HUD integration; no prior test files were changed.",
+    "Verify cannon damage is local and true native fragments separate, fall and collide; counters/mesh disappearance are not substitutes.",
+    "Verify persistent crater geometry matches collision and preserves water cuts; verify real water plumes/propagating disturbance.",
+    "Inspect tracer, muzzle, bomb, camera/reticle/HUD/credits readability and accepted/rejected status in saved actual Dublin map.",
+    "Measure normal/light action at 60 FPS and maximal destruction at 30 FPS; no performance pass claimed."
+  ],
+  "source_hashes": [
+    {
+      "path": "Source\\DublinFlight\\DublinFlightPawn.h",
+      "sha256": "B329226B07BD4303AF242C5257DBCC496BD3A56B713E97AA45671ECBDC0548E6",
+      "bytes": 5186
+    },
+    {
+      "path": "Source\\DublinFlight\\DublinFlightPawn.cpp",
+      "sha256": "9E12FD676C1DD7951D61D5C697D5D00F67499021F6F71B22A9FDFBEA6903B08B",
+      "bytes": 17207
+    },
+    {
+      "path": "Source\\DublinFlight\\DublinFlightHUD.cpp",
+      "sha256": "614957E6FB5D46A8FF00EF3349B01F27C1020A41BB7364E90562FE3EA1898893",
+      "bytes": 7102
+    },
+    {
+      "path": "Source\\DublinFlight\\Weapons\\DublinProjectile.cpp",
+      "sha256": "B2EA9C285B4FA0FB2B91054916DF9215AECCC2BC50E3B71246887FE525F6C655",
+      "bytes": 6189
+    },
+    {
+      "path": "Source\\DublinFlight\\Weapons\\DublinProjectile.h",
+      "sha256": "C721B399F7EFDFE60B32EE8C6396C4C008409795ED9CE9DB32C1BA58F3F1A144",
+      "bytes": 2003
+    },
+    {
+      "path": "Source\\DublinFlight\\Weapons\\DublinWeaponComponent.cpp",
+      "sha256": "6242996EB80D618CC124FC85BA924395A84853D06F85132C2F7981A3C1C042D6",
+      "bytes": 8431
+    },
+    {
+      "path": "Source\\DublinFlight\\Weapons\\DublinWeaponComponent.h",
+      "sha256": "79EC9C3DDF3F78711EC176F13884A7D83C06AB4B15C09AC1C9912EC0D9ACE53C",
+      "bytes": 3985
+    },
+    {
+      "path": "Source\\DublinFlight\\Weapons\\DublinWeaponModel.cpp",
+      "sha256": "CB66EE858307A7CC9DF4E8A7767F6E83E9494AB79D5C3B38DE9C02F5FF6D68C6",
+      "bytes": 3524
+    },
+    {
+      "path": "Source\\DublinFlight\\Weapons\\DublinWeaponModel.h",
+      "sha256": "C01F74D50BCDE2DC0FBF0B1F9FF886146107ED878F50FE84424B0A4613E63E0E",
+      "bytes": 1382
+    },
+    {
+      "path": "Source\\DublinFlight\\Weapons\\Tests\\DublinWeaponPIETests.cpp",
+      "sha256": "59ED7ADC045C7B9074BFA6EEBB0841BEA4A8F9FCD983D73D6B4BAD92C92A1E0B",
+      "bytes": 16067
+    },
+    {
+      "path": "Source\\DublinFlight\\Weapons\\Tests\\DublinWeaponTests.cpp",
+      "sha256": "3002DA3D37FF64DEC1F27FAD98B6B1CFD00EAE3747C17FC1DBD5A000CEC1429E",
+      "bytes": 7612
+    }
+  ]
+}

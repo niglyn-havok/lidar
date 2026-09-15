@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "checked_at_utc": "2026-09-08T17:19:16.850861+00:00",
+  "archive_bodies_downloaded": 0,
+  "remaining_archive_budget_bytes": 946648907,
+  "sources": [
+    {
+      "name": "nyu_collection",
+      "url": "https://archive.nyu.edu/handle/2451/38684",
+      "resolved_url": "https://archive.nyu.edu/handle/2451/38684",
+      "response_bytes": 29687,
+      "html_sha256": "30a8d7c7efce767c9f18fe0e10d657c4b7be01aabab5f374f3e78a450ca823cb",
+      "present_tokens": [
+        "CC BY",
+        "partially covered"
+      ]
+    },
+    {
+      "name": "nyu_components",
+      "url": "https://serv.cusp.nyu.edu/projects/ALSDublin15/html/data-components.html",
+      "resolved_url": "https://serv.cusp.nyu.edu/projects/ALSDublin15/html/data-components.html",
+      "response_bytes": 12681,
+      "html_sha256": "ad76f55b634fec1fbbcdc207fe23d0a2abf699b78eb75d6fa0a86c6b2295ffb2",
+      "present_tokens": [
+        "orthorectified"
+      ]
+    },
+    {
+      "name": "nyu_survey",
+      "url": "https://serv.cusp.nyu.edu/projects/ALSDublin15/ALSDublin15.html",
+      "resolved_url": "https://serv.cusp.nyu.edu/projects/ALSDublin15/ALSDublin15.html",
+      "response_bytes": 274162,
+      "html_sha256": "edf8576e1ad305fd1565d6f5f604d8805d2090ba2253e1d15d05cfbf6be64700",
+      "present_tokens": [
+        "20cm",
+        "ECW",
+        "partially covered"
+      ]
+    },
+    {
+      "name": "tailte_aerial",
+      "url": "https://tailte.ie/map-shop/professional-map-products/aerial-imagery-maps-and-data/",
+      "resolved_url": "https://tailte.ie/map-shop/professional-map-products/aerial-imagery-maps-and-data/",
+      "response_bytes": 67277,
+      "html_sha256": "3ef1a9d86cb9068a284f64b54ce659583a01dba9a9ebd836021119a17936823d",
+      "present_tokens": [
+        "purchase",
+        "15cm",
+        "orthorectified"
+      ]
+    },
+    {
+      "name": "tailte_rights",
+      "url": "https://tailte.ie/map-shop/map-licences-and-copyright/",
+      "resolved_url": "https://tailte.ie/map-shop/map-licences-and-copyright/",
+      "response_bytes": 119287,
+      "html_sha256": "c53616e57e39b256d43e2e615cf33f417b509c79bea8786d570798c74b78a555",
+      "present_tokens": [
+        "Copyright Licence",
+        "purchase"
+      ]
+    },
+    {
+      "name": "tailte_open_data",
+      "url": "https://tailte.ie/services/open-data/",
+      "resolved_url": "https://tailte.ie/services/open-data/",
+      "response_bytes": 66633,
+      "html_sha256": "8e9a8f40f219e562408854eba843582b84f7874a58611c88c62435a00297df93",
+      "present_tokens": [
+        "Creative Commons"
+      ]
+    },
+    {
+      "name": "smartdublin_docklands",
+      "url": "https://data.smartdublin.ie/dataset/3d-data-hack-dublin-resources",
+      "resolved_url": "https://data.smartdublin.ie/dataset/3d-data-hack-dublin-resources",
+      "response_bytes": 68007,
+      "html_sha256": "78dc94c474609a409c7ec2968255567e58665ccc3094ecc76f7c9ecb5f089853",
+      "present_tokens": [
+        "CC BY",
+        "Creative Commons",
+        "NonCommercial"
+      ]
+    }
+  ],
+  "candidate_archive_heads": [
+    {
+      "url": "https://archive.nyu.edu/bitstream/2451/38684/26/nyu_2451_38684_misc_other.zip",
+      "head_bytes": 366295340,
+      "checked_at_utc": "2026-09-08T17:19:20.938855+00:00",
+      "within_remaining_budget": true,
+      "license_basis": "https://archive.nyu.edu/handle/2451/38684",
+      "gap_coverage_verified": false,
+      "download_performed": false
+    },
+    {
+      "url": "https://archive.nyu.edu/bitstream/2451/38684/27/nyu_2451_38684_misc_oblique.zip",
+      "head_bytes": 938572637,
+      "checked_at_utc": "2026-09-08T17:19:21.239645+00:00",
+      "within_remaining_budget": true,
+      "license_basis": "https://archive.nyu.edu/handle/2451/38684",
+      "gap_coverage_verified": false,
+      "download_performed": false
+    },
+    {
+      "url": "https://archive.nyu.edu/bitstream/2451/38684/29/nyu_2451_38684_misc_rgb.zip",
+      "head_bytes": 10868898928,
+      "checked_at_utc": "2026-09-08T17:19:21.564451+00:00",
+      "within_remaining_budget": false,
+      "license_basis": "https://archive.nyu.edu/handle/2451/38684",
+      "gap_coverage_verified": false,
+      "download_performed": false
+    },
+    {
+      "url": "https://archive.nyu.edu/bitstream/2451/38684/31/nyu_2451_38684_doc.zip",
+      "head_bytes": 1777646,
+      "checked_at_utc": "2026-09-08T17:19:21.849555+00:00",
+      "within_remaining_budget": true,
+      "license_basis": "https://archive.nyu.edu/handle/2451/38684",
+      "gap_coverage_verified": false,
+      "download_performed": false
+    }
+  ],
+  "catalog_queries": [
+    {
+      "url": "https://data.gov.ie/api/3/action/package_search?q=orthophoto+OR+%22aerial+imagery%22&rows=12",
+      "total_matching_records": 0,
+      "bounded_results": []
+    },
+    {
+      "url": "https://data.smartdublin.ie/api/3/action/package_search?q=orthophoto+OR+%22aerial+imagery%22&rows=12",
+      "total_matching_records": 0,
+      "bounded_results": []
+    }
+  ],
+  "errors": [],
+  "elapsed_since_followup_start_seconds": 236.587275,
+  "nyu_misc_other_suffix_probe": {
+    "url": "https://archive.nyu.edu/bitstream/2451/38684/26/nyu_2451_38684_misc_other.zip",
+    "requested_range": "bytes=-65536",
+    "status_code": 200,
+    "content_length": "366295340",
+    "content_range": null,
+    "body_bytes_read": 0,
+    "checked_at_utc": "2026-09-08T17:20:46.344491+00:00",
+    "decision": "Server did not supply a bounded partial response; close without reading archive body."
+  },
+  "ucd_2007_lead": {
+    "url": "https://doi.org/10.7925/DRS1.UCDLIB_30462",
+    "error": "404 Client Error: Not Found for url: http://digital.ucd.ie/view/ucdlib:30462",
+    "decision": "Not verified; do not acquire imagery."
+  }
+}

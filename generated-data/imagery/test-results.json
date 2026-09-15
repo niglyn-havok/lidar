@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "completed_at_utc": "2026-09-08T17:19:20.655193+00:00",
+  "passed": true,
+  "tests_run": 25,
+  "failures": 0,
+  "errors": 0,
+  "image_sha256": "f3e2aa75e4b5c4a52bd6e2f177bc896d2ddd0d78c082a1ab742536f9c075f606",
+  "processor_sha256": "288c40862db4a8543cf3cc18b2bbc22fed74ba0c4186e206deba7e6e757f61ab",
+  "extractor_sha256": "ea42e2c893cdd3fb4766d9c75550901398fa6a0f07fa56539b139a3c93287fd6",
+  "test_script_sha256": "a43b778b800290ccb818c86a98cbcccd7581e5020f4c7a1847aeb407227a7a1e",
+  "failure_details": []
+}

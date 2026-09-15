@@ -1,0 +1,24 @@
+{
+  "Dublin - A City Held in Glass.png": {
+    "resolution": [
+      3200,
+      3800
+    ],
+    "png_bit_depth": 16,
+    "bytes": 55369468,
+    "opaque": true
+  },
+  "Dublin - City Detail.png": {
+    "resolution": [
+      2800,
+      2100
+    ],
+    "png_bit_depth": 16,
+    "bytes": 33329357,
+    "opaque": true
+  },
+  "bridge_origin": {
+    "water": false,
+    "surface_elevation_metres": 4.441999912261963
+  }
+}

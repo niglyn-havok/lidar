@@ -1,0 +1,230 @@
+{
+  "schema_version": 1,
+  "status": "complete",
+  "stage": "complete",
+  "output": "Content\\Data\\dublin-city.json",
+  "blockers": [],
+  "counts": {
+    "terrainVertices": 148225,
+    "terrainTriangles": 274050,
+    "waterVertices": 81,
+    "waterTriangles": 77,
+    "buildingVolumes": 1044,
+    "buildingVertices": 31798,
+    "buildingTriangles": 25576,
+    "bridgeVolumes": 9,
+    "closedSolidFailuresInOutput": 0,
+    "heightMethods": {
+      "lidar_robust_median_flat_coarse": 373,
+      "osm_height_fallback_no_supported_2015_roof": 78,
+      "osm_levels_assumed_3.2m_flat_fallback": 17,
+      "lidar_robust_plane": 430,
+      "lidar_near_flat_plane": 100,
+      "lidar_supported_two_plane_ridge": 36,
+      "bridge_lidar_low_quartile_deck_assumed_0.7m_slab": 8,
+      "bridge_lidar_low_supported_arch_assumed_0.7m_slab": 1,
+      "prior_verified_report_raw_tip_procedural_taper": 1
+    },
+    "diagnosticStatuses": {
+      "deferred_geometry": 2,
+      "excluded_lifecycle": 1,
+      "duplicate_or_covered": 96,
+      "deferred_sliver": 11,
+      "deferred_beyond_halo": 4,
+      "replaced_by_verified_spire_landmark": 1,
+      "bridge_line_covered_by_area": 31,
+      "deferred_unsafe_or_unsupported_volume": 49
+    },
+    "deferredVolumes": 66,
+    "buildingsWithHoles": 16,
+    "cropClosedVolumes": 73
+  },
+  "tests": {
+    "status": "passed",
+    "run": 16,
+    "failures": 0,
+    "errors": 0
+  },
+  "updatedUtc": "2026-09-08T17:18:26.493319+00:00",
+  "surfaceBoundsEN": [
+    314950,
+    233400,
+    316950,
+    235350
+  ],
+  "sources": {
+    "buildings": {
+      "source": "OpenStreetMap",
+      "endpoint": "https://overpass-api.de/api/interpreter",
+      "query": "[out:json][timeout:40][maxsize:67108864];(way[\"building\"](53.3432878,-6.2657463,53.3512733,-6.2524015);relation[\"building\"](53.3432878,-6.2657463,53.3512733,-6.2524015);way[\"building:part\"](53.3432878,-6.2657463,53.3512733,-6.2524015);relation[\"building:part\"](53.3432878,-6.2657463,53.3512733,-6.2524015););out body geom;",
+      "bboxSouthWestNorthEast": [
+        53.34328782529877,
+        -6.265746327362666,
+        53.35127331818866,
+        -6.252401520452229
+      ],
+      "coreBoundsEN": [
+        315605,
+        234009,
+        316373,
+        234777
+      ],
+      "haloBoundsEN": [
+        315555,
+        233959,
+        316423,
+        234827
+      ],
+      "acquiredUtc": "2026-09-08T17:00:52.100306+00:00",
+      "osmBaseTimestampUtc": "2026-09-08T16:59:35Z",
+      "bytes": 1365790,
+      "sha256": "475ad85a9a1be4fe49fecf94a069a7e69c9058ac6663baa383feda105b2fd3c5",
+      "elements": 1462,
+      "seconds": 1.613,
+      "attempts": 1,
+      "earlierErrors": [],
+      "responseLimitBytes": 10000000,
+      "attribution": "© OpenStreetMap contributors",
+      "license": "ODbL 1.0",
+      "licenseUrl": "https://www.openstreetmap.org/copyright"
+    },
+    "hydrology": {
+      "source": "OpenStreetMap",
+      "endpoint": "https://overpass-api.de/api/interpreter",
+      "query": "[out:json][timeout:40][maxsize:67108864];(way[\"waterway\"=\"riverbank\"](53.3432878,-6.2657463,53.3512733,-6.2524015);relation[\"waterway\"=\"riverbank\"](53.3432878,-6.2657463,53.3512733,-6.2524015);way[\"natural\"=\"water\"](53.3432878,-6.2657463,53.3512733,-6.2524015);relation[\"natural\"=\"water\"](53.3432878,-6.2657463,53.3512733,-6.2524015);way[\"waterway\"=\"river\"](53.3432878,-6.2657463,53.3512733,-6.2524015);way[\"highway\"](53.3432878,-6.2657463,53.3512733,-6.2524015);way[\"man_made\"=\"bridge\"](53.3432878,-6.2657463,53.3512733,-6.2524015);relation[\"man_made\"=\"bridge\"](53.3432878,-6.2657463,53.3512733,-6.2524015);way[\"place\"=\"island\"](53.3432878,-6.2657463,53.3512733,-6.2524015);relation[\"place\"=\"island\"](53.3432878,-6.2657463,53.3512733,-6.2524015););out body geom;",
+      "bboxSouthWestNorthEast": [
+        53.34328782529877,
+        -6.265746327362666,
+        53.35127331818866,
+        -6.252401520452229
+      ],
+      "coreBoundsEN": [
+        315605,
+        234009,
+        316373,
+        234777
+      ],
+      "haloBoundsEN": [
+        315555,
+        233959,
+        316423,
+        234827
+      ],
+      "acquiredUtc": "2026-09-08T17:00:53.871293+00:00",
+      "osmBaseTimestampUtc": "2026-09-08T16:59:35Z",
+      "bytes": 841032,
+      "sha256": "2a41280ec5bfca2b80f4839203c87536f8b22a3aaf803f689b3b007eb42f86f8",
+      "elements": 1149,
+      "seconds": 1.769,
+      "attempts": 1,
+      "earlierErrors": [],
+      "responseLimitBytes": 10000000,
+      "attribution": "© OpenStreetMap contributors",
+      "license": "ODbL 1.0",
+      "licenseUrl": "https://www.openstreetmap.org/copyright"
+    }
+  },
+  "ground": {
+    "eligibleRasterCells": 220138,
+    "lowSupportedNodes": 4098,
+    "rejectedElevatedOrDisconnectedNodes": 1058,
+    "nodeHeightRangeM": [
+      0.755,
+      11.396
+    ],
+    "buildingBufferM": 4,
+    "blockM": 8,
+    "blockPercentile": 25,
+    "candidateSource": "Measured max-raster surface outside building/water/deck buffers; cached class2 terrain NOT used",
+    "wideSupportRule": "128 nearby low nodes; reject >p20 +1.5m +0.035*supportRadius",
+    "gridShape": [
+      385,
+      385
+    ],
+    "spacingM": 2,
+    "waterCutTriangles": 20862,
+    "heightRangeM": [
+      0.783,
+      11.231
+    ],
+    "supportDistanceP50P95MaxM": [
+      9.49,
+      31.02,
+      71.56
+    ],
+    "interpolatedSlotsFurtherThan40m": 2456,
+    "shorelineMethod": "OSM water-polygon triangle-centroid cut; <=2.83m cell-diagonal approximation",
+    "underwaterVertices": "Unused grid slots have interpolated bank heights, no bed/bathymetry claim",
+    "buildingInteriorSamplesUsed": 0,
+    "certifiedBareEarth": false,
+    "spireGradeAnchor": "Prior report H6.45m; artistic 3m-radius level pad blending to interpolated ground by6m to avoid floating restored base"
+  },
+  "validation": {
+    "status": "passed",
+    "terrainVertices": 148225,
+    "terrainTriangles": 274050,
+    "waterVertices": 81,
+    "waterTriangles": 77,
+    "buildingVolumes": 1044,
+    "buildingVertices": 31798,
+    "buildingTriangles": 25576,
+    "bridgeVolumes": 9,
+    "closedSolidFailuresInOutput": 0
+  },
+  "sourceSurface": {
+    "path": "artwork\\surface.npz",
+    "sha256": "2b6783007360c78180bcb295a0c1532ae7f29ad76ad66ab6361595e038936086",
+    "sourceBoundsEN": [
+      314950.0,
+      233400.0,
+      316950.0,
+      235350.0
+    ],
+    "haloShapeYX": [
+      869,
+      869
+    ],
+    "cellM": 1.0,
+    "measuredHaloFraction": 0.999725
+  },
+  "outputBytes": 14059267,
+  "outputSha256": "54a4e9d6a835632d1e9dd58050559aced46ee92cd675961ff1a9732ac6750af4",
+  "runtimeSeconds": 63.4,
+  "provenance": "generated-data\\city-provenance.json",
+  "caveats": [
+    "2015-03-26 LiDAR versus acquired 2026 OSM; changed structures and source registration are not independently surveyed.",
+    "Numeric EPSG:29903 legacy convention retained. LAS custom false-origin discrepancy (+0.32,+0.08m) and legacy lower-left bin placement remain; no silent per-layer offsets.",
+    "Ground uses low supported exterior surface samples only, 4m building exclusion and wider low-support screening; cached class2 terrain is not used. Interpolation beneath buildings is inferred and support distances are recorded.",
+    "Ground can contain residual unmapped features; ground node heights are bounded and robustly screened, not certified bare-earth DTM.",
+    "Water H=1.1m is an artistic provisional tide. Water is OSM polygon geometry with holes/islands retained; no bathymetry is inferred.",
+    "Terrain shoreline uses 2m grid triangle-centroid cut; bank discrepancy <=2.83m; exact OSM water geometry retained.",
+    "Complex roofs downgraded to footprint-constrained flat robust median with explicit per-volume method; ornamental details, trees and facade detail are not recovered from max-raster data.",
+    "Bridge decks are separate low-raster-height, approximate-width/0.7m-thick closed slabs; a supported footbridge arch can be fitted. Piers, railings and trusses are not reconstructed.",
+    "The 1m maximum-return/median raster can blend bridge railings, vehicles and deck; low-quantile bridge heights are supported visual proxies, not certified deck levels.",
+    "Boundary building footprints are clipped and CLOSED at the exact 768m core to keep roof UVs in [0,1]; artificial crop closure walls and 1m foundations are flagged.",
+    "OSM outlines are planimetrically partitioned: detailed parts win, relation-member duplicates suppressed, uncovered parent residuals retained; vertically stacked parts become a coarse non-overlapping XY partition.",
+    "Meshes have intentional UV/hard-edge seam vertices. Closure is tested after exact positional welding; every geometric edge has two oppositely directed incident triangles.",
+    "Wall UVs are metres: U cumulative boundary distance, V height above the local bottom; roof UVs remain global top-down normalized coordinates. Facades are generic, not measured.",
+    "UE clockwise winding: outward normal = cross(C-A,B-A); signed volume is NEGATIVE of conventional right-hand determinant formula.",
+    "Spire restored from verified prior handoff/report, not remeasured: base H6.45m, tip H124.609m, diameter3m, tip radius0.08m.",
+    "OSM Spire shell suppressed in favour of one restored landmark; an artistic 3m-radius H6.45m grade pad blends out by6m, preventing a floating base.",
+    "No orthophoto, Esri imagery, imagery masks, LAZ, native source/config, editor or asset modifications were made by this pipeline.",
+    "This verifies offline geometry only, not saved-map appearance, collision, destruction or frame-rate acceptance."
+  ],
+  "originalGeometricCitySHA256": "8495828b2d9d8bf433b1c2ea38f6cd4f3fd916e22d936f19ce44ff7c917551d8",
+  "geometryDigestSHA256": "57ea627c41c36612115e5b032cbde3831316098f4b53820991d2c18b47aaebf2",
+  "facadeAddition": {
+    "status": "complete",
+    "note": "Facade colour addition, NOT geometry regeneration",
+    "generatedUtc": "2026-09-08T18:31:21.047076+00:00",
+    "provenance": "Content\\Data\\facade-provenance.json",
+    "tests": {
+      "status": "passed",
+      "run": 15,
+      "failures": 0,
+      "errors": 0
+    },
+    "colouredVertices": 31798,
+    "buildingIds": 1044
+  }
+}

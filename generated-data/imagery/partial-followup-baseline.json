@@ -1,0 +1,9 @@
+{
+  "started_at_utc": "2026-09-08T17:15:25.980941+00:00",
+  "preserve_unchanged_sha256": {
+    "dublin-ortho.png": "f3e2aa75e4b5c4a52bd6e2f177bc896d2ddd0d78c082a1ab742536f9c075f606",
+    "dublin-ortho-georeference.json": "03723c3d319213104b3322ab0439bbe3ed218d41052e0ed7485b58d13d9e6729"
+  },
+  "research_time_budget_seconds": 600,
+  "additional_archive_budget_bytes": 946648907
+}

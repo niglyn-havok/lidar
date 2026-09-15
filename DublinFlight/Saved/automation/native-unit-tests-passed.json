@@ -1,0 +1,163 @@
+{
+	"tests": [
+		{
+			"name": "DublinFlight.City.Coordinates.KnownSurveyAndClockwise",
+			"state": "Success",
+			"duration": 0.015461601316928864,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.City.Geometry.ChunkMappingAndMaterials",
+			"state": "Success",
+			"duration": 0.0083701983094215393,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.City.Geometry.FixedTerrainTopology",
+			"state": "Success",
+			"duration": 0.016523100435733795,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.City.Lifecycle.ReclaimsUntrackedDuplicates",
+			"state": "Success",
+			"duration": 0.020809300243854523,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.City.Parser.SafeRelativePath",
+			"state": "Success",
+			"duration": 0.015190701931715012,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.City.Parser.ShapeAndBounds",
+			"state": "Success",
+			"duration": 0.068690799176692963,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Flight.AttitudeAndFramePartition",
+			"state": "Success",
+			"duration": 0.015757299959659576,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Flight.FiniteGuardsAndBoundedSubsteps",
+			"state": "Success",
+			"duration": 0.016036398708820343,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Flight.GodStationaryAimingAndTranslation",
+			"state": "Success",
+			"duration": 0.013761501759290695,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Flight.InitialStateUnitsAndCompass",
+			"state": "Success",
+			"duration": 0.015785597264766693,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Flight.InputMappingAndHeldKeySuppression",
+			"state": "Success",
+			"duration": 0.015359897166490555,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Flight.ModeTransitionsAndReset",
+			"state": "Success",
+			"duration": 0.015377398580312729,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Flight.SweptMovementCallbackContract",
+			"state": "Success",
+			"duration": 0.014547199010848999,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Flight.ThrottleBoundsAndDistance",
+			"state": "Success",
+			"duration": 0.018569998443126678,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Input.LabelsAndDurations",
+			"state": "Success",
+			"duration": 0.015240099281072617,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Metrics.Exact60FPSThreshold",
+			"state": "Success",
+			"duration": 0.01606309786438942,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Metrics.MemoryCap",
+			"state": "Success",
+			"duration": 0.015328001230955124,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Metrics.QuantilesAndOrder",
+			"state": "Success",
+			"duration": 0.015808399766683578,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Metrics.RejectInvalidSamples",
+			"state": "Success",
+			"duration": 0.017635099589824677,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Metrics.SpikeDespiteGoodAverage",
+			"state": "Success",
+			"duration": 0.014539401978254318,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Window.RejectInvalidClock",
+			"state": "Success",
+			"duration": 0.0153345987200737,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Window.WarmupAndFullFrames",
+			"state": "Success",
+			"duration": 0.015578899532556534,
+			"errors": [],
+			"warnings": []
+		}
+	],
+	"passed": 22,
+	"failed": 0,
+	"skipped": 0,
+	"total": 22,
+	"duration": 0.39576855301856995
+}

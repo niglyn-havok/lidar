@@ -1,0 +1,159 @@
+{
+  "tile": "316000_234500",
+  "files": [
+    {
+      "path": "generated-data\\imagery\\originals\\316000_234500\\316000_234500.tfw",
+      "bytes": 37,
+      "zip_member_path": "nyu_2451_38607_rgbi/316000_234500.tfw",
+      "zip_member_path_validated": true,
+      "destination_within_imagery_subtree": true,
+      "sha256": "2cec1fb89d0965f4ab034ee3830a82928590b474560544cdfb6d759172c0fd8b",
+      "published_sha256": "2cec1fb89d0965f4ab034ee3830a82928590b474560544cdfb6d759172c0fd8b",
+      "published_checksum_source": "metadata\\316000_234500-source-checksums.json",
+      "published_hash_matches": true,
+      "zip_crc_checked_on_extraction": true
+    },
+    {
+      "path": "generated-data\\imagery\\originals\\316000_234500\\316000_234500.tif",
+      "bytes": 400080450,
+      "zip_member_path": "nyu_2451_38607_rgbi/316000_234500.tif",
+      "zip_member_path_validated": true,
+      "destination_within_imagery_subtree": true,
+      "sha256": "457e9902a97356c3ebfb76dfa3199c4f94626eaa719585dfc3648a204e0d6d90",
+      "published_sha256": "457e9902a97356c3ebfb76dfa3199c4f94626eaa719585dfc3648a204e0d6d90",
+      "published_checksum_source": "metadata\\316000_234500-source-checksums.json",
+      "published_hash_matches": true,
+      "zip_crc_checked_on_extraction": true
+    }
+  ],
+  "archive_path": "generated-data\\imagery\\downloads\\nyu_2451_38607_orthophoto_T_316000_234500.zip",
+  "inspected_at_utc": "2026-09-08T17:12:20.800152+00:00",
+  "shape": [
+    10000,
+    10000,
+    4
+  ],
+  "dtype": "uint8",
+  "axes": "YXS",
+  "geotiff_metadata": {
+    "KeyDirectoryVersion": 1,
+    "KeyRevision": 1,
+    "KeyRevisionMinor": 0,
+    "GTModelTypeGeoKey": 1,
+    "GTRasterTypeGeoKey": 1,
+    "GeographicTypeGeoKey": 32767,
+    "GeogAngularUnitsGeoKey": 9102,
+    "GeogEllipsoidGeoKey": 7002,
+    "GeogSemiMajorAxisGeoKey": 6377340.189,
+    "GeogSemiMinorAxisGeoKey": 6356034.448,
+    "GeogInvFlatteningGeoKey": 299.32496546353127,
+    "ProjectedCSTypeGeoKey": 29902,
+    "ProjLinearUnitsGeoKey": 9001,
+    "ModelPixelScale": [
+      0.05,
+      0.05,
+      1.0
+    ],
+    "ModelTiepoint": [
+      0.0,
+      0.0,
+      0.0,
+      316000.0,
+      235000.0,
+      0.0
+    ]
+  },
+  "tags": {
+    "ImageWidth": 10000,
+    "ImageLength": 10000,
+    "BitsPerSample": [
+      8,
+      8,
+      8,
+      8
+    ],
+    "Compression": 1,
+    "PhotometricInterpretation": 2,
+    "SamplesPerPixel": 4,
+    "PlanarConfiguration": 1,
+    "ExtraSamples": [
+      0
+    ],
+    "ModelPixelScaleTag": [
+      0.05,
+      0.05,
+      1.0
+    ],
+    "ModelTiepointTag": [
+      0.0,
+      0.0,
+      0.0,
+      316000.0,
+      235000.0,
+      0.0
+    ],
+    "GeoKeyDirectoryTag": [
+      1,
+      1,
+      0,
+      10,
+      1024,
+      0,
+      1,
+      1,
+      1025,
+      0,
+      1,
+      1,
+      2048,
+      0,
+      1,
+      32767,
+      2054,
+      0,
+      1,
+      9102,
+      2056,
+      0,
+      1,
+      7002,
+      2057,
+      34736,
+      1,
+      0,
+      2058,
+      34736,
+      1,
+      1,
+      2059,
+      34736,
+      1,
+      2,
+      3072,
+      0,
+      1,
+      29902,
+      3076,
+      0,
+      1,
+      9001
+    ],
+    "GeoDoubleParamsTag": [
+      6377340.189,
+      6356034.448,
+      299.32496546353127
+    ]
+  },
+  "tfw_text": "0.05\n0\n0\n-0.05\n316000.025\n234999.975\n",
+  "extraction_policy": "All ZIP paths validated; reject absolute/drive/UNC/traversal/ambiguous paths and special files. Only the exact TIFF/TFW pair is streamed to checked in-scope paths; no extractall.",
+  "tfw_A_D_B_E_C_F": [
+    0.05,
+    0.0,
+    0.0,
+    -0.05,
+    316000.025,
+    234999.975
+  ],
+  "page_count": 1,
+  "is_memmappable": true
+}

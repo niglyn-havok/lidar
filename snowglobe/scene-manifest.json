@@ -1,0 +1,22 @@
+{
+  "blend_path": "C:\\Code\\tmp\\messing\\dublin-lidar\\snowglobe\\Dublin - OConnell Bridge - Snow Globe.blend",
+  "objects": 102,
+  "mesh_vertices": 2210335,
+  "mesh_polygons": 2383087,
+  "packed_images": [
+    "dublin-aerial.jpg",
+    "editorial-overlay.png"
+  ],
+  "unpacked_file_images": [],
+  "camera": "CAMERA | hero - O'Connell Bridge at survey origin",
+  "final_resolution": [
+    3200,
+    3800
+  ],
+  "cycles_samples": 256,
+  "glass_shell_thickness": 0.035,
+  "bridge_center_model_xy": [
+    0,
+    0
+  ]
+}

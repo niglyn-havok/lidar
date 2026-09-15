@@ -1,0 +1,44 @@
+# Windows and editor state
+Thumbs.db
+Desktop.ini
+.vs/
+*.user
+*.suo
+*.VC.db
+
+# Python caches and local environments
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Incomplete downloads and temporary files
+*.part
+*.tmp
+*.temp
+
+# Download caches duplicated by retained extracted source data and metadata
+/archives/
+/generated-data/imagery/downloads/
+
+# Unreal-generated build, cache, IDE, packaging, and runtime output
+/DublinFlight/.vs/
+/DublinFlight/Binaries/
+/DublinFlight/DerivedDataCache/
+/DublinFlight/Intermediate/
+/DublinFlight/*.sln
+/DublinFlight/*.slnx
+/DublinFlight/Build/Windows/FileOpenOrder/
+/DublinFlight/Saved/*
+
+# Preserve useful automation handoffs, captures, and agent experiment records
+!/DublinFlight/Saved/automation/
+!/DublinFlight/Saved/automation/**
+
+# One-shot process markers and recoverable encoding temporaries
+/artwork/stop-recording.flag
+/snowglobe/orbit/orbit-encoding.mp4
+/snowglobe/orbit-landscape/orbit-encoding.mp4

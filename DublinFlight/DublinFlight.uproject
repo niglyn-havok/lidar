@@ -1,0 +1,82 @@
+{
+    "FileVersion": 3,
+    "EngineAssociation": "5.8",
+    "Category": "",
+    "Description": "",
+    "Modules": [
+        {
+            "Name": "DublinFlight",
+            "Type": "Runtime",
+            "LoadingPhase": "Default"
+        }
+    ],
+    "Plugins": [
+        {
+            "Name": "ModelingToolsEditorMode",
+            "Enabled": true,
+            "TargetAllowList": [
+                "Editor"
+            ]
+        },
+        {
+            "Name": "ModelContextProtocol",
+            "Enabled": true
+        },
+        {
+            "Name": "AllToolsets",
+            "Enabled": true
+        },
+        {
+            "Name": "ChaosClothAssetToolset",
+            "Enabled": true
+        },
+        {
+            "Name": "LiveCodingToolset",
+            "Enabled": true
+        },
+        {
+            "Name": "MetaHumanGenerator",
+            "Enabled": true
+        },
+        {
+            "Name": "MVVMToolset",
+            "Enabled": true
+        },
+        {
+            "Name": "SequencerAnimMixerToolset",
+            "Enabled": true
+        },
+        {
+            "Name": "PythonScriptPlugin",
+            "Enabled": true
+        },
+        {
+            "Name": "EditorScriptingUtilities",
+            "Enabled": true
+        },
+        {
+            "Name": "EnhancedInput",
+            "Enabled": true
+        },
+        {
+            "Name": "GeometryCollectionPlugin",
+            "Enabled": true
+        },
+        {
+            "Name": "FieldSystemPlugin",
+            "Enabled": true
+        },
+        {
+            "Name": "Niagara",
+            "Enabled": true
+        },
+        {
+            "Name": "ProceduralMeshComponent",
+            "Enabled": true
+        },
+        {
+            "Name": "PlanarCut",
+            "Enabled": true
+        }
+    ]
+}

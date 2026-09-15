@@ -1,0 +1,21 @@
+{
+  "file": "Dublin - Snow Globe - 12s Landscape Orbit.mp4",
+  "duration_seconds": 12.0,
+  "fps": 24.0,
+  "decoded_frames": 288,
+  "resolution": [
+    1920,
+    1080
+  ],
+  "codec": "h264",
+  "bytes": 18387538,
+  "rotation_degrees": 360,
+  "median_adjacent_frame_difference": 4.474876403808594,
+  "loop_seam_difference": 4.686059474945068,
+  "all_frames_decoded": true,
+  "framing_matches_preview": false,
+  "preview_elevation_preserved": true,
+  "landscape": true,
+  "text_free": true,
+  "render_seconds": 2608.12
+}

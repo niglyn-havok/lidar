@@ -1,0 +1,61 @@
+Using bundled DotNet SDK version: 10.0 win-x64
+Running UnrealBuildTool: dotnet "..\..\Engine\Binaries\DotNET\UnrealBuildTool\UnrealBuildTool.dll" DublinFlightEditor Win64 Development C:\Code\tmp\messing\dublin-lidar\DublinFlight\DublinFlight.uproject -NoHotReloadFromIDE -WaitMutex -MaxParallelActions=8
+Log file: C:\Users\niglyn\AppData\Local\UnrealBuildTool\Log.txt
+Executing up to 8 actions based on MaxProcessorCount override
+Creating makefile for DublinFlightEditor (.uproject file is newer)
+UbaServer - Listening on 0.0.0.0:1345
+Plugin 'MetaHumanGenerator' depends on plugin 'StructUtils' which was deprecated in 5.5 and will soon be removed. Please update your dependencies.
+Project 'DublinFlightEditor' depends on plugin 'StructUtils' which was deprecated in 5.5 and will soon be removed. Please update your dependencies.
+UHT compiled-in object format Default
+UHT processed DublinFlightEditor in 11.3094834 seconds (15 generated files written)
+Building DublinFlightEditor...
+===== Toolchain Information =====
+Using ISPC compiler (C:\Program Files\Epic Games\UE_5.8\Engine\Source\ThirdParty\Intel\ISPC\bin\Windows\ispc.exe)
+  Intel(r) Implicit SPMD Program Compiler (Intel(r) ISPC), 1.24.0 (build commit  @ 20250404, LLVM 18.1.2) 
+Using Visual Studio 14.44.35228 toolchain (C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207) and Windows 10.0.22621.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[Adaptive Build] Excluded from DublinFlight unity file: DublinFlight.cpp, DublinFlightGameMode.cpp, DublinFlightHUD.cpp, DublinFlightPawn.cpp, DublinFlightSimulation.cpp, DublinCityData.cpp, DublinCityDestruction.cpp, DublinCityDestructionTests.cpp, DublinCityDestructionWorld.cpp, DublinCityFractureBaker.cpp, DublinCityFractureLibrary.cpp, DublinCityGeometry.cpp, DublinCityTests.cpp, DublinCityWorld.cpp, DublinImpactAudio.cpp, DublinImpactEffectsSubsystem.cpp, DublinImpactEffectsTests.cpp, DublinImpactEffectType.cpp, DublinFlightPerformanceMetrics.cpp, DublinFlightPerformanceSubsystem.cpp, DublinFlightPerformanceTests.cpp, DublinFlightPIETests.cpp, DublinFlightSimulationTests.cpp, DublinProjectile.cpp, DublinWeaponComponent.cpp, DublinWeaponModel.cpp, DublinWeaponPIETests.cpp, DublinWeaponTests.cpp
+=================================
+Using Unreal Build Accelerator local executor to run 32 action(s)
+  CPU 24 physical cores, 32 logical cores
+  Memory 63.66 GB physical, 41.47 GB/127.66 GB committed
+  UBA Storage capacity 40 GB
+[1/32] Compile [x64] DublinCityFractureLibrary.cpp
+[2/32] Compile [x64] DublinCityDestruction.cpp
+[3/32] Compile [x64] DublinCityGeometry.cpp
+[4/32] Compile [x64] DublinCityTests.cpp
+[5/32] Compile [x64] DublinCityData.cpp
+[6/32] Compile [x64] DublinFlight.cpp
+[7/32] Compile [x64] DublinFlightGameMode.cpp
+[8/32] Compile [x64] DublinCityFractureBaker.cpp
+C:\Code\tmp\messing\dublin-lidar\DublinFlight\Source\DublinFlight\City\DublinCityFractureBaker.cpp(56,27): error C2888: 'bool DublinFractureBake::HasCurrentMaterialBindings(const UGeometryCollection &,const ADublinCityWorld &)': symbol cannot be defined within namespace 'anonymous-namespace'
+	bool DublinFractureBake::HasCurrentMaterialBindings(const UGeometryCollection& Collection, const ADublinCityWorld& City)
+	                         ^
+[9/32] Compile [x64] DublinFlightHUD.cpp
+[10/32] Compile [x64] DublinFlightPIETests.cpp
+[11/32] Compile [x64] DublinFlightPerformanceMetrics.cpp
+[12/32] Compile [x64] DublinFlightPawn.cpp
+[13/32] Compile [x64] DublinFlightPerformanceTests.cpp
+[14/32] Compile [x64] DublinFlightPerformanceSubsystem.cpp
+[15/32] Compile [x64] DublinFlightSimulation.cpp
+[16/32] Compile [x64] DublinCityWorld.cpp
+[17/32] Compile [x64] DublinProjectile.cpp
+C:\Code\tmp\messing\dublin-lidar\DublinFlight\Source\DublinFlight\Weapons\DublinProjectile.cpp(127,50): error C2446: ':': no conversion from 'const FVector_NetQuantize' to 'FVector'
+	Resolve(Hit.bStartPenetrating ? GetActorLocation() : Hit.ImpactPoint, Hit.ImpactNormal, false, Hit.GetActor());
+	                                                ^
+[18/32] Compile [x64] DublinFlightSimulationTests.cpp
+[19/32] Compile [x64] DublinImpactAudio.cpp
+[20/32] Compile [x64] DublinCityDestructionTests.cpp
+[21/32] Compile [x64] DublinImpactEffectType.cpp
+[22/32] Compile [x64] DublinWeaponModel.cpp
+[23/32] Compile [x64] DublinWeaponComponent.cpp
+[24/32] Compile [x64] DublinCityDestructionWorld.cpp
+[25/32] Compile [x64] DublinWeaponTests.cpp
+[26/32] Compile [x64] DublinImpactEffectsTests.cpp
+[27/32] Compile [x64] DublinWeaponPIETests.cpp
+[28/32] Compile [x64] Module.DublinFlight.cpp
+[29/32] Compile [x64] DublinImpactEffectsSubsystem.cpp
+Total time in Unreal Build Accelerator local executor: 15.83 seconds
+
+Result: Failed (OtherCompilationError)
+Total execution time: 32.29 seconds
+Trace written to file C:\Users\niglyn\AppData\Local\UnrealBuildTool\Trace.uba with size 14.7kb

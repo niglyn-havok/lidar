@@ -1,0 +1,227 @@
+{
+	"tests": [
+		{
+			"name": "DublinFlight.Destruction.Fracture.AuthoredContactGraph",
+			"state": "Success",
+			"duration": 0.013636797666549683,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Destruction.Fracture.BoundedConservativeRetrySites",
+			"state": "Success",
+			"duration": 0.014141399413347244,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Destruction.Fracture.NumericalCellCutsConserveGeometry",
+			"state": "Success",
+			"duration": 0.44976750016212463,
+			"errors": [],
+			"warnings": [
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6643.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6643.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6643.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6643.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6643.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6643.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6641.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6643.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6643.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6643.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6642.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6643.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6645.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6644.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 53.6643.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 142.948.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 132.208.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 158.938.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 146.997.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 142.901.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 132.163.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 158.893.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 146.953.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 290.383.",
+				"LogPlanarCut: Collision sample spacing of 50 is too small for this geometry (would generate an excessive number of vertices); clamping to 290.353."
+			]
+		},
+		{
+			"name": "DublinFlight.Destruction.Fracture.RegisteredCollisionInitialization",
+			"state": "Success",
+			"duration": 0.16533550620079041,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Destruction.Fracture.RepeatedHitsUseCurrentLeaves",
+			"state": "Success",
+			"duration": 0.0095154978334903717,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Destruction.Fracture.RgbaAndCosmeticIdentity",
+			"state": "Success",
+			"duration": 0.011673901230096817,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Destruction.Readiness.RejectsUnavailableAssetsWithoutMutation",
+			"state": "Success",
+			"duration": 0.024694699794054031,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Benchmark.ConsoleAndStrictTarget",
+			"state": "Success",
+			"duration": 0.012216001749038696,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Benchmark.SharedWarmupAndEnd",
+			"state": "Success",
+			"duration": 0.018267400562763214,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Benchmark.WallScheduleAndMissedAdmissions",
+			"state": "Success",
+			"duration": 0.018696799874305725,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Input.LabelsAndDurations",
+			"state": "Success",
+			"duration": 0.01253809779882431,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Input.ScenarioTargetMinimumFPS",
+			"state": "Success",
+			"duration": 0.01378680020570755,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Metrics.Exact30FPSThreshold",
+			"state": "Success",
+			"duration": 0.018957499414682388,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Metrics.Exact60FPSThreshold",
+			"state": "Success",
+			"duration": 0.019764900207519531,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Metrics.MemoryCap",
+			"state": "Success",
+			"duration": 0.017291799187660217,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Metrics.QuantilesAndOrder",
+			"state": "Success",
+			"duration": 0.019512802362442017,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Metrics.RejectInvalidSamples",
+			"state": "Success",
+			"duration": 0.017668601125478745,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Metrics.ScenarioTargetsAndSpike",
+			"state": "Success",
+			"duration": 0.020004402846097946,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Metrics.SpikeDespiteGoodAverage",
+			"state": "Success",
+			"duration": 0.01536170020699501,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Window.RejectInvalidClock",
+			"state": "Success",
+			"duration": 0.013450399041175842,
+			"errors": [],
+			"warnings": []
+		},
+		{
+			"name": "DublinFlight.Performance.Window.WarmupAndFullFrames",
+			"state": "Success",
+			"duration": 0.018731597810983658,
+			"errors": [],
+			"warnings": []
+		}
+	],
+	"passed": 21,
+	"failed": 0,
+	"skipped": 0,
+	"total": 21,
+	"duration": 0.92501407861709595
+}

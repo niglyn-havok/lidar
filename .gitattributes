@@ -1,0 +1,31 @@
+# Normalize text while leaving binary/LFS content untouched.
+* text=auto
+
+# Unreal authored assets
+*.uasset filter=lfs diff=lfs merge=lfs -text
+*.umap filter=lfs diff=lfs merge=lfs -text
+
+# Source datasets and scientific arrays
+*.laz filter=lfs diff=lfs merge=lfs -text
+*.las filter=lfs diff=lfs merge=lfs -text
+*.tif filter=lfs diff=lfs merge=lfs -text
+*.tiff filter=lfs diff=lfs merge=lfs -text
+*.npz filter=lfs diff=lfs merge=lfs -text
+*.zip filter=lfs diff=lfs merge=lfs -text
+
+# Images, video, and editable artwork
+*.png filter=lfs diff=lfs merge=lfs -text
+*.jpg filter=lfs diff=lfs merge=lfs -text
+*.jpeg filter=lfs diff=lfs merge=lfs -text
+*.gif filter=lfs diff=lfs merge=lfs -text
+*.mp4 filter=lfs diff=lfs merge=lfs -text
+*.blend filter=lfs diff=lfs merge=lfs -text
+
+# Large generated contracts and retained automation captures
+DublinFlight/Content/Data/dublin-city.json filter=lfs diff=lfs merge=lfs -text
+generated-data/city-provenance.json filter=lfs diff=lfs merge=lfs -text
+generated-data/facade-evidence.json filter=lfs diff=lfs merge=lfs -text
+generated-data/sources/osm-buildings.json filter=lfs diff=lfs merge=lfs -text
+DublinFlight/Saved/automation/checkpoint-*.json filter=lfs diff=lfs merge=lfs -text
+DublinFlight/Saved/automation/gameplay-*-capture.json filter=lfs diff=lfs merge=lfs -text
+DublinFlight/Saved/automation/sample-*.json filter=lfs diff=lfs merge=lfs -text

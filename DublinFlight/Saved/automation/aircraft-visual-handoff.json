@@ -1,0 +1,102 @@
+{
+  "status": "code_complete_ready_for_parent_build",
+  "scope": "Original procedural aircraft visuals and narrow pawn presentation hooks only",
+  "files": [
+    "Source\\DublinFlight\\Visuals\\DublinAircraftVisual.h",
+    "Source\\DublinFlight\\Visuals\\DublinAircraftVisual.cpp",
+    "Source\\DublinFlight\\Visuals\\DublinAircraftVisualTests.cpp",
+    "Source\\DublinFlight\\DublinFlightPawn.h",
+    "Source\\DublinFlight\\DublinFlightPawn.cpp"
+  ],
+  "components": {
+    "AircraftVisualsRoot": "USceneComponent attached to unchanged FlightCollision sphere",
+    "AircraftAirframe": "UProceduralMeshComponent attached to AircraftVisualsRoot; five material sections",
+    "AircraftPropeller": "UProceduralMeshComponent attached to AircraftVisualsRoot at local X=390 cm; one section",
+    "AircraftParts": "BlueprintReadOnly array now typed UProceduralMeshComponent; contains only AircraftAirframe and AircraftPropeller",
+    "removed": ["Fuselage", "MainWing", "Tailplane", "TailFin", "Canopy", "Nose", "LeftWingAccent", "RightWingAccent"],
+    "visibility": "Existing CalcCamera 650 cm proximity threshold and SetOwnerNoSee behavior retained for both replacement renderers"
+  },
+  "dependencies": [
+    "Existing public ProceduralMeshComponent module; no module/plugin changes",
+    "Existing /Game/Materials/M_FlightSurface.M_FlightSurface; native Tint and Roughness parameter checks retained",
+    "No new assets, textures, third-party aircraft data, branding, or downloads"
+  ],
+  "materials": {
+    "count": 5,
+    "cache": "Five pawn-owned transient MIDs, shared between airframe sections and propeller",
+    "finishes": [
+      {"name": "Pearl", "linearTint": [0.68, 0.72, 0.69], "roughness": 0.34},
+      {"name": "Petrol", "linearTint": [0.018, 0.24, 0.29], "roughness": 0.32},
+      {"name": "Graphite", "linearTint": [0.018, 0.027, 0.033], "roughness": 0.38},
+      {"name": "Canopy", "linearTint": [0.008, 0.026, 0.045], "roughness": 0.12},
+      {"name": "Brass", "linearTint": [0.72, 0.43, 0.12], "roughness": 0.36}
+    ],
+    "failureBehavior": "Log error plus existing HUD FlightStatus; geometry remains invisible rather than showing white fallback. Empty status after reset is restored to material error while visuals are unavailable."
+  },
+  "geometry": {
+    "design": "Original tapered elliptical fuselage, closed cambered teardrop wing sections with swept rounded taper and thickness, shaped tailplane/fin, framed dark canopy, contrasting wingtips, brass racing stripe and cowling panels, spinner and three modeled propeller blades",
+    "triangles": 4864,
+    "vertices": 9272,
+    "sections": 6,
+    "lengthCm": 880,
+    "wingspanCm": 840,
+    "staticBoundsCm": {"min": [-435, -420, -117.1192], "max": [445, 420, 173]},
+    "maximumVertexRadiusCm": 445.0011,
+    "generation": "BuildGeometry is pure/deterministic with no UObject/world access. CPU geometry cached once; mesh sections created once per pawn in BeginPlay, never on the CDO or per frame.",
+    "collision": "All visual components NoCollision, ignore all channels, no overlaps/navigation/physics; every CreateMeshSection passes bCreateCollision=false.",
+    "propeller": "Presentation-only roll transform updated at no more than 30 Hz from existing pawn Tick; no component ticks, no coupling to thrust, simulation or weapon timing; updates skipped while owner-hidden",
+    "winding": "Unreal clockwise (C-A)x(B-A), smooth outward normals, UV-aligned tangents with mirrored-wing handedness"
+  },
+  "pawnHooks": [
+    "Constructor replaces eight primitive components with one scene root and two procedural renderers",
+    "InitializeAircraftMaterials validates/caches finishes and creates mesh sections once",
+    "Tick calls UpdateAircraftVisuals after the existing unchanged simulation/state update",
+    "UpdateReadableState preserves explicit material-failure status when necessary",
+    "CalcCamera iterates the procedural AircraftParts instead of static meshes"
+  ],
+  "preserved": [
+    "470 cm collision sphere and all root collision settings",
+    "650 cm weapon muzzle remains ahead of maximum visual X=445 cm; no Weapons edits",
+    "Flight simulation, 30-65 m/s range, input bindings and every control method unchanged",
+    "Chase camera settings and camera proximity hiding unchanged",
+    "Public flight state/schema unchanged"
+  ],
+  "tests": {
+    "name": "DublinFlight.Visuals.AirframeGeometry",
+    "status": "not run; parent owns Unreal builds/editor/automation",
+    "coverage": [
+      "Finite positions/normals/tangents/UVs and matched buffers",
+      "Nonempty bounded sections with stable material order",
+      "In-range indices, nondegenerate clockwise triangles and normalized normals",
+      "Tangent orthogonality and UV handedness on mirrored wings",
+      "Combined 2000-6000 triangle budget and bounded vertices",
+      "8.8 m length, 8.4 m span, unchanged 470 cm sphere fit, and muzzle clearance",
+      "Propeller sphere fit for every rotation",
+      "Modeled wing thickness, upper-wing/canopy outward normals, canopy roughness 0.12"
+    ],
+    "independentFormulaAudit": {
+      "status": "passed; mathematical mirror only, not a C++/Unreal test",
+      "triangles": 4864,
+      "vertices": 9272,
+      "degenerateTriangles": 0,
+      "nonUnitNormals": 0,
+      "minimumFaceCornerNormalDot": 0.227253,
+      "maximumVertexRadiusCm": 445.0011
+    },
+    "staticChecks": "New and modified C++ files verified UTF-8 without BOM and CRLF; old AddAircraftPart/AircraftColors/static-mesh primitive references removed from pawn"
+  },
+  "visualTradeoffs": [
+    "Opaque dark glossy canopy uses existing generic shader: no transparent interior, refraction or glass overdraw",
+    "Frames and paint stripes are material regions, not layered coplanar decals",
+    "No cockpit interior, landing gear, rivets, decals, engine audio or skeletal animation added",
+    "Stylized bounded-rate propeller motion rather than expensive translucent blur disk",
+    "Mesh intentionally appears only in BeginPlay; no editor-time preview mesh or CDO generation",
+    "Actual appearance and Unreal integration remain unverified until parent builds, runs tests and captures gameplay"
+  ],
+  "parentNextSteps": [
+    "Rebuild DublinFlight with UHT because Blueprint-visible presentation component types changed",
+    "Run DublinFlight.Visuals.AirframeGeometry and existing flight/weapon regressions",
+    "Capture actual in-game chase view and verify front-face shading, framed canopy, wing silhouette and 650 cm camera hiding"
+  ],
+  "scopeCompliance": "Only listed Visuals files, pawn presentation hooks, and this handoff were edited; no editor calls, launches, builds, delegation, GitHub actions or other agents' files touched"
+}

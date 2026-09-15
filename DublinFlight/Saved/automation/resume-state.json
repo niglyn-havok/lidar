@@ -1,0 +1,60 @@
+{
+  "updated": "2026-09-08",
+  "objectiveComplete": false,
+  "performanceTargets": {"normalAndLightActionMinimumFPS": 60, "maximalDestructionTargetMinimumFPS": 30, "majorDestructionDipsBelow60Accepted": true},
+  "activeSlice": "weapons, actual destruction and building-specific facades",
+  "editor": {
+    "processId": 1552,
+    "project": "DublinFlight.uproject",
+    "mcpPort": 8000,
+    "state": "LIVE; PIE stopped; effects agent may be authoring only /Game/FX assets",
+    "pythonRemoteExecution": false,
+    "toolNote": "api_tool discovery may return zero. Previously discovered schemas are callable through functions.exec tools.ue_editor_control.ue_editor_control_editor_status and ue_editor_control_call_tool. Do not declare tools missing without trying that registered plugin call."
+  },
+  "map": {
+    "asset": "/Game/Maps/Dublin",
+    "saved": true,
+    "startupConfigured": true,
+    "spawnCm": [-28000, 8000, 18000],
+    "yawDegrees": 0,
+    "cityNotYetLoaded": false,
+    "testCourseActorsRemoved": 25,
+    "note": "Sky and player start only until real city data/runtime integrate. No runway belongs in playable map."
+  },
+  "agents": [
+    {"name": "flight-recovery", "id": "609b6073-b1d0-4cc7-9066-9a1c4d6ad327", "scope": "root flight sources and Tests, handoff flight-implementation-handoff.json"},
+    {"name": "performance-recovery", "id": "94301bb5-1d70-41ef-a968-fb8b7653a454", "scope": "Performance sources and performance-implementation-handoff.json"},
+    {"name": "city-generation", "id": "068780e8-af29-491e-945a-b30d5343a041", "scope": "generated-data except imagery, Content Data dublin-city.json, data-generation-handoff.json"},
+    {"name": "dublin-orthophoto", "id": "53b85c6f-3ba9-4c93-8b78-0bacead6e1ba", "scope": "generated-data imagery, Content Data dublin-ortho.png/sidecar, imagery-generation-handoff.json"},
+    {"name": "city-runtime", "id": "b77d1cd5-1bfd-41fc-b1aa-f4ca50b83713", "scope": "City world destruction, fracture baking, craters and waves; destruction-world-handoff.json"},
+    {"name": "impact-effects", "id": "cfadb53b-a27b-4fd0-85a7-41dc199a5ec1", "scope": "Effects native code, /Game/FX asset authoring through plugin, effects-handoff.json"}
+  ],
+  "coordinatorChanges": [
+    "Startup/default map changed to /Game/Maps/Dublin; native DublinFlightGameMode configured.",
+    "Build.cs adds ProceduralMeshComponent publicly and Json RHI RenderCore SlateCore ApplicationCore privately.",
+    "DefaultGame packaging stages Content Data non-UFS and cooks /Game/Maps/Dublin.",
+    "Typed TextureTools.import_file schema discovered for the eventual ortho PNG.",
+    "Full native editor integration build SUCCEEDED after adding module include root and fixing unsupported FFileStatData API.",
+    "All assets saved, previous editor closed through Slate, rebuilt, new editor launched through plugin with PythonRemoteExecution=false.",
+    "DublinCityWorld_0 exists at identity, ready with 1044 volumes, 144 terrain chunks and 134 building chunks. Aerial/coverage, generic facade and SingleLayerWater materials assigned; map explicitly saved.",
+    "21 native unit tests executed: 20 passed, performance embedded-NUL fixture failed. Performance agent has fixed the fixture; rerun after rebuild.",
+    "PIE actual-input test failed because AutomationController tears down existing PIE before test start. Flight agent is converting to standard editor latent PIE setup; source fix pending.",
+    "Runtime actor shows 559 components, double the expected generated mesh count. City agent is fixing PIE duplicate-component lifecycle; source fix pending.",
+    "Manual Slate G/Home input works. Pawn currently god-mode near (-27923.95,8000,18000). Use Slate Screenshot on viewport splitter, NOT CaptureViewport, to include actual PIE HUD.",
+    "First 120-cap static god-city baseline: average92.56FPS, minimum43.16FPS, 5 of926 frames over16.667ms. 60FPS gate FAIL, not a success claim.",
+    "Temporarily disabled editor bThrottleCPUWhenNotForeground and bAllowSlateThrottling (both originally true); restore after validation when appropriate. t.MaxFPS now120 (was0).",
+    "User requests varied building-specific facades. Evidence metadata complete; data agent now adding optional colorsRGBA arrays only, alpha1..8 styles; geometry unchanged. Parent M_DublinFacade style shader compiled/saved; new colours not yet visually applied.",
+    "All previous acceptance fixes rebuilt and verified: 22 unit tests plus full actual-input PIE test PASSED; runtime duplicate component count verified280. Flight and first city slice accepted.",
+    "DublinImpact.h shared payload added. checkpoint12 fixes cross-agent ApplyImpact/GetWaterSurfaceZ/EmitImpact signatures.",
+    "NEXT source cohort IN PROGRESS: City destruction, root flight Weapons, Effects code and /Game/FX assets; Performance next30FPS metrics ready but newtests unrun. DO NOT build or close editor until all code writers and effects asset author are finished."
+  ],
+  "nextActions": [
+    "Read agent results after completion notification, or recover their durable JSON after a crash.",
+    "Integrate all reported dependencies, compile via LiveCoding tool if safe for new reflected classes; otherwise save and orderly close existing editor, build once, launch through plugin with PythonRemoteExecution=false.",
+    "Import licensed ortho image via TextureTools, build roof/ground texture material through typed MaterialTools.",
+    "Place ADublinCityWorld, set materials/default game mode, save Dublin map.",
+    "Run native unit tests, start PIE, run actual-input flight PIE test, capture and inspect image and save assets.",
+    "Only then advance to verified destruction implementation and 60 FPS measurement."
+  ],
+  "restrictions": ["No unrestricted Python", "No gotcha or other issues", "No engine switch", "No invented data/copyright entitlement", "No final completion claim without full objective verification"]
+}

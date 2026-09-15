@@ -1,0 +1,163 @@
+{
+  "status": "complete_metadata_only",
+  "scope": "Metadata evidence only; no city JSON, geometry, scripts, imagery, native or editor changes",
+  "protected_before_sha256": {
+    "DublinFlight\\Content\\Data\\dublin-city.json": "8495828b2d9d8bf433b1c2ea38f6cd4f3fd916e22d936f19ce44ff7c917551d8",
+    "generated-data\\city_pipeline.py": "2f719166204ecbe657ac0a573ccd17233621d26e959042431ad62d8745d4dbc3",
+    "generated-data\\acquire_osm.py": "3eb1b0a143651c5df71d3344743345577ba72b5afb17294a6784de74ffc715b2",
+    "generated-data\\test_city_pipeline.py": "15d05dd87f152bdf2db495b9290834bb49125c080cb3e764db15ef9d3ba9e818",
+    "generated-data\\city-provenance.json": "5f242cbfdb4116014a73890ed487bf62cd7c8c787ce3bd9a20a910eb397f637b",
+    "generated-data\\clean-ground-support.npz": "132608869a826f108e4084992ec5165084e1fd61c40a3076bc557e677de21f79",
+    "DublinFlight\\Saved\\Automation\\data-generation-handoff.json": "7e32ac1e51ff28abf8672d67f2f17995960844be41434db7bf1c104be67ea0d7"
+  },
+  "city_building_ids": 1044,
+  "source_date": "2026-09-08",
+  "deadline_minutes": 10,
+  "completedUtc": "2026-09-08T18:16:28.574061+00:00",
+  "output": "generated-data\\facade-evidence.json",
+  "outputBytes": 1822270,
+  "outputSha256": "2420d1cddde1649536e7faa0fa7a7293c8c376ed9a41f84703a5075a3c05dc36",
+  "summary": {
+    "city_ids": 1044,
+    "regular_building_volumes": 1034,
+    "non_facade_records": 10,
+    "unique_osm_source_ids": 1016,
+    "direct_tag_counts_by_output_id": {
+      "building:part": 188,
+      "addr:street": 634,
+      "addr:housenumber": 551,
+      "building:material": 39,
+      "height": 149,
+      "min_height": 81,
+      "roof:colour": 69,
+      "building:levels": 314,
+      "roof:material": 11,
+      "heritage": 321,
+      "building:colour": 35,
+      "shop": 65,
+      "building": 847,
+      "roof:levels": 36,
+      "amenity": 111,
+      "office": 17,
+      "religion": 7,
+      "denomination": 7,
+      "building:use": 2,
+      "start_date": 4,
+      "ref:IE:niah": 1,
+      "historic": 1
+    },
+    "inherited_candidate_counts_by_output_id": {
+      "building": 187,
+      "building:levels": 82,
+      "building:material": 28,
+      "building:colour": 10,
+      "roof:material": 11,
+      "roof:colour": 10,
+      "start_date": 53,
+      "amenity": 50
+    },
+    "direct_material_values": {
+      "stone": 18,
+      "glass;metal": 1,
+      "glass": 2,
+      "brick": 17,
+      "steel": 1
+    },
+    "direct_colour_values": {
+      "white": 2,
+      "lightgrey": 3,
+      "aquamarine": 1,
+      "brown": 4,
+      "black": 1,
+      "red": 7,
+      "grey": 12,
+      "#E96B39": 5
+    },
+    "known_material_records": 42,
+    "known_colour_records": 37,
+    "known_storeys_records": 315,
+    "parts_with_parent_candidates": 187,
+    "authoritative_named_or_address_matches": {
+      "dcc-eden-address": 1,
+      "niah-aston6": 1,
+      "niah-temple-bar48": 1
+    },
+    "region_counts": {
+      "trinity-west": 116,
+      "core-mixed": 362,
+      "liffey-quays": 185,
+      "oconnell-civic": 216,
+      "temple-bar": 165
+    },
+    "inferred_palette_counts": {
+      "cool_stone": 170,
+      "warm_stone": 143,
+      "red_brick": 195,
+      "cream_render": 161,
+      "brown_brick": 226,
+      "grey_render": 107,
+      "modern_glazing": 31,
+      "metal_structure": 1
+    },
+    "regular_building_direct_tag_counts": {
+      "building:material": 39,
+      "building:colour": 35,
+      "roof:material": 10,
+      "roof:colour": 68,
+      "building:levels": 314,
+      "start_date": 2,
+      "building:use": 2,
+      "amenity": 111,
+      "shop": 65,
+      "office": 17
+    },
+    "unique_source_direct_tag_counts": {
+      "building:material": 38,
+      "building:colour": 34,
+      "roof:material": 11,
+      "roof:colour": 57,
+      "building:levels": 313,
+      "start_date": 4,
+      "building:use": 2,
+      "amenity": 111,
+      "shop": 64,
+      "office": 17
+    },
+    "regular_buildings_with_functional_use_metadata": 521,
+    "use_coverage_note": "Functional-use count deduplicates overlapping amenity/shop/office/use tags; building=yes alone is not a known use."
+  },
+  "protected_after_sha256": {
+    "DublinFlight\\Content\\Data\\dublin-city.json": "8495828b2d9d8bf433b1c2ea38f6cd4f3fd916e22d936f19ce44ff7c917551d8",
+    "generated-data\\city_pipeline.py": "2f719166204ecbe657ac0a573ccd17233621d26e959042431ad62d8745d4dbc3",
+    "generated-data\\acquire_osm.py": "3eb1b0a143651c5df71d3344743345577ba72b5afb17294a6784de74ffc715b2",
+    "generated-data\\test_city_pipeline.py": "15d05dd87f152bdf2db495b9290834bb49125c080cb3e764db15ef9d3ba9e818",
+    "generated-data\\city-provenance.json": "5f242cbfdb4116014a73890ed487bf62cd7c8c787ce3bd9a20a910eb397f637b",
+    "generated-data\\clean-ground-support.npz": "132608869a826f108e4084992ec5165084e1fd61c40a3076bc557e677de21f79",
+    "DublinFlight\\Saved\\Automation\\data-generation-handoff.json": "7e32ac1e51ff28abf8672d67f2f17995960844be41434db7bf1c104be67ea0d7"
+  },
+  "protected_files_unchanged": true,
+  "validation": {
+    "id_join_exact": true,
+    "nullable_known_fields_have_specific_source": true,
+    "all_inferences_labelled_and_apply_now_false": true,
+    "numeric_storeys_finite": true,
+    "json_roundtrip_passed": true,
+    "protected_hashes_unchanged": true,
+    "authoritative_source_conflict_retained": true
+  },
+  "ready_for_later_facade_planning": true,
+  "applied_to_city": false,
+  "peer_messages_sent": 0,
+  "caveats": [
+    "Preparation only: no visual pass, assets, geometry, city JSON or script modifications.",
+    "known_* means source-asserted material/colour, not verified present-day survey truth. Null means unknown. Never treat absence of an OSM tag as absence of a material.",
+    "Counts are by1044 exported IDs, including multipart volumes; unique-source counts are separate. Same source can appear more than once after partitioning.",
+    "OSM acquisition is2026; LiDAR and several NIAH descriptions are2015; the Council appraisal is2001. Renovation and date conflicts remain.",
+    "Conservation descriptions are narrow regional/historical evidence. A brick/stone quay precedent does not make every riverside building brick or stone.",
+    "Hex palettes, region boxes, storey-height/bay-width ranges and window rhythms are explicitly INFERRED art-direction suggestions, not measurements or official colour schedules.",
+    "DCC sources cover OConnell/quays and Temple Bar/College Green context; specific facade detail is supplemented with authoritative national NIAH records. No unverified Museum/OldLibrary outside-core material is copied onto Trinity West Front.",
+    "No copyrighted photos, streetview, Esri assets, architectural drawings or document text copied; short factual paraphrases and provenance links only.",
+    "Render/modern alternatives are candidates where direct material is missing; they are not evidence of actual per-building facade composition.",
+    "Existing wall UVs are metres and permit later material variation. This evidence does not authorize that implementation now."
+  ]
+}

@@ -1,0 +1,517 @@
+{
+  "schema_version": 1,
+  "status": "ready_for_partial_import",
+  "ready_for_import": true,
+  "updated_at_utc": "2026-09-08T17:22:40.017957+00:00",
+  "image_path": "DublinFlight\\Content\\Data\\dublin-ortho.png",
+  "georeference_path": "DublinFlight\\Content\\Data\\dublin-ortho-georeference.json",
+  "image_bytes": 30031884,
+  "image_sha256": "f3e2aa75e4b5c4a52bd6e2f177bc896d2ddd0d78c082a1ab742536f9c075f606",
+  "dimensions_wh": [
+    4096,
+    4096
+  ],
+  "extent_en_m": [
+    315605.0,
+    234009.0,
+    316373.0,
+    234777.0
+  ],
+  "output_pixel_spacing_m": 0.1875,
+  "native_source_pixel_spacing_m": 0.05,
+  "coverage": {
+    "native_core_pixels": 235929600,
+    "covered_once_native_pixels": 235929600,
+    "uncovered_native_pixels": 0,
+    "overlapping_native_pixels": 0,
+    "declared_nodata_native_pixels": 0,
+    "all_four_bands_zero_native_pixels": 0,
+    "all_four_bands_white_native_pixels": 12374390,
+    "all_rgb_zero_native_pixels": 0,
+    "all_rgb_white_native_pixels": 12379437,
+    "ir_zero_with_nonzero_rgb_native_pixels": 1109,
+    "raster_extent_coverage_fraction": 1.0,
+    "inferred_white_void_fraction": 0.05244950188530816,
+    "usable_imagery_fraction_conservative": 0.9475504981146918,
+    "inferred_white_void_area_m2": 30935.975000000006,
+    "usable_imagery_area_m2_conservative": 558888.0250000001,
+    "inferred_void_detection": "All four source channels equal 255. Large white regions are visually confirmed survey gaps touching the core boundary. This conservative rule may also exclude tiny saturated pixels; the publisher supplied no validity/nodata mask. Zero IR is never used as alpha.",
+    "fully_void_output_pixels": 877511,
+    "partially_covered_output_pixels": 4911,
+    "fully_covered_output_pixels": 15894794,
+    "large_white_void_components": [
+      {
+        "output_pixels": 418918,
+        "bounds_pixel_edges_xyxy": [
+          0,
+          0,
+          774,
+          792
+        ],
+        "bounds_en_m": [
+          315605.0,
+          234628.5,
+          315750.125,
+          234777.0
+        ],
+        "touches_core_boundary": true
+      },
+      {
+        "output_pixels": 341360,
+        "bounds_pixel_edges_xyxy": [
+          3395,
+          0,
+          4096,
+          588
+        ],
+        "bounds_en_m": [
+          316241.5625,
+          234666.75,
+          316373.0,
+          234777.0
+        ],
+        "touches_core_boundary": true
+      },
+      {
+        "output_pixels": 106248,
+        "bounds_pixel_edges_xyxy": [
+          1944,
+          0,
+          2795,
+          249
+        ],
+        "bounds_en_m": [
+          315969.5,
+          234730.3125,
+          316129.0625,
+          234777.0
+        ],
+        "touches_core_boundary": true
+      },
+      {
+        "output_pixels": 10985,
+        "bounds_pixel_edges_xyxy": [
+          0,
+          1363,
+          88,
+          1609
+        ],
+        "bounds_en_m": [
+          315605.0,
+          234475.3125,
+          315621.5,
+          234521.4375
+        ],
+        "touches_core_boundary": true
+      }
+    ],
+    "complete_usable_coverage": false,
+    "coverage_interpretation": "Raster extent coverage is NOT usable imagery coverage. White source-survey gaps remain unchanged in the RGB output and are separately quantified/masked; no fill is invented. No source GDAL_NODATA is declared; all-four-band-zero pixels are additionally rejected. Shadows, occlusions and survey radiometric artifacts remain."
+  },
+  "license": {
+    "name": "CC BY 4.0",
+    "url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution_required": true,
+    "indicate_changes": true,
+    "no_endorsement": true,
+    "no_additional_restrictions": true
+  },
+  "attribution": "2015 Aerial Laser and Photogrammetry Survey of Dublin City â€” Debra F. Laefer, Saleh Abuwarda, Anh-Vu Vo, Linh Truong-Hong, Hamid Gharibi. Survey: 26 March 2015. Source: NYU Faculty Digital Archive. CC BY 4.0.",
+  "blocker": null,
+  "candidate_png_available": true,
+  "coverage_mask_path": "generated-data\\imagery\\core-validity.png",
+  "complete_usable_coverage": false,
+  "source_crs": "Embedded EPSG:29902 TM65 / Irish Grid; shared numeric survey grid preserved",
+  "registration_caution": {
+    "legacy_working_crs_label": "EPSG:29903 / TM75 / Irish Grid",
+    "source_projected_crs_label": "EPSG:29902 / TM65 / Irish Grid",
+    "operation": "Explicit identity in the shared numeric survey grid; no datum reprojection applied.",
+    "reason": "Preserve the authoritative city-data-handoff numeric-grid contract shared with source LiDAR. Do not silently reproject one layer.",
+    "not_an_assertion_of_datum_equivalence": true,
+    "raw_las_offset_caveat": "Existing LAS custom CRS has +0.32 m easting/+0.08 m northing false-origin differences from canonical EPSG:29903; no per-layer correction applied.",
+    "absolute_alignment_accuracy": "Not independently measured; pixel spacing is not survey/geodetic accuracy."
+  },
+  "consumer_uv_contract": {
+    "origin_en_m": [
+      315989.0,
+      234393.0
+    ],
+    "axis_basis": "+X east, +Y south, units centimetres",
+    "consumers": [
+      "full-core roof",
+      "full-core ground"
+    ],
+    "uv_origin": "top_left",
+    "xy_bounds_cm": [
+      -38400,
+      -38400,
+      38400,
+      38400
+    ],
+    "image_uv_top_origin": [
+      "u=(E-315605)/768",
+      "v=(234777-N)/768"
+    ],
+    "ue_uv": [
+      "u=0.5+Xcm/76800",
+      "v=0.5+Ycm/76800"
+    ],
+    "outside_core": "No halo pixels supplied. Do not stretch this 768 m image over an 800 m or 1600 m mesh."
+  },
+  "credit_display_handoff": "HUD/about later, owned by the native editor coordinator; not implemented by this preprocessing task.",
+  "visible_credits_required": true,
+  "unreal_actions_performed": false,
+  "import_coordinator_note": "Proceed with honest partial city import. Shared full-core roof/ground UVs; use binary point-sampled validity and explicitly generic neutral material where zero. Full visual-completeness gate remains unpassed.",
+  "provenance_directory": "generated-data\\imagery\\provenance",
+  "validation_path": "generated-data\\imagery\\validation.json",
+  "progress_file": "generated-data\\imagery\\progress.json",
+  "archive_total_bytes": 1053351093,
+  "tests": {
+    "schema_version": 1,
+    "completed_at_utc": "2026-09-08T17:19:20.655193+00:00",
+    "passed": true,
+    "tests_run": 25,
+    "failures": 0,
+    "errors": 0,
+    "image_sha256": "f3e2aa75e4b5c4a52bd6e2f177bc896d2ddd0d78c082a1ab742536f9c075f606",
+    "processor_sha256": "288c40862db4a8543cf3cc18b2bbc22fed74ba0c4186e206deba7e6e757f61ab",
+    "extractor_sha256": "ea42e2c893cdd3fb4766d9c75550901398fa6a0f07fa56539b139a3c93287fd6",
+    "test_script_sha256": "a43b778b800290ccb818c86a98cbcccd7581e5020f4c7a1847aeb407227a7a1e",
+    "failure_details": []
+  },
+  "test_results_path": "generated-data\\imagery\\test-results.json",
+  "ready_for_partial_import": true,
+  "full_coverage": false,
+  "final_complete_visual_gate_passed": false,
+  "coverage_warning": "The four licensed source GeoTIFFs contain 12374390 all-band-white core pixels (5.244950% or 30935.9750 m2), including 4 large boundary-connected gaps. A complete accurately textured 768 m core cannot be made from these four source tiles. Candidate RGB crop and diagnostic mask are preserved; no fabricated/unlicensed fill or additional imagery downloads were performed.",
+  "validity_image_path": "DublinFlight\\Content\\Data\\dublin-ortho-validity.png",
+  "partial_import_contract_path": "generated-data\\imagery\\partial-import-contract.json",
+  "mask_contract": {
+    "schema_version": 1,
+    "created_at_utc": "2026-09-08T17:22:38.009385+00:00",
+    "ready_for_partial_import": true,
+    "full_coverage": false,
+    "final_complete_visual_gate_passed": false,
+    "image_preserved_unchanged": {
+      "dublin-ortho.png": "f3e2aa75e4b5c4a52bd6e2f177bc896d2ddd0d78c082a1ab742536f9c075f606",
+      "dublin-ortho-georeference.json": "03723c3d319213104b3322ab0439bbe3ed218d41052e0ed7485b58d13d9e6729"
+    },
+    "mask_path": "DublinFlight\\Content\\Data\\dublin-ortho-validity.png",
+    "mask_bytes": 30651,
+    "mask_sha256": "5ac7ad823bec5a925e8b347e019d57ba452d3580f938ab2f0a7800740d89407d",
+    "dimensions_wh": [
+      4096,
+      4096
+    ],
+    "mode": "L",
+    "bits_per_pixel": 8,
+    "pixel_spacing_m": 0.1875,
+    "extent_en_m": [
+      315605.0,
+      234009.0,
+      316373.0,
+      234777.0
+    ],
+    "top_origin": true,
+    "alignment": "Exactly the same pixel centres and extent as dublin-ortho.png; no Y flip.",
+    "uv_formulas": [
+      "u=0.5+Xcm/76800",
+      "v=0.5+Ycm/76800"
+    ],
+    "mask_values": {
+      "255": "Use original licensed RGB imagery.",
+      "0": "Use explicitly generic neutral rooftop/ground; not measured colour and not invented replacement imagery."
+    },
+    "mask_derivation": "Threshold validated fractional coverage at exactly 255, then erode valid pixels by a 3x3 footprint (one output texel, 18.75 cm) only around internal invalid/partial coverage. This suppresses bilinear RGB white fringes.",
+    "edge_policy": {
+      "mask_srgb": false,
+      "mask_filter": "nearest / point",
+      "mask_mipmaps": "disabled",
+      "mask_address_u_v": "clamp",
+      "compression": "Lossless single-channel data; preserve exact 0/255.",
+      "shader": "Point-sample mask at shared UV; branch/step at 0.5. No interpolated mask, no feathering, no temporal/dither blend.",
+      "rgb_sampling": "Point or bilinear LOD0, clamp. The one-texel mask guard covers bilinear LOD0 support; higher RGB mip levels/anisotropic footprints are NOT certified by this mask.",
+      "outside_core": "Do not stretch or repeat the 768 m texture; use neutral material outside the exact extent."
+    },
+    "valid_output_pixels_before_guard": 15894794,
+    "valid_output_pixels_after_guard": 15889502,
+    "extra_neutral_boundary_guard_pixels": 5292,
+    "shader_imagery_fraction_after_guard": 0.9470881223678589,
+    "conservative_native_usable_fraction": 0.9475504981146918,
+    "gaps": [
+      {
+        "gap_id": "gap-1",
+        "core_native_pixel_bounds_xyxy": [
+          0,
+          0,
+          2908,
+          2970
+        ],
+        "irish_grid_bounds_wsen_m": [
+          315605.0,
+          234628.5,
+          315750.4,
+          234777.0
+        ],
+        "native_connected_component_pixels": 5904071,
+        "area_m2": 14760.1775,
+        "source_tiles": [
+          {
+            "tile": "315500_234500",
+            "source_pixel_bounds_xyxy": [
+              2100,
+              4460,
+              5008,
+              7430
+            ],
+            "gap_native_pixels": 5904071
+          }
+        ],
+        "output_fully_void_component": {
+          "output_pixels": 418918,
+          "bounds_pixel_edges_xyxy": [
+            0,
+            0,
+            774,
+            792
+          ],
+          "bounds_en_m": [
+            315605.0,
+            234628.5,
+            315750.125,
+            234777.0
+          ],
+          "touches_core_boundary": true
+        },
+        "bounds_convention": "Half-open pixel-edge bounds [left,top,right,bottom], zero-based, north-first. Rectangles enclose the gap; not every enclosed pixel is void.",
+        "confidence": "High for this large boundary-connected component; not a publisher-provided nodata declaration.",
+        "evidence": [
+          "Every component sample is exactly [255,255,255,255], including infrared.",
+          "The region is spatially continuous, crosses many expected roofs/streets and touches the core boundary.",
+          "Sharp clipped survey-footprint boundaries are visible in the unmodified ortho preview, not roof outlines.",
+          "Component covers 5904071 native 5 cm samples; small saturated roof pixels are classified separately.",
+          "Official NYU documentation states that peripheral tiles can be only partially covered."
+        ]
+      },
+      {
+        "gap_id": "gap-2",
+        "core_native_pixel_bounds_xyxy": [
+          12731,
+          0,
+          15360,
+          2209
+        ],
+        "irish_grid_bounds_wsen_m": [
+          316241.55,
+          234666.55,
+          316373.0,
+          234777.0
+        ],
+        "native_connected_component_pixels": 4809884,
+        "area_m2": 12024.71,
+        "source_tiles": [
+          {
+            "tile": "316000_234500",
+            "source_pixel_bounds_xyxy": [
+              4831,
+              4460,
+              7460,
+              6669
+            ],
+            "gap_native_pixels": 4809884
+          }
+        ],
+        "output_fully_void_component": {
+          "output_pixels": 341360,
+          "bounds_pixel_edges_xyxy": [
+            3395,
+            0,
+            4096,
+            588
+          ],
+          "bounds_en_m": [
+            316241.5625,
+            234666.75,
+            316373.0,
+            234777.0
+          ],
+          "touches_core_boundary": true
+        },
+        "bounds_convention": "Half-open pixel-edge bounds [left,top,right,bottom], zero-based, north-first. Rectangles enclose the gap; not every enclosed pixel is void.",
+        "confidence": "High for this large boundary-connected component; not a publisher-provided nodata declaration.",
+        "evidence": [
+          "Every component sample is exactly [255,255,255,255], including infrared.",
+          "The region is spatially continuous, crosses many expected roofs/streets and touches the core boundary.",
+          "Sharp clipped survey-footprint boundaries are visible in the unmodified ortho preview, not roof outlines.",
+          "Component covers 4809884 native 5 cm samples; small saturated roof pixels are classified separately.",
+          "Official NYU documentation states that peripheral tiles can be only partially covered."
+        ]
+      },
+      {
+        "gap_id": "gap-3",
+        "core_native_pixel_bounds_xyxy": [
+          7287,
+          0,
+          10494,
+          937
+        ],
+        "irish_grid_bounds_wsen_m": [
+          315969.35,
+          234730.15,
+          316129.7,
+          234777.0
+        ],
+        "native_connected_component_pixels": 1503093,
+        "area_m2": 3757.7325,
+        "source_tiles": [
+          {
+            "tile": "315500_234500",
+            "source_pixel_bounds_xyxy": [
+              9387,
+              4460,
+              10000,
+              5397
+            ],
+            "gap_native_pixels": 439834
+          },
+          {
+            "tile": "316000_234500",
+            "source_pixel_bounds_xyxy": [
+              0,
+              4460,
+              2594,
+              5279
+            ],
+            "gap_native_pixels": 1063259
+          }
+        ],
+        "output_fully_void_component": {
+          "output_pixels": 106248,
+          "bounds_pixel_edges_xyxy": [
+            1944,
+            0,
+            2795,
+            249
+          ],
+          "bounds_en_m": [
+            315969.5,
+            234730.3125,
+            316129.0625,
+            234777.0
+          ],
+          "touches_core_boundary": true
+        },
+        "bounds_convention": "Half-open pixel-edge bounds [left,top,right,bottom], zero-based, north-first. Rectangles enclose the gap; not every enclosed pixel is void.",
+        "confidence": "High for this large boundary-connected component; not a publisher-provided nodata declaration.",
+        "evidence": [
+          "Every component sample is exactly [255,255,255,255], including infrared.",
+          "The region is spatially continuous, crosses many expected roofs/streets and touches the core boundary.",
+          "Sharp clipped survey-footprint boundaries are visible in the unmodified ortho preview, not roof outlines.",
+          "Component covers 1503093 native 5 cm samples; small saturated roof pixels are classified separately.",
+          "Official NYU documentation states that peripheral tiles can be only partially covered."
+        ]
+      },
+      {
+        "gap_id": "gap-4",
+        "core_native_pixel_bounds_xyxy": [
+          0,
+          5100,
+          335,
+          6038
+        ],
+        "irish_grid_bounds_wsen_m": [
+          315605.0,
+          234475.1,
+          315621.75,
+          234522.0
+        ],
+        "native_connected_component_pixels": 157319,
+        "area_m2": 393.2975,
+        "source_tiles": [
+          {
+            "tile": "315500_234000",
+            "source_pixel_bounds_xyxy": [
+              2100,
+              0,
+              2435,
+              498
+            ],
+            "gap_native_pixels": 118829
+          },
+          {
+            "tile": "315500_234500",
+            "source_pixel_bounds_xyxy": [
+              2100,
+              9560,
+              2274,
+              10000
+            ],
+            "gap_native_pixels": 38490
+          }
+        ],
+        "output_fully_void_component": {
+          "output_pixels": 10985,
+          "bounds_pixel_edges_xyxy": [
+            0,
+            1363,
+            88,
+            1609
+          ],
+          "bounds_en_m": [
+            315605.0,
+            234475.3125,
+            315621.5,
+            234521.4375
+          ],
+          "touches_core_boundary": true
+        },
+        "bounds_convention": "Half-open pixel-edge bounds [left,top,right,bottom], zero-based, north-first. Rectangles enclose the gap; not every enclosed pixel is void.",
+        "confidence": "High for this large boundary-connected component; not a publisher-provided nodata declaration.",
+        "evidence": [
+          "Every component sample is exactly [255,255,255,255], including infrared.",
+          "The region is spatially continuous, crosses many expected roofs/streets and touches the core boundary.",
+          "Sharp clipped survey-footprint boundaries are visible in the unmodified ortho preview, not roof outlines.",
+          "Component covers 157319 native 5 cm samples; small saturated roof pixels are classified separately.",
+          "Official NYU documentation states that peripheral tiles can be only partially covered."
+        ]
+      }
+    ],
+    "large_gap_native_pixels": 12374367,
+    "small_white_or_saturated_native_pixels": 23,
+    "confidence_limit": "Large components are high-confidence survey gaps. Tiny all-band-white pixels could be real saturation; conservatively neutral, never inferred imagery.",
+    "credit_text": "2015 Aerial Laser and Photogrammetry Survey of Dublin City â€” Debra F. Laefer, Saleh Abuwarda, Anh-Vu Vo, Linh Truong-Hong, Hamid Gharibi. Survey: 26 March 2015. Source: NYU Faculty Digital Archive. CC BY 4.0.",
+    "credits_placement": "Consumer HUD/about later; preserve creator/source/CC BY 4.0 links and modification notice.",
+    "coverage_warning_not_engine_blocker": "Partial rendering is approved with this mask and explicitly generic neutral materials. Missing source coverage is not an engine/tools failure.",
+    "validation": {
+      "passed": true,
+      "binary_values": [
+        0,
+        255
+      ],
+      "no_valid_pixel_comes_from_partial_or_void_mask": true,
+      "original_image_and_georeference_unchanged": true,
+      "large_gap_count": 4
+    }
+  },
+  "engine_or_tools_blocker": false,
+  "partial_import_validation": {
+    "completed_at_utc": "2026-09-08T17:22:39.443598+00:00",
+    "passed": true,
+    "tests_run": 6,
+    "failures": 0,
+    "errors": 0,
+    "mask_sha256": "5ac7ad823bec5a925e8b347e019d57ba452d3580f938ab2f0a7800740d89407d",
+    "contract_sha256": "5b73d6cdcc8c4e9804fcde9a63877bcd47b58652be67507633e036b577679b5b",
+    "failure_details": []
+  },
+  "alternative_source_investigation": {
+    "status": "bounded_primary_source_investigation_complete_no_verified_gap_filler",
+    "options_path": "generated-data\\imagery\\gap-fill-options.json",
+    "evidence_path": "generated-data\\imagery\\gap-source-investigation.json",
+    "additional_archive_bytes_downloaded": 0,
+    "remaining_archive_budget_bytes": 946648907,
+    "completed_at_utc": "2026-09-08T17:22:40.017949+00:00",
+    "elapsed_followup_seconds": 434.03689
+  },
+  "followup_status": "complete_partial_import_ready_with_bounded_alternative_evidence"
+}

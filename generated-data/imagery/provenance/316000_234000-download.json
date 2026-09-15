@@ -1,0 +1,17 @@
+{
+  "tile": "316000_234000",
+  "record_url": "https://archive.nyu.edu/handle/2451/38606?mode=full",
+  "archive_url": "https://archive.nyu.edu/retrieve/79893/nyu_2451_38606_orthophoto_T_316000_234000.zip",
+  "resolved_archive_url": "https://archive.nyu.edu/retrieve/79893/nyu_2451_38606_orthophoto_T_316000_234000.zip",
+  "head_bytes": 342596125,
+  "head_at_utc": "2026-09-08T17:01:24.966176+00:00",
+  "http_headers": {
+    "Content-Type": "application/octet-stream",
+    "Content-Length": "342596125"
+  },
+  "archive_path": "generated-data\\imagery\\downloads\\nyu_2451_38606_orthophoto_T_316000_234000.zip",
+  "reused_existing": false,
+  "archive_sha256": "906f9611dc84d4bb9f92096a97a31b03c02cbdf1a4f747fc4b4391bfe4d5acf0",
+  "download_completed_at_utc": "2026-09-08T17:01:52.321742+00:00",
+  "actual_archive_bytes": 342596125
+}

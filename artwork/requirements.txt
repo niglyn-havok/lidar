@@ -1,0 +1,6 @@
+laspy[lazrs]
+moderngl
+numpy
+scipy
+Pillow
+opencv-python

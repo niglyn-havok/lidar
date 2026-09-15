@@ -1,0 +1,175 @@
+{
+  "status": "phase_three_baker_recovery_source_ready_preserve_195_successful_caches",
+  "scope": "City native sources only; no editor actions/builds/tests run by this agent",
+  "early_findings": [
+    "UE5.8 UGeometryCollection defaults already select volumetric convex, and UpdateGeometryDependentProperties calls UpdateConvexGeometry. Missing collision defaults is NOT established.",
+    "Before phase one, bake validation accepted visible render data plus a clean simulation GUID without checking each SimulatableParticlesAttribute/Implicits leaf. Runtime activation accepted a physics proxy without verifying collision geometry. These gaps are now fixed and the gates are preserved.",
+    "The native PIE locality test traces actual source roof triangle centroids at least 400cm from the hit, from roof+1000 to roof-300, accepting any target GC hit inside expanded building bounds; no assertion edits are planned."
+  ],
+  "root_cause": "ActivateBuilding calls SetSimulatePhysics(true) BEFORE RegisterComponent. Exact UE5.8 UGeometryCollectionComponent::SetSimulatePhysics (cpp:1323) first EnsurePhysicsStateCreated -> RecreatePhysicsState, which refuses creation while unregistered (ActorComponent.cpp:2594). It then falls back directly to RegisterAndInitializePhysicsProxy, BYPASSING OnCreatePhysicsState. Registration later sees an existing proxy and skips the entire guarded initialization: physics user data, per-leaf DynamicState/Active initialization, anchored attribute copy and BuildInitialFilterData (GeometryCollectionComponent.cpp:3844-3932). This explains both no world collision ray and no fragment movement despite a valid proxy.",
+  "implemented_fix": [
+    "ActivateBuilding now uses RegisterRuntimePhysics: RegisterComponent first, then SetSimulatePhysics. A proxy already created while unregistered is rejected, never treated as readiness.",
+    "Before stripping intact geometry, ValidateCollisionData checks complete unique leaf mapping, a clustered root implicit, every leaf's cooked SimulatableParticles flag, non-null positive-size finite implicit bounds, positive finite mass and finite mass-to-local transform. Invalid/missing collision explicitly blocks activation with the intact mesh retained.",
+    "After registration, validate the actual external root particle geometry and nonempty shapes, correct FChaosUserData primitive-component ownership, query/simulation enabled flags, valid simulation filtering and ECC_Visibility blocking. Validate leaf dynamic states and copied anchor flags. No physics-thread pointers are read.",
+    "Validate SimulatableParticles, NOT Active, for clustered leaves: UE5.8 proxy initialization intentionally disables children while enabling the root.",
+    "Bake completion and cache reuse now require collision data validation, rather than render data and a clean GUID alone.",
+    "Added DublinFlight.Destruction.Fracture.RegisteredCollisionInitialization: two real cube leaves in a clustered native GC, one ground anchor and one free dynamic piece, missing-leaf collision rejection, all-anchored rejection, actual initialization ownership/filter checks, and an actual component roof collision ray at a nonzero world pivot. Parent verified this test PASS after phase one.",
+    "Phase two: select stable authored leaf indices using CURRENT component-space COM transforms converted to world coordinates, the same spherical center selection and nearest-piece fallback as the previous engine call. ApplyExternalStrain targets those leaves, never the permanently obsolete original root. Chaos routes each leaf's strain to its current parent, including replacement internal clusters.",
+    "Phase two: unanchor only selected authored support leaves with SetAnchoredByIndex(false). Installed engine already restores Dynamic and clears kinematic target; no redundant collection-wide dynamic-state override or permanent global anchoring was added.",
+    "Phase two: BuildConnectionGraph sets precise proximity bUseAsConnectionGraph=true and authors the supported connection-edge facade. Runtime/bake collision gates additionally require a valid nonempty authored graph. This bypasses the failing runtime Delaunay fallback without disabling ensures or changing engine/CVars.",
+    "Phase two: CurrentBakeVersion=2 is included in BuildingDigest for BOTH colored and uncolored inputs. Library saves stamp version2, readiness requires version2, and existing old source digests cannot be silently reused.",
+    "Phase two tests: AuthoredContactGraph exercises contact authoring with coincident piece centers; RepeatedHitsUseCurrentLeaves checks local selection, obsolete-root independence, moved-debris exclusion and nearest-piece fallback. The already-passing registration fixture now authors the required graph; none of its collision/state assertions were weakened."
+  ],
+  "changed_files": [
+    "Source\\DublinFlight\\City\\DublinCityDestructionWorld.cpp",
+    "Source\\DublinFlight\\City\\DublinCityFractureBaker.cpp",
+    "Source\\DublinFlight\\City\\DublinCityFractureLibrary.h",
+    "Source\\DublinFlight\\City\\DublinCityFractureLibrary.cpp",
+    "Source\\DublinFlight\\City\\DublinCityDestructionTests.cpp",
+    "Source\\DublinFlight\\City\\DublinCityDestruction.h",
+    "Source\\DublinFlight\\City\\DublinCityDestruction.cpp",
+    "Saved\\Automation\\fracture-physics-repair-handoff.json"
+  ],
+  "phase_two_asset_policy_historical": {
+    "baked_data_changed": true,
+    "bake_version_or_digest_changed": true,
+    "current_bake_version": 2,
+    "reason": "Phase two adds authored physical connection edges. This SUPERSEDES phase-one-only no-rebake guidance. GeometryDigest remains geometry-only; SourceDigest incorporates the version and therefore selects new GC package names.",
+    "parent_action": "Build/restart through the parent workflow, then explicitly rebake ONLY the twelve known sample source IDs listed below using BakeBuildingIds and BeginFractureBake. Keep full bake off. No GC package deletion is necessary or requested: versioned source digests automatically reject old records and create new packages, updating only the selected library rows. An old library/old digest correctly reports zero current-ready volumes before this rebake. Keep partial-bake preview explicit. Run actual-city physics only after all twelve selected rows are ready, saved and graph/collision validated.",
+    "rebake_source_ids": [
+      "osm/relation/4453907",
+      "osm/relation/4453909",
+      "osm/relation/4453908",
+      "osm/way/1494457211",
+      "osm/way/1494457210",
+      "osm/way/1482816456",
+      "osm/way/1494465891",
+      "osm/way/1409515695",
+      "osm/way/1494465884",
+      "osm/way/1488413013",
+      "osm/way/1488413008",
+      "osm/way/1488413017"
+    ],
+    "known_failed_target": "osm/relation/4453909",
+    "known_failed_collection": "/Game/Dublin/Fracture/GC_e1a2ead797616ccccb355e9202b681a3.GC_e1a2ead797616ccccb355e9202b681a3"
+  },
+  "preserved": [
+    "No edits to Tests/DublinDestructionPIETests.cpp or its collision assertions.",
+    "No source geometry/JSON/scripts, Effects, Visuals, Weapons or Performance changes.",
+    "RGBA source bytes, neutral cut material, Nanite, damage thresholds, strain magnitudes/zero propagation, impulse magnitudes/radius bounds, sleep policy and all native caps unchanged. Damage routing and support targeting are repaired, not globally widened.",
+    "60 FPS normal/light and 30 FPS maximal remain independent required parent acceptance gates."
+  ],
+  "engine_evidence": [
+    "GeometryCollectionComponent.cpp:1323-1343 SetSimulatePhysics fallback directly RegisterAndInitializePhysicsProxy after EnsurePhysicsStateCreated.",
+    "PrimitiveComponent.cpp:998-1005 EnsurePhysicsStateCreated invokes RecreatePhysicsState.",
+    "ActorComponent.cpp:2594-2605 RecreatePhysicsState only creates state when IsRegistered.",
+    "GeometryCollectionComponent.cpp:3834-3940 OnCreatePhysicsState guards all collision-owner/filter/state/anchor initialization with !PhysicsProxy.",
+    "GeometryCollectionPhysicsProxy.cpp:791-807 initializes only the clustered root Active=true; leaf SimulatableParticles must not be confused with Active.",
+    "PBDRigidsSolver.cpp:1007-1030 registers and initializes external root particles synchronously and immediately adds enabled particles to external scene queries.",
+    "GeometryCollectionObject.cpp:184-209 already defaults to volumetric convex; :432-458 UpdateGeometryDependentProperties already computes convexes.",
+    "PBDRigidClustering.cpp:2441-2464 DisableCluster disables the old root, clears ClusterIds and removes its children; GeometryCollectionPhysicsProxy.cpp:1193-1216 resolves a transform item to exactly its old handle.",
+    "GeometryCollectionPhysicsProxy.cpp:2770-2857 ApplyExternalStrain chooses Action directly for a childless handle; PBDRigidClustering.cpp:1055-1072 SetExternalStrain updates the target leaf's CURRENT parent.",
+    "GeometryCollectionPhysicsProxy.cpp:2639-2654 SetParticleAnchored_Internal(false) sets Dynamic and clears the kinematic target; no additional permanent InitialDynamicState reset is needed.",
+    "GeometryCollectionProximityPropertiesInterface.h defaults bUseAsConnectionGraph=false; GeometryCollectionProximityUtility.cpp:863-870 consequently clears the graph unless explicitly enabled.",
+    "GeometryCollectionPhysicsProxy.cpp:1648-1730 consumes valid authored connection edges, otherwise invokes runtime GenerateConnectionGraph. PBDRigidClustering.cpp:2131-2191 shows that None/PointImplicit can still fall back to Delaunay, so changing only that enum is not a definitive fix.",
+    "GeometryCollectionProximityUtility.cpp:610+ CopyProximityToConnectionGraph maps physical geometry contacts into distinct same-parent transform edges. Replacement island clusters preserve those edges; PBDRigidClustering.cpp:557-665 does not regenerate a Delaunay graph."
+  ],
+  "phase_two_validation_historical": {
+    "static_checks": "PASS for phase two: all seven City source files have balanced C++ delimiters and UTF-8 without BOM/CRLF-only encoding; registration still precedes the sole simulation-enable call; prior cooked/root query gates retained; no stale-root ApplyExternalStrain or SetAnchoredByBox; graph authoring/validation present; version2 digest applies to both colored and uncolored sources; new tests defined once. Source-equivalent pure selection math produced [3], [1,2], [3] for local hit, subsequent support bomb and nearest fallback.",
+    "phase_one_test_source_sha256": "ef4b5b55786a70e22ad1e5fff3c5bf9175f5ce9edce747e63349842fad80bca4",
+    "current_parent_owned_test_source_sha256": "b8a8cd884aa5d91c860468fd50e6f9818a0f911810b53614120964f1b4882d63",
+    "parent_test_source_note": "The parent-owned PIE file was modified externally at12:34:57 during this repair, so its old whole-file hash guard correctly tripped. This agent never wrote that file; no diagnostic or assertion changes were made by this agent.",
+    "new_native_test": "DublinFlight.Destruction.Fracture.RegisteredCollisionInitialization",
+    "phase_two_new_native_tests": [
+      "DublinFlight.Destruction.Fracture.AuthoredContactGraph",
+      "DublinFlight.Destruction.Fracture.RepeatedHitsUseCurrentLeaves"
+    ],
+    "parent_verification_order": [
+      "Build the module through existing coordinator workflow (not performed by this agent).",
+      "Run DublinFlight.Destruction.Fracture (including both new phase-two tests and the updated existing registration fixture) plus Readiness tests.",
+      "Explicitly rebake only the twelve listed sample IDs. Save updated library version2 and new GC packages; verify all twelve ready and Nanite. Do not full-bake yet.",
+      "Run DublinFlight.Destruction.PIE.ActualCityDamage against those version2 saved samples in explicit partial preview, retaining all physical assertions.",
+      "Require actual retained roof world collision, repeated-hit separation/falling and support damage; do not substitute counters for physical proof.",
+      "Only after physical proof proceed to any full-city bake/performance or visual acceptance."
+    ]
+  },
+  "parent_read_request": "Phase-three source is ready. No further live read is required before parent build, targeted fracture tests and the explicit52-failed-ID recovery batch. Preserve all195 successful caches.",
+  "native_build": "PHASE_TWO_PARENT_BUILD_AND_FOUR_FRACTURE_TESTS_PASS_PHASE_THREE_BUILD_PENDING",
+  "native_physics_verification": "PARENT_ACTUAL_CITY_DAMAGE_PIE_PASS_22_256_SECONDS_INCLUDING_LOCALITY_FALL_SEPARATION_SUPPORTS_CRATER_WAVES",
+  "phase_three_baker_recovery": {
+    "parent_baseline": "Version2 twelve-sample rebake12/12 zeroerrors; all four fracture regressionsPASS; unchanged ActualCityDamage PIE PASS22.256s. Full bake paused after247/1044:195ready,52failed. Working runtime is untouched in phase3.",
+    "diagnosis": [
+      "Representative failed source volumes are substantial closed meshes (for example osm/way/1534687395 bounds474.1x447.5x3440.14cm, true footprint thickness434.18cm). A blanket thin-source exclusion is unjustified.",
+      "Dense uniform cuts can create tiny or nearly planar disconnected leaf islands. Default convex simplification is10cm, too coarse for the smallest fragments.",
+      "Installed GeometryCollectionConvexUtility.cpp:929 rejects a cluster hull when its volume exceeds source volume by CanExceedFraction; concave roots can therefore have no hull even when their children have collision. Installed cook then uses that missing root convex for the root implicit."
+    ],
+    "bounded_attempts": [
+      "Attempt1: existing successful version2 grid and island settings, unchanged (at most64sites). Fresh full immutable source conversion.",
+      "Attempt2: at most16sites, deterministic within-cell jitter bounded to13% of cell width; finer island seam tolerance; geometry-preserving microshard consolidation and1mm convex simplification.",
+      "Attempt3: exactly2 vertically separated sites, producing a horizontal split at51% of source height. Keep disconnected islands in their slab rather than creating pathological individual rigid islands. All source/outside-cell geometry retained, zero grout. Same precise collision/recovery measures.",
+      "At most3 attempts total. Each attempt starts from the complete source mesh, not the damaged/partial prior attempt. After exhaustion, the record stays explicitly not ready and reports all attempt failures."
+    ],
+    "microshard_policy": "On retries, native FindBoneVolumes uses cm3. Leaves below max(1cm3, one-millionth of total volume), or with local bound half-extent below1mm, are selected for native MergeBones into contact neighbors of the same parent. bUnionJoinedPieces=false appends the entire attributed mesh, avoiding boolean subtraction or dropping visible surfaces. No-neighbor cases remain subject to all strict gates and the final conservative retry.",
+    "root_collision_policy": "On retries, after precise leaf hull generation use supported GenerateClusterConvexHullsFromChildrenHulls with at most the authored piece count and zero merge-error tolerance. This aggregates child hulls instead of accepting a missing root implicit or inflating one hull across a concave courtyard. No collision gate is disabled.",
+    "conservation_gate": "Each attempt measures closed-mesh volume before cutting and sums all final rigid leaf volumes after consolidation. Nonfinite/nonpositive source volume or disagreement greater than max(1cm3,0.01% of source volume) is an explicit failure. This is numeric tolerance, not permission to discard islands. Source RGBA/UV/materials and neutral cut material continue through existing attributed mesh conversion.",
+    "diagnostics": {
+      "record_fields": [
+        "BakeAttempts",
+        "FractureSiteCount",
+        "MergedMicroShards",
+        "SourceVolumeCm3",
+        "RetainedVolumeCm3",
+        "BakeDiagnostics"
+      ],
+      "failure_detail": "Each failed collision diagnostic identifies bone/geometry, simulation type and simulatable flag, implicit presence/bounds, mass, finite mass transform, hull count, vertex/face counts and geometry dimensions. Missing root attributes are distinguished from a root's null implicit. Per-attempt summaries include sites, pieces, anchors, merged count and source->retained volume.",
+      "successful_recovery": "Ready records retain the prior failed-attempt diagnostics plus the successful attempt summary; no successful fallback is counted as a failed bake."
+    },
+    "current_asset_policy": {
+      "bake_version": 2,
+      "version_or_digest_bump": false,
+      "reason": "Recovery changes only failed/new asset generation, not runtime attribute compatibility. Original attempt1 and all previously validated successful caches remain reusable. Added record diagnostics have default values for existing rows.",
+      "parent_next_action": "Build, run the new retry-site regression plus all existing fracture/readiness tests, then explicitly bake the52 failed IDs from the parent's paused-progress list PLUS bridge/osm/way/43319604/0 (deduplicate). Do not invalidate/delete/rebake the195 ready rows. Verify representative recovered physics and volume/collision diagnostics, rerun ActualCannonBombInputs with its real readiness gate intact, then resume the remaining full bake through the existing workflow.",
+      "additional_verification_source_ids": [
+        "bridge/osm/way/43319604/0"
+      ],
+      "bridge_readiness_followup": "At12:59:28 parent reported ActualCannonBombInputs rejected a real cannon payload because this bridge is not ready. Immutable source inspection finds it at source index1040/1044, beyond the initial247 source-order range; it is an additional unprocessed volume, not evidence that the new recovery patch failed. Bounds22191.5x9448.5x70cm;140triangles. Include it explicitly in the recovery/verification batch; do not relax readiness.",
+      "failed_id_manifest": "Saved\\Automation\\full-bake-progress-20260915.json (parent-owned; it was not yet present during this agent's bounded reads)",
+      "known_representative_ids": [
+        "osm/way/1534687395",
+        "osm/way/1482872833",
+        "osm/way/1488401203",
+        "osm/way/1482838074/volume/0",
+        "osm/way/1409515694",
+        "osm/way/1482864217",
+        "osm/way/1488401193",
+        "osm/relation/3375612",
+        "osm/relation/8347563",
+        "osm/relation/6009155/volume/0"
+      ]
+    },
+    "phase_three_changed_source": [
+      "Source\\DublinFlight\\City\\DublinCityFractureBaker.cpp",
+      "Source\\DublinFlight\\City\\DublinCityFractureLibrary.cpp",
+      "Source\\DublinFlight\\City\\DublinCityFractureLibrary.h",
+      "Source\\DublinFlight\\City\\DublinCityDestructionTests.cpp"
+    ],
+    "new_native_test": "DublinFlight.Destruction.Fracture.BoundedConservativeRetrySites",
+    "validation": "Static source/API/encoding checks passed. New native test checks original-grid compatibility, deterministic bounded distinct sites, exactly-two-slab last attempt and rejection of a fourth attempt. Phase3 native compilation,52-failure recovery plus the additional bridge bake and representative physical proof remain parent-owned and have NOT been claimed.",
+    "integration_build_notes": "Source patch is finished; no more agent City edits/builds are in progress. Four source files changed in phase3, including reflected optional diagnostic fields in FDublinFractureRecord: use the parent's normal full native Editor-target build/UHT and restart workflow, not an assumed hot-reload of changed reflected layouts. Current live editorPID46384 remains untouched by this agent. After build, run DublinFlight.Destruction.Fracture and Readiness groups; keep all prior runtime and physical assertions."
+  },
+  "phase_two_early_evidence": {
+    "parent_verified_phase_one": "Parent build SUCCEEDED in33.66s; RegisteredCollisionInitialization PASS; unchanged actual PIE roof locality PASS.",
+    "failure": "Support-bomb phase2: max travel3.9777187cm, drop2.1494550cm, pair change0.4981759cm;21 stationary supports,0 moved; runtime Voronoi.cpp:180 coincident-site ensure.",
+    "anchor_hypothesis_rejected": "GeometryCollectionPhysicsProxy.cpp:SetParticleAnchored_Internal explicitly changes an unanchored non-Dynamic handle to Dynamic and clears its kinematic target. Existing initial Kinematic support state alone is not the root cause.",
+    "repeated_hit_root_cause": "ApplyCollectionImpact always ApplyExternalStrain(GetRootIndex()). Chaos DisableCluster clears the original root ClusterIds and removes its children. FindClusteredParticleHandleByItemIndex_Internal returns that exact old root, not a replacement active cluster. Later strain therefore targets a disabled empty root. Targeting stable authored leaf indices instead lets SetExternalStrain update each leaf's current parent.",
+    "connection_root_cause": "Baker uses default proximity bUseAsConnectionGraph=false. UpdateProximity consequently clears the connection graph. Physics proxy sees no valid authored graph and runs MinimalSpanningSubsetDelaunay; that runtime fallback reaches the observed Voronoi ensure. Use supported proximity-to-connection-graph authoring and validate saved graph instead."
+  },
+  "parent_sample_followup_2026_09_15_122649_bst": {
+    "observation": "Parent completed three cannon hits, support bomb, crater and water against the still-loaded pre-repair module: three GC components, zero reported moved fragments, no queue errors. Reflected ObjectType Dynamic, MaxSimulatedLevel 100, collision sample fraction 1, static-mesh trace replacement false and no per-level collision profiles.",
+    "interpretation": "Consistent with the proven initialization bypass: reflected component settings and a proxy do not prove that OnCreatePhysicsState populated dynamic particle states, ownership and query filtering.",
+    "counter_clarification": "63 retained remote leaves out of 65 does NOT establish two moved leaves. The locality loop counts only leaves whose rest center is beyond twice the cannon radius AND movement is below 5cm; the other two may simply be near the hit and ineligible.",
+    "transform_space_check": "Reconfirmed installed GeometryCollectionComponent.cpp:7023-7042 GetInitialLocalRestTransforms applies MassToLocal to component-space global rest transforms; :7124-7143 GetCurrentTransforms applies the same MassToLocal to current component-space transforms. Comparing these for displacement is consistent; test WorldLeaves adds the actual component transform. No evidence supports changing the counter transform convention.",
+    "next": "Source fix is ready. No further live read needed before parent rebuild and new test/unchanged real PIE physical verification. Existing live Sample cannot validate unloaded source edits."
+  },
+  "completion_boundary": "Working physical runtime is parent-verified. Phase3 bounded baker recovery, strict volume/collision gates, actionable diagnostics and regression coverage are persistent. No live editor calls, builds, issues, PythonRemote, delegation, source-data edits or asset deletion performed. Phase3 compilation,52-failure recovery and representative physics remain explicit parent verification gates."
+}

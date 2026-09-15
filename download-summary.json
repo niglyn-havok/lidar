@@ -1,0 +1,32 @@
+{
+  "tiles_downloaded": 20,
+  "required_tiles": 20,
+  "unavailable_tile_ids": [],
+  "archive_bytes": 6073459475,
+  "laz_bytes": 6072477515,
+  "point_count": 1201233783,
+  "coverage_caution": "Tile availability does not guarantee continuous point coverage. The 2015 survey has partial coverage outside its densely surveyed core.",
+  "definite_extent_gaps_intersecting_requested_circle": [
+    {
+      "tile_id": "315000_235000",
+      "side": "west",
+      "empty_extent_irish_grid": [
+        315000,
+        235000,
+        315261.576,
+        235500
+      ]
+    },
+    {
+      "tile_id": "315000_235000",
+      "side": "north",
+      "empty_extent_irish_grid": [
+        315000,
+        235236.034,
+        315500,
+        235500
+      ]
+    }
+  ],
+  "gap_analysis_limitation": "These are gaps provable from point-cloud bounding boxes; additional gaps may exist within those boxes."
+}

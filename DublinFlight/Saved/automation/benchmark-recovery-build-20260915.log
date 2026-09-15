@@ -1,0 +1,39 @@
+Using bundled DotNet SDK version: 10.0 win-x64
+Running UnrealBuildTool: dotnet "..\..\Engine\Binaries\DotNET\UnrealBuildTool\UnrealBuildTool.dll" DublinFlightEditor Win64 Development -Project=C:\Code\tmp\messing\dublin-lidar\DublinFlight\DublinFlight.uproject -WaitMutex -NoHotReloadFromIDE
+Log file: C:\Users\niglyn\AppData\Local\UnrealBuildTool\Log.txt
+Determining max actions to execute in parallel (24 physical cores, 32 logical cores)
+  Executing up to 24 processes, one per physical core
+UbaServer - Listening on 0.0.0.0:1345
+Invalidating makefile for DublinFlightEditor (source file added)
+Plugin 'MetaHumanGenerator' depends on plugin 'StructUtils' which was deprecated in 5.5 and will soon be removed. Please update your dependencies.
+Project 'DublinFlightEditor' depends on plugin 'StructUtils' which was deprecated in 5.5 and will soon be removed. Please update your dependencies.
+UHT compiled-in object format Default
+UHT processed DublinFlightEditor in 9.5707897 seconds (1 generated files written)
+Building DublinFlightEditor...
+===== Toolchain Information =====
+Using ISPC compiler (C:\Program Files\Epic Games\UE_5.8\Engine\Source\ThirdParty\Intel\ISPC\bin\Windows\ispc.exe)
+  Intel(r) Implicit SPMD Program Compiler (Intel(r) ISPC), 1.24.0 (build commit  @ 20250404, LLVM 18.1.2) 
+Using Visual Studio 14.44.35228 toolchain (C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207) and Windows 10.0.22621.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[Adaptive Build] Excluded from DublinFlight unity file: DublinFlight.cpp, DublinFlightGameMode.cpp, DublinFlightHUD.cpp, DublinFlightPawn.cpp, DublinFlightSimulation.cpp, DublinCityData.cpp, DublinCityDestruction.cpp, DublinCityDestructionTests.cpp, DublinCityDestructionWorld.cpp, DublinCityFractureBaker.cpp, DublinCityFractureLibrary.cpp, DublinCityGeometry.cpp, DublinCityTests.cpp, DublinCityWorld.cpp, DublinImpactAudio.cpp, DublinImpactEffectsSubsystem.cpp, DublinImpactEffectsTests.cpp, DublinImpactEffectType.cpp, DublinFlightBenchmark.cpp, DublinFlightBenchmarkTests.cpp, DublinFlightPerformanceMetrics.cpp, DublinFlightPerformanceSubsystem.cpp, DublinFlightPerformanceTests.cpp, DublinDestructionPIETests.cpp, DublinFlightPIETests.cpp, DublinFlightSimulationTests.cpp, DublinAircraftVisual.cpp, DublinAircraftVisualTests.cpp, DublinProjectile.cpp, DublinWeaponComponent.cpp, DublinWeaponModel.cpp, DublinWeaponPIETests.cpp, DublinWeaponTests.cpp
+=================================
+Using Unreal Build Accelerator local executor to run 10 action(s)
+  CPU 24 physical cores, 32 logical cores
+  Memory 63.66 GB physical, 37.86 GB/127.66 GB committed
+  UBA Storage capacity 40 GB
+[1/10] Compile [x64] DublinFlightBenchmarkTests.cpp
+[2/10] Compile [x64] DublinFlightPerformanceMetrics.cpp
+[3/10] Compile [x64] DublinFlightPerformanceTests.cpp
+[4/10] Compile [x64] DublinFlightPerformanceSubsystem.cpp
+[5/10] Compile [x64] DublinWeaponPIETests.cpp
+[6/10] Compile [x64] Module.DublinFlight.cpp
+[7/10] Compile [x64] DublinFlightBenchmark.cpp
+[8/10] Link [x64] UnrealEditor-DublinFlight.lib
+[9/10] Link [x64] UnrealEditor-DublinFlight.dll
+[10/10] WriteMetadata DublinFlightEditor.target [NoUba]
+
+Total time in Unreal Build Accelerator local executor: 12.44 seconds
+Output binary: C:\Program Files\Epic Games\UE_5.8\Engine\Binaries\Win64\UnrealEditor.exe
+
+Result: Succeeded
+Total execution time: 29.13 seconds
+Trace written to file C:\Users\niglyn\AppData\Local\UnrealBuildTool\Trace.uba with size 9.2kb

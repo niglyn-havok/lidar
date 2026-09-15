@@ -1,0 +1,482 @@
+{
+  "schema_version": 1,
+  "status": "complete_evidence_handoff_with_explicit_implementation_gates",
+  "recovered_on": "2026-09-08",
+  "scope": "Read-only source inspection; no source-data, Unreal asset, editor, runtime or config modifications. This handoff is the only deliverable.",
+  "source_root": "C:\\Code\\tmp\\messing\\dublin-lidar",
+  "prior_session": {
+    "id": "e2674edc-406d-497f-ab51-47dc2d0f57b1",
+    "query_window_utc": ["2026-09-08T12:30:00Z", "2026-09-08T13:40:00Z"],
+    "recovered_from": "Time-bounded exact-ID session_store_sql query, cloud plus local results",
+    "reported_scene": "Snow globe centered on O'Connell Bridge, 1520 m diameter; cached-grid coverage independently reproduced as 99.9646186836497 percent",
+    "session_files_recovered": 22,
+    "local_fallback": "Cloud returned rows, so a separate source=local fallback was unnecessary. The turns query also returned three supplemental local rows."
+  },
+  "confirmed_initial_evidence": {
+    "manifest": "C:\\Code\\tmp\\messing\\dublin-lidar\\manifest.json",
+    "download_summary": "C:\\Code\\tmp\\messing\\dublin-lidar\\download-summary.json",
+    "dataset": "2015 Aerial Laser and Photogrammetry Survey of Dublin City",
+    "capture_date": "2015-03-26",
+    "source_reported_license": "CC BY 4.0; verified against official NYU collection record and full records for tiles 315500_234000 and 315500_234500",
+    "source_reported_attribution": "Debra F. Laefer, Saleh Abuwarda, Anh-Vu Vo, Linh Truong-Hong, Hamid Gharibi",
+    "horizontal_coordinates": "Legacy reconstruction treats numeric Irish Grid coordinates as EPSG:29903; raw LAS custom-CRS caveat is recorded under coordinate_contract",
+    "vertical_datum": "Ordnance Survey Malin Head",
+    "center_irish_grid_m": [315989, 234393],
+    "download_selection_radius_m": 1000,
+    "laz_tiles": 20,
+    "reported_points": 1201233783,
+    "coverage_caution": "Complete selected tiles are retained, not circle-clipped. Survey has gaps; tile presence does not imply measured coverage.",
+    "existing_scene": "C:\\Code\\tmp\\messing\\dublin-lidar\\snowglobe\\Dublin - OConnell Bridge - Snow Globe.blend",
+    "existing_surface": "C:\\Code\\tmp\\messing\\dublin-lidar\\artwork\\surface.npz",
+    "pipeline_scripts": [
+      "C:\\Code\\tmp\\messing\\dublin-lidar\\artwork\\build_surface.py",
+      "C:\\Code\\tmp\\messing\\dublin-lidar\\snowglobe\\prepare_assets.py",
+      "C:\\Code\\tmp\\messing\\dublin-lidar\\snowglobe\\prepare_city.py",
+      "C:\\Code\\tmp\\messing\\dublin-lidar\\snowglobe\\build_globe.py"
+    ]
+  },
+  "recovered_pipeline": {
+    "crs": "EPSG:29903 / TM75 / Irish Grid; not EPSG:2157",
+    "center_wgs84_lon_lat": [-6.259074517419306, 53.34728073745449],
+    "source_grid": {
+      "path": "C:\\Code\\tmp\\messing\\dublin-lidar\\artwork\\surface.npz",
+      "bounds_m": [314950, 233400, 316950, 235350],
+      "shape_yx": [1950, 2000],
+      "cell_m": 1,
+      "keys": ["surface", "raw", "terrain", "valid", "count", "bounds", "cell"],
+      "index": "row=floor(N-233400), col=floor(E-314950); row increases north",
+      "cleanup": "Keep -4<Z<170; max return per 1m bin; nearest fill gaps; 3x3 median surface; class-2 minimum per bin, nearest fill and 5x5 median terrain.",
+      "critical_warning": "terrain is NOT a validated bare-earth DTM. Cached terrain follows several OSM building roofs; Fleet Street Car Park has median terrain 21.720m versus surface 21.806m. Only classes 2 and 4 occur in recorded tile histograms; class 6 buildings absent. Do not use class 2 blindly as ground.",
+      "raw_is_not_point_cloud": "raw is a single maximum elevation per bin, including -Infinity at missing bins; it cannot supply point-height percentiles or return-level classification.",
+      "pixel_convention": "Point bins cover [E0+i,E0+i+1) x [N0+j,N0+j+1), but old Blender geometry places the corresponding value at the lower-left integer coordinate. This is a legacy half-cell convention, not a true surveyed grid of vertices."
+    },
+    "city_grid": {
+      "path": "C:\\Code\\tmp\\messing\\dublin-lidar\\snowglobe\\assets\\city-grid.npz",
+      "bounds_m": [315189, 233593, 316789, 235193],
+      "shape_yx": [1601, 1601],
+      "keys": ["height", "water", "green", "canopy", "valid"],
+      "derivative_edits": "Water flattened to 1.1m; Spire's 5x5 raster neighborhood flattened to 6.45m; separate procedural needle restored in Blender."
+    },
+    "geometry": {
+      "city_meshes": 1,
+      "representation": "Continuous circular 1m quad heightfield, not discrete watertight buildings; canopy and Spire are separate objects.",
+      "city_object_name": "DUBLIN | measured 1m LiDAR surface - 1520m diameter",
+      "city_counts_reproduced_from_script": {
+        "vertices": 1817653,
+        "quads": 1814612,
+        "triangles_after_simple_quad_split": 3629224
+      },
+      "scene_manifest_totals": {"objects": 102, "mesh_vertices": 2210335, "mesh_polygons": 2383087},
+      "mesh_object_count": {
+        "expected_from_build_and_finalize_scripts": 90,
+        "actual_live_scene_recount": null,
+        "basis": "90 mesh objects + 2 text objects + 8 lights + 2 cameras = 102 objects; scene-manifest confirms the total but does not enumerate mesh objects. Compressed BLEND was not opened in Blender."
+      },
+      "city_related_objects": [
+        "DUBLIN | measured 1m LiDAR surface - 1520m diameter",
+        "CANOPY | LiDAR-located leaf clusters",
+        "LANDMARK | The Spire - restored from raw measured tip",
+        "CITY SECTION | closed LiDAR perimeter",
+        "CITY SECTION | circular survey cut"
+      ],
+      "canopy_clusters": 22000,
+      "not_importable_as_destructible_buildings": "Heightfield ramps span facade edges; separate perimeter skirt is not welded into watertight per-building solids. Neither the closed glass shell nor the decorative circular base makes the city watertight.",
+      "file_format": "Blender 5.2 scene, Zstandard-compressed BLEND, 82982893 bytes; no FBX/OBJ/PLY/STL/glTF/USD exports found in inspected data scope",
+      "blender_axes": "+X east, +Y north, +Z up",
+      "blender_formula": "x=(E-315989)*0.01; y=(N-234393)*0.01; z=H_MalinHead*0.01+0.132",
+      "warning": "Remove 0.132 model-unit display lift before real-scale import; this equals 13.2 surveyed metres. Whole-scene polygon totals include globe and decoration."
+    },
+    "aerial": {
+      "path": "C:\\Code\\tmp\\messing\\dublin-lidar\\snowglobe\\assets\\dublin-aerial.jpg",
+      "provider": "Esri World Imagery; source attribution Esri, Vantor, Earthstar Geographics, and the GIS User Community",
+      "shape_wh": [2048, 2048],
+      "rectified_crs": "EPSG:29903",
+      "rectified_bounds_m": [315189, 233593, 316789, 235193],
+      "metres_per_pixel": 0.78125,
+      "source_crs": "EPSG:3857",
+      "source_bounds_m": [-698129.2105236892, 7046123.161565267, -695384.3167245891, 7048868.055364367],
+      "pixel_center_formula": "E=315189+(col+0.5)*0.78125; N=235193-(row+0.5)*0.78125",
+      "ue_topdown_uv": "u=(E-315189)/1600; v=(235193-N)/1600",
+      "license_status": "Not cleared for standalone UE texture redistribution. Existing attribution does not establish permission; prefer source-survey orthophotos if their individual terms are confirmed.",
+      "capture_date": null
+    },
+    "first_patch_proposal": {
+      "size_m": [800, 800],
+      "bounds_m": [315589, 233993, 316389, 234793],
+      "same_center_as_snowglobe": true,
+      "vertex_grid_shape_yx": [801, 801],
+      "measured_samples": 641430,
+      "sample_count": 641601,
+      "coverage_fraction": 0.9997334792183927,
+      "point_count_per_measured_bin_p05_p50_p95": [109, 313, 698],
+      "footprint_files_found": false,
+      "standalone_mesh_exports_found": false,
+      "search_scope": "snowglobe, artwork, tiles and metadata; common GIS and mesh exchange extensions",
+      "osm_assessment": "Live bounded Overpass probe succeeded: 946 valid closed building ways intersect the core before relation/part deduplication. Counts are not a completeness percentage or a final building count."
+    }
+  },
+  "asset_inventory": {
+    "root": "C:\\Code\\tmp\\messing\\dublin-lidar",
+    "path_rule": "Entries below are relative to root unless absolute. Preserve originals; write any future derivatives into a separate generated-data directory.",
+    "lidar": {
+      "directory": "tiles",
+      "format": "LAZ, LAS 1.2 point format 1",
+      "tile_count": 20,
+      "total_laz_bytes_reported": 6072477515,
+      "archives": "archives\\nyu_2451_*_pc_T_*.zip",
+      "archive_count": 20,
+      "one_archive_inspected": "archives\\nyu_2451_38601_pc_T_315500_234000.zip",
+      "one_archive_contents": ["nyu_2451_38601_laz\\", "nyu_2451_38601_laz\\T_315500_234000.laz"],
+      "metadata": ["manifest.json", "download-summary.json", "metadata\\source-index.json", "metadata\\<tile>-download.json", "metadata\\<tile>-source-checksums.json"]
+    },
+    "grids": [
+      {"path": "artwork\\surface.npz", "bytes": 29629021, "arrays": "surface/raw/terrain float32; valid bool; count uint32; bounds int64; cell float64"},
+      {"path": "snowglobe\\assets\\city-grid.npz", "bytes": 5663513, "arrays": "height float32; water/green/canopy/valid bool"}
+    ],
+    "images": [
+      {"path": "snowglobe\\assets\\source-aerial.jpg", "format": "RGB JPEG", "dimensions_wh": [2048, 2048], "role": "Original Esri EPSG:3857 export; not cleared for UE texture use"},
+      {"path": "snowglobe\\assets\\dublin-aerial.jpg", "format": "RGB JPEG", "dimensions_wh": [2048, 2048], "role": "Rectified colour; packed in BLEND; not cleared for UE texture use"},
+      {"path": "snowglobe\\assets\\aerial-preview.jpg", "format": "RGB JPEG", "dimensions_wh": [1024, 1024], "role": "Preview, not additional resolution"},
+      {"path": "snowglobe\\assets\\classification-preview.jpg", "format": "RGB JPEG", "dimensions_wh": [1000, 1000], "role": "Artistic segmentation diagnostic"},
+      {"path": "snowglobe\\assets\\water-mask.png", "format": "L PNG", "dimensions_wh": [1601, 1601], "role": "Imagery-derived mask; bridges heuristically excluded"},
+      {"path": "snowglobe\\assets\\vegetation-mask.png", "format": "L PNG", "dimensions_wh": [1601, 1601], "role": "Imagery-derived mask, not LiDAR semantic labels"},
+      {"path": "snowglobe\\assets\\editorial-overlay.png", "format": "RGBA PNG", "dimensions_wh": [3200, 3800], "role": "Title and credit overlay; not a city texture"}
+    ],
+    "scenes": [
+      "snowglobe\\Dublin - OConnell Bridge - Snow Globe.blend",
+      "snowglobe\\Dublin - Snow Globe - 12s Orbit.blend",
+      "snowglobe\\Dublin - Snow Globe - 12s Landscape Orbit.blend"
+    ],
+    "script_roles": [
+      {"path": "artwork\\build_surface.py", "role": "Reads all selected LAZ; creates max-height raster, unreliable class-2 terrain, fill and median filters. Do not rerun full-dataset processing."},
+      {"path": "artwork\\render_city.py", "role": "Existing illustrative surface rendering; not a building-solid reconstruction pipeline"},
+      {"path": "snowglobe\\prepare_assets.py", "role": "Fetches Esri service metadata and 2048px Web Mercator JPEG, then bilinearly rectifies to legacy EPSG:29903 crop"},
+      {"path": "snowglobe\\prepare_city.py", "role": "Crops surface cache; derives artistic landcover and water; patches Spire raster"},
+      {"path": "snowglobe\\build_globe.py", "role": "Builds one city heightfield, procedural facade shader, canopy, Spire and display scene; replaces the Blender scene"},
+      {"path": "snowglobe\\finalize_scene.py", "role": "Organizes collections, packs images, writes scene-manifest; only glass receives mesh cleanup"},
+      {"path": "snowglobe\\create_layout.py", "role": "Editorial title/credit overlay"},
+      {"path": "snowglobe\\setup_orbit.py", "role": "Portrait camera orbit; not geographic geometry"},
+      {"path": "snowglobe\\setup_landscape_orbit.py", "role": "Landscape framing variant"},
+      {"path": "snowglobe\\start_orbit_render.py", "role": "Render orchestration"},
+      {"path": "snowglobe\\encode_orbit.py", "role": "Video encoding"}
+    ],
+    "provenance_files": [
+      "snowglobe\\ABOUT.txt",
+      "snowglobe\\provenance.json",
+      "snowglobe\\scene-manifest.json",
+      "snowglobe\\assets\\imagery-service.json",
+      "snowglobe\\assets\\imagery-georeference.json",
+      "artwork\\surface-provenance.json"
+    ],
+    "footprints_and_orthophotos_on_disk": "No GeoJSON/OSM/PBF/GPKG/Shapefile or TIF/TIFF/TFW files found in snowglobe, artwork, tiles or metadata. Existing ZIP inventory is point-cloud archives, not imagery archives.",
+    "available_python_modules_observed": ["numpy", "laspy", "pyproj", "PIL", "shapely"],
+    "not_installed_or_changed": "No packages installed; existing scripts were read, not executed."
+  },
+  "coordinate_contract": {
+    "status": "Exact legacy transform recovered; proposed UE basis below is explicit but not tested through an importer",
+    "working_crs": "EPSG:29903, TM75 / Irish Grid, horizontal metres",
+    "working_origin_enu_m": [315989, 234393, 0],
+    "vertical_datum": "Ordnance Survey Malin Head, as recorded in manifest; not WGS84 ellipsoidal altitude",
+    "h0_malin_head_m": 0,
+    "raw_las_crs_caveat": {
+      "header_parse_crs": null,
+      "sample_file": "tiles\\T_315500_234000.laz",
+      "geokey_projected_crs": 32767,
+      "geokey_citation": "DAT1965, AiryMod1849, TM65 / Irish Grid",
+      "projection": "Transverse Mercator",
+      "latitude_of_origin_deg": 53.5,
+      "central_meridian_deg": -8,
+      "scale_factor": 1.000035,
+      "false_easting_m": 200000.32,
+      "false_northing_m": 250000.08,
+      "ellipsoid_semimajor_m": 6377340.189,
+      "ellipsoid_inverse_flattening": 299.3249646,
+      "interpretation": "User-defined source CRS is not a clean embedded EPSG:29903 identifier. False offsets differ by +0.32m,+0.08m from canonical EPSG:29903. This is not evidence of a 1m-accurate survey.",
+      "first_patch_decision": "Keep the same numeric grid and EPSG:29903 treatment as the snowglobe for reproducibility. Do not silently switch to EPSG:2157 or apply per-layer corrections. Record this sub-metre discrepancy and test common registration on at least three stable corners before higher-detail reconstruction."
+    },
+    "osm_to_working_grid": "pyproj.Transformer.from_crs(4326,29903,always_xy=True).transform(lon,lat); no vertical transform; preserve the selected PROJ operation with generated data",
+    "observed_transform_accuracy_m": 1,
+    "observed_transform_note": "Reported by PROJ for the horizontal Helmert operation, not measured footprint alignment accuracy.",
+    "observed_29903_to_wgs84_pipeline": "proj=pipeline step inv proj=tmerc lat_0=53.5 lon_0=-8 k=1.000035 x_0=200000 y_0=250000 a=6377340.189 rf=299.3249646 step inv proj=longlat a=6377340.189 rf=299.3249646 step proj=push v_3 step proj=cart a=6377340.189 rf=299.3249646 step proj=helmert x=482.5 y=-130.6 z=564.6 rx=-1.042 ry=-0.214 rz=-0.631 s=8.15 convention=position_vector step inv proj=cart ellps=WGS84 step proj=pop v_3 step proj=unitconvert xy_in=rad xy_out=deg",
+    "legacy_grid_to_city_crop": "surface arrays [193:1794,239:1840] produce 1601x1601 city-grid; numeric sample coordinates E=315189+col, N=233593+row",
+    "legacy_800m_core_slices": {
+      "surface_npz_yx": "[593:1394,639:1440]",
+      "city_grid_npz_yx": "[400:1201,400:1201]",
+      "shape_yx": [801, 801]
+    },
+    "new_point_raster_rule": "For any newly rasterized points use actual bin centres E=Emin+(col+0.5)*cell, N=Nmin+(row+0.5)*cell. Retain legacy lower-left placement only for reproducing the old mesh; never mix conventions without the half-cell adjustment.",
+    "ue_basis": "+X east, +Y south, +Z up; centimetres; origin XY remains O'Connell Bridge",
+    "ue_from_survey": ["Xcm=100*(E-315989)", "Ycm=-100*(N-234393)", "Zcm=100*(H_MalinHead-0)"],
+    "ue_from_legacy_blender_world": ["Xcm=10000*Bx", "Ycm=-10000*By", "Zcm=10000*(Bz-0.132)"],
+    "ue_inverse": ["E=315989+Xcm/100", "N=234393-Ycm/100", "H_MalinHead=Zcm/100"],
+    "handedness": "The Y reflection has determinant -1. Reverse triangle winding once if directly converting source arrays; transform normals correctly. If the interchange exporter/importer performs that conversion, do not perform it a second time.",
+    "calibration_points": [
+      {"meaning": "Geographic origin at Malin Head zero", "survey_enh_m": [315989, 234393, 0], "ue_xyz_cm": [0, 0, 0]},
+      {"meaning": "100m east", "survey_enh_m": [316089, 234393, 0], "ue_xyz_cm": [10000, 0, 0]},
+      {"meaning": "100m north", "survey_enh_m": [315989, 234493, 0], "ue_xyz_cm": [0, -10000, 0]},
+      {"meaning": "10m up", "survey_enh_m": [315989, 234393, 10], "ue_xyz_cm": [0, 0, 1000]},
+      {"meaning": "Bridge cached surface sample, not a certified survey control", "survey_enh_m": [315989, 234393, 4.4419999123], "ue_xyz_cm": [0, 0, 444.19999123]},
+      {"meaning": "Spire restored tip, prior script value not remeasured in this recovery", "survey_enh_m": [315903.5, 234672.5, 124.609], "ue_xyz_cm": [-8550, -27950, 12460.9]}
+    ]
+  },
+  "lidar_quality": {
+    "bounded_raw_inspection": "One header plus first 200000 points of T_315500_234000.laz; not a statistically representative survey-wide sample.",
+    "header_scales_m": [0.001, 0.001, 0.001],
+    "header_offsets_m": [314000, 230000, 0],
+    "scale_caution": "Millimetre storage quantization is not millimetre positional accuracy.",
+    "sample_tile_points": 82302919,
+    "sample_tile_height_range_m": [-99.594, 343.329],
+    "sample_class_counts": {"2": 154409, "4": 45591},
+    "all_tile_histograms": "artwork\\surface-provenance.json records only class 2 and class 4 for all 20 tiles. Class meanings are not independently confirmed for this producer.",
+    "rgb": "LAS point format 1 has no RGB fields. Colours came from imagery, not coloured point records.",
+    "fields_present": ["intensity", "return_number", "number_of_returns", "classification", "withheld", "synthetic", "key_point", "scan_angle_rank", "point_source_id", "gps_time"],
+    "density": {
+      "official_core_nominal_points_per_m2": 335,
+      "observed_800m_core_count_percentiles": {"p05": 109, "p25": 257, "p50": 313, "p75": 383, "p95": 698, "max": 7777},
+      "interpretation": "Counts are retained returns per measured 1m XY bin, including repeated strips/vertical surfaces. They are not independent samples, uniform roof density, or point accuracy.",
+      "missing_800m_core_samples": 171,
+      "coverage_caution": "99.9733% occupied bins is not 99.9733% correct surfaces or roof coverage. Water, occlusion, interpolation and buildings still need quality checks."
+    },
+    "existing_noise_cleanup_limitations": [
+      "Global -4<Z<170 filtering excludes extreme returns but is not a ground/noise classifier.",
+      "Maximum-per-bin rasterization promotes isolated high returns and blends roofs, trees and facades.",
+      "3x3 median filtering blunts roof ridges and slender landmarks; nearest filling can propagate errors across unmeasured areas.",
+      "No withheld filtering, statistical outlier removal, robust roof-plane segmentation or footprint-constrained cleanup appears in build_surface.py.",
+      "The derived terrain retains roofs; it cannot be imported as the craterable bare-earth surface.",
+      "Imagery-derived green/water/canopy masks are artistic heuristics and carry unresolved Esri derivative-use rights."
+    ],
+    "terrain_roof_contamination_examples": [
+      {"osm_way_id": 29270007, "name": "Museum Building", "samples": 1292, "surface_median_m": 21.285, "terrain_median_m": 19.171},
+      {"osm_way_id": 37264787, "name": "Fleet Street Car Park", "samples": 937, "surface_median_m": 21.806, "terrain_median_m": 21.720},
+      {"osm_way_id": 44075406, "name": "Old Library", "samples": 1092, "surface_median_m": 25.276, "terrain_median_m": 24.5785}
+    ]
+  },
+  "osm_footprints": {
+    "local_existing_dataset": null,
+    "probe_status": "Succeeded; public geography query only, response processed in memory and not retained as a source-data file",
+    "endpoint": "https://overpass-api.de/api/interpreter",
+    "query_method": "GET with URL-encoded data parameter; POST form data also supported",
+    "probe_query": "[out:json][timeout:25][maxsize:16777216];(way[\"building\"](53.343140,-6.265993,53.351421,-6.252155);relation[\"building\"](53.343140,-6.265993,53.351421,-6.252155);way[\"building:part\"](53.343140,-6.265993,53.351421,-6.252155);relation[\"building:part\"](53.343140,-6.265993,53.351421,-6.252155););out body geom;",
+    "query_bbox_order": "south,west,north,east in WGS84; approximately 800m core plus 50m halo and slight projection-envelope excess",
+    "osm_base_timestamp_utc": "2026-09-08T16:38:10Z",
+    "response_bytes": 1443060,
+    "client_response_cap_bytes": 4194304,
+    "counts": {
+      "elements": 1546,
+      "ways": 1529,
+      "relations": 17,
+      "building_tagged_elements": 1185,
+      "building_part_tagged_elements": 361,
+      "closed_ways": 1529,
+      "valid_closed_building_ways_intersecting_core": 946,
+      "invalid_closed_building_ways_observed_in_halo": 0,
+      "building_elements_with_height_tag": 14,
+      "building_elements_with_levels_tag": 426,
+      "building_elements_with_roof_shape_tag": 45
+    },
+    "coverage_interpretation": "Enough mapped polygons for the first patch. This is not proof of exhaustive coverage, correct footprints, relation validity or 946 independent buildings. Geometry/member overlaps and parts remain to be normalized.",
+    "capture_mismatch": "OSM snapshot is September 8, 2026; LiDAR is March 26, 2015. Current footprints may represent new/demolished buildings and roof tags are sparse.",
+    "download_recipe": [
+      "Run the recorded bounded query once; retain response bytes, timestamp, query, attribution and a locally computed SHA-256 in a NEW generated-data directory. To request the same historical snapshot, add date=2026-09-08T16:38:10Z using Overpass date syntax and verify that the endpoint supports attic data.",
+      "Reject HTTP errors, XML/HTML error bodies, a JSON remark, timeout or a truncated response. Honour 429/504 and do not start parallel retries or download a country/planet extract.",
+      "Use out body geom without an output bbox so selected ways and relation members retain full geometry; fetch only missing relation members if required, with a hard object-count/extent cap.",
+      "Exclude building=no/building:part=no and construction/abandoned/demolished states unless explicitly modeled as such. Preserve OSM type/id, relation member roles, source tags and the acquisition timestamp.",
+      "Assemble multipolygons with outer/inner rings; suppress duplicate member-way buildings and overlapping parent shells when detailed building:part volumes cover them. Treat non-multipolygon building relations as grouping metadata rather than a polygon.",
+      "Keep whole buildings intersecting the core if they fit within the halo. If a footprint extends beyond the 50m halo, defer it or obtain a specifically bounded extension; do not manufacture an open building at the patch edge."
+    ]
+  },
+  "imagery_reuse_and_replacement": {
+    "legacy_projection_recipe": {
+      "service": "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer",
+      "operation": "export",
+      "request": "Transform the four corners of [315189,233593,316789,235193] from EPSG:29903 to EPSG:3857 with always_xy=True; request encompassing bbox, bboxSR=3857, imageSR=3857, size=2048,2048, format=jpg, f=json",
+      "returned_extent_is_authoritative": "Use assets\\imagery-georeference.json, not an assumed request bbox: the server fits the requested aspect ratio.",
+      "resampling": "For each destination pixel centre transform legacy Irish Grid to EPSG:3857; source col=(mx-xmin)/(xmax-xmin)*2048-0.5; source row=(ymax-my)/(ymax-ymin)*2048-0.5; scipy.ndimage.map_coordinates(order=1, mode=nearest).",
+      "saved_world_file_equivalent": {"A": 0.78125, "D": 0, "B": 0, "E": -0.78125, "C": 315189.390625, "F": 235192.609375},
+      "legacy_blender_uv": "u=(E-315189)/1600; v=(N-233593)/1600, bottom-origin V",
+      "ue_image_uv": "u=(E-315189)/1600; v=(235193-N)/1600, top-origin V. In proposed UE coordinates: u=0.5+Xcm/160000; v=0.5+Ycm/160000.",
+      "800m_crop_pixels_xyxy": [512, 512, 1536, 1536],
+      "800m_crop_dimensions_wh": [1024, 1024],
+      "image_precision_caution": "0.78125m/px is resampled output spacing, not guaranteed native imagery resolution or ortho accuracy. JPEG does not embed the working georeference; keep sidecar metadata.",
+      "appearance": "This is aerial/satellite basemap colouring for roofs and ground. Oblique roof lean, cast shadows, occlusion, temporal mismatch and image resampling preclude facade survey fidelity."
+    },
+    "esri_rights_gate": {
+      "status": "Not cleared for standalone offline UE textures or redistributed derivatives",
+      "official_item": "https://www.arcgis.com/sharing/rest/content/items/10df2279f9684e4a9f6a7f08febac2a9?f=json",
+      "verified_terms_summary": "Item is under Esri Master License Agreement; standard layer is not intended for offline tile export and points to World Imagery for Export for offline ArcGIS applications. Official Wayback export guidance restricts exported tiles to ArcGIS. No entitlement or separate permission for this UE use was found.",
+      "decision": "Do not treat a publicly reachable export endpoint, packed BLEND imagery, or preserved credits as permission. Preserve existing files unchanged but do not automatically import/ship the JPEG or imagery-derived masks. Do not trace additional footprints from this imagery.",
+      "credit_to_preserve_for_existing_material": "Source: Esri, Vantor, Earthstar Geographics, and the GIS User Community",
+      "specific_local_imagery_supplier_and_capture_date": "Not established by saved service-wide copyright text."
+    },
+    "preferred_replacement": {
+      "provider": "Original 2015 Dublin survey distributed by NYU, imagery captured with Phase One system",
+      "license": "CC BY 4.0, verified on collection and two relevant full tile records",
+      "format": "RGBi orthophoto GeoTIFF plus TFW; official description: 5cm, four bands R/G/B/infrared, 500m x 500m tiles",
+      "expected_dimensions_wh": [10000, 10000],
+      "dimensions_status": "Calculated from 500m / 0.05m; TIFF headers not downloaded or verified",
+      "local_availability": false,
+      "core_and_halo_archives": [
+        {"tile": "315500_233500", "url": "https://archive.nyu.edu/retrieve/79846/nyu_2451_38600_orthophoto_T_315500_233500.zip"},
+        {"tile": "315500_234000", "url": "https://archive.nyu.edu/retrieve/79851/nyu_2451_38601_orthophoto_T_315500_234000.zip", "head_content_length_bytes": 339896455},
+        {"tile": "315500_234500", "url": "https://archive.nyu.edu/retrieve/79772/nyu_2451_38586_orthophoto_T_315500-234500.zip", "head_content_length_bytes": 224867801},
+        {"tile": "316000_233500", "url": "https://archive.nyu.edu/retrieve/79889/nyu_2451_38605_orthophoto_T_316000_233500.zip"},
+        {"tile": "316000_234000", "url": "https://archive.nyu.edu/retrieve/79893/nyu_2451_38606_orthophoto_T_316000_234000.zip"},
+        {"tile": "316000_234500", "url": "https://archive.nyu.edu/retrieve/79897/nyu_2451_38607_orthophoto_T_316000_234500.zip"}
+      ],
+      "bounded_download_limit": "No orthophoto archives downloaded. One suffix-Range probe requested 64KiB but returned HTTP 200 with full archive Content-Length; body was not read. This tested endpoint cannot be assumed to support remote windowed ZIP access. Do not silently turn a crop request into hundreds of MB or multi-GB downloads.",
+      "smallest_centre_preserving_alternative": "A 768m square centred at [315989,234393] has bounds [315605,234009,316373,234777] and needs four imagery tiles instead of six, but does NOT remove the large-archive restriction. The recommended 800m core dips 7m into the southern tile row.",
+      "future_acquisition_gate": "Obtain an explicitly bounded licensed orthophoto crop or approval for the necessary archives in a separate stage. Until then use clearly labeled neutral materials for geometry work, not an allegedly faithful satellite-textured result.",
+      "future_processing": "Inspect GeoTIFF CRS, affine transform, nodata, band order and bit depth; respect the raw custom-CRS caveat. Mosaic only overlapping windows, convert R/G/B appropriately, retain infrared for newly licensed vegetation analysis, then resample the 800m crop to a proposed 4096x4096 (0.1953125m/px) or smaller. Do not assume the fourth band is alpha.",
+      "checksums": "Per-tile source-checksum JSONs exist. The quick key-name probe did not locate orthophoto-specific entries; confirm matching TIFF/archive checksums or record a fresh download checksum rather than misusing the LAZ hash.",
+      "known_source_defect": "Official source lists 316500_233500.tif as defective; this tile lies outside the recommended patch."
+    }
+  },
+  "first_patch_reconstruction": {
+    "recommendation": "Footprint-constrained, roof-preserving per-building solids on a newly separated ground surface; do not convert the monolithic snowglobe heightfield into fracture geometry.",
+    "status": "Implementation recipe and tunable starting thresholds, not an executed reconstruction",
+    "core_bounds_en_m": [315589, 233993, 316389, 234793],
+    "halo_bounds_en_m": [315539, 233943, 316439, 234843],
+    "core_bounds_wgs84_wsen": [-6.265223693855561, 53.343600646046674, -6.252924332659482, 53.350960547334495],
+    "core_ue_xy_bounds_cm": [-40000, -40000, 40000, 40000],
+    "recognition_anchors": ["O'Connell Bridge at origin", "The Spire at offset E=-85.5m,N=279.5m", "River Liffey and bridge sequence", "OSM-confirmed Trinity Old Library/Campanile and Liberty Hall footprints"],
+    "background_extent": "Existing 760m-radius disc is useful only as a visual/reference extent. It is not clean destructible architecture and includes unlicensed-for-UE imagery. Outside surveyed coverage do not imply a measured city.",
+    "raw_tiles_if_later_refinement_needed": [
+      "tiles\\T_315500_233500.laz",
+      "tiles\\T_315500_234000.laz",
+      "tiles\\T_315500_234500.laz",
+      "tiles\\T_316000_233500.laz",
+      "tiles\\T_316000_234000.laz",
+      "tiles\\T_316000_234500.laz"
+    ],
+    "bounded_processing": "Begin with cached core/halo rasters. For roof or ground failures, stream only needed source tiles in chunks and discard points outside the halo immediately. Ordinary LAZ is not a COPC spatial index, so a tiny XY crop can still require decoding much of a tile; schedule that separately, never reread all 1.2B points here.",
+    "steps": [
+      {
+        "step": 1,
+        "name": "Normalize footprints",
+        "method": "Reproject with the frozen legacy CRS contract; assemble multipolygons and holes; remove only duplicate vertices/zero-length edges; make invalid rings valid with explicit diagnostics. Preserve courtyards and non-orthogonal architecture. Start with 0.25m topology-preserving simplification, maximum 0.5m, rejecting changes above 2% area or collapsing narrow parts/shared boundaries. These are proposed tolerances, not validated fit quality."
+      },
+      {
+        "step": 2,
+        "name": "Establish ground independently of roofs",
+        "method": "Exclude all footprint interiors plus a small buffer, vegetation, water and elevated bridge decks from candidate ground samples. Fit a robust local ground surface from supported low, smooth road/courtyard samples; propagate beneath buildings with an explicit support-distance/confidence mask. Prefer a robust 3-10m external ground ring and a local plane over taking terrain at the building centroid. Reject disconnected rooftop terraces even when class 2. Preserve river banks and separate decks; do not interpolate a road bridge across the river bed."
+      },
+      {
+        "step": 3,
+        "name": "Fuse measured roof heights",
+        "method": "Use valid, sufficiently populated cells inside footprint eroded initially by 1m, retaining the un-eroded boundary for silhouette. Start with >=30 valid interior samples and >=70% measured interior coverage; small buildings need a separately flagged path. Fit connected robust roof planes with an initial 0.35-0.75m residual band and report residual/support, rather than using the global maximum. Raw-point refinement should reject withheld/nonfinite/isolated points, use local height distributions and geometric planarity, and retain coherent steep/vertical landmark returns. Classes 2/4 alone do not distinguish buildings from vegetation."
+      },
+      {
+        "step": 4,
+        "name": "Retain roofs and distinguish eaves from ridges",
+        "method": "Clip fitted planes to the real footprint and building:part boundaries; intersect adjacent planes to retain supported ridge/hip lines. Roof height at each boundary creates wall tops; base follows the independently fitted ground. Do not set every roof vertex to p95, erase all roofs with a morphological filter, or let unconstrained Delaunay triangles bridge courtyards. Use constrained triangulation over each clipped roof region. For complex/unresolved roofs retain a constrained denoised local height patch, or explicitly downgrade that building to a tagged coarse model. OSM roof tags guide but do not override contradictory measured roof evidence."
+      },
+      {
+        "step": 5,
+        "name": "Handle gaps and date conflicts explicitly",
+        "method": "Prefer coherent LiDAR roof evidence. OSM height/min_height can support a flagged fallback after units are validated; building:levels alone is not a measured height and needs an explicitly labeled assumed storey height. If neither sufficient LiDAR nor usable tags exist, flag/defer the building instead of silently inventing a height. Modern footprints without matching 2015 roof massing are change-detection conflicts, not interpolation targets. Keep confidence, source snapshot and chosen method per building."
+      },
+      {
+        "step": 6,
+        "name": "Create closed fracture-ready solids",
+        "method": "One closed mesh per resolved building volume: roof, exterior walls, courtyard-facing walls and triangulated underside/foundation cap with matching rings. Courtyard holes must remain real holes through the footprint. Add a modest explicitly artificial foundation depth below local terrain (initially 1m), not the display plinth. Resolve overlapping parts into non-overlapping closed volumes; do not overlay a parent shell on its parts. Weld compatible boundaries, remove zero-area triangles, orient outward, and require two incident faces per edge, no self-intersections and positive enclosed volume. Validate disconnected components separately; a manifold mesh alone is not enough to guarantee robust fracture."
+      },
+      {
+        "step": 7,
+        "name": "Separate materials and surfaces",
+        "method": "Apply only cleared aerial/orthophoto RGB to roof and ground XY UVs. Use explicitly generic facade materials with metric UVs; do not stretch top-down imagery down walls or claim measured windows. Keep water, bridge decks, vegetation, landmarks and ground as independent layers. Remove roof massing from the ground before placing solids, preventing duplicate surfaces and buried phantom buildings."
+      },
+      {
+        "step": 8,
+        "name": "Package for the next UE stage",
+        "method": "Generate geometry offline, keeping double-precision survey coordinates until local-origin subtraction. Store per-building IDs/pivots, geometry, UVs, confidence and provenance alongside a common transform. Prefer local per-building vertices plus world placement metadata. Produce native static meshes using an approved editor-side importer or export interoperable static-mesh files in a separate stage. No full-dataset runtime reconstruction, Unreal mutation, API inspection or fracture implementation occurred in this recovery."
+      }
+    ],
+    "landmarks": "Preserve the Spire as a separate intentional tapered solid: source script base H=6.45m, tip H=124.609m, base diameter 3m; tip radius 0.08m in real scale. These dimensions are recovered from prior code, not independently surveyed here. Do not confuse the raster's blunted 85.182m sample with the restored tip.",
+    "terrain_and_water_future_boundary": "The cleaned ground is a starting height surface, not an implemented runtime crater system. Heightfields cannot represent arbitrary caves/overhangs; river bed/bathymetry is not established by this LiDAR/aerial data. Water H=1.1m in the snowglobe is an artistic constant, not a measured tide. Keep hydrology and bridge structure work separate."
+  },
+  "ue_import_contract": {
+    "target": "UE5.8 DublinFlight; not modified or built",
+    "preferred_route": "Data-first static-mesh reconstruction from normalized footprints and fitted roofs. Do not import all snowglobe objects or run build_globe.py as an import step.",
+    "direct_mesh_builder_route": "Convert positions by coordinate_contract.ue_from_survey, reverse source winding for the reflected Y basis, transform normals, then subtract per-building UE pivot from vertex positions and place its actor at that pivot. This avoids hidden interchange axis/scale conversions.",
+    "interchange_route": "Export selected/generated geometry only, explicit centimetre units and declared axes, separate building objects, no globe/base/studio/air/snow/combined canopy. Configure exporter and UE importer so the final transform equals the recorded matrix exactly once; leave final actor scale and import uniform scale at 1 after units are baked. Preserve material slots and UVs; avoid combining all buildings. A specific Blender 5.2 FBX preset was not run or verified, so do not rely on undocumented default axis conversion.",
+    "legacy_blend_reference_only": "If extracting a reference mesh from BLEND in a later dedicated read-only load/copy, evaluate object world transforms first, remove +0.132 display lift, restore 100 surveyed metres per Blender unit, then convert metres to cm. The direct combined factor is 10000, not 100; importer unit conversion may account for part of it, so do not apply it twice.",
+    "required_import_acceptance": [
+      "Labelled east/north/up calibration vertices land exactly at the specified cm positions; 100m is 10000cm and north is negative UE Y in this proposed basis.",
+      "Spire XY offset is [-8550,-27950]cm; bridge remains XY zero; no 13.2m display lift remains.",
+      "Top surfaces face up with backface culling enabled; reflection did not invert normals or double-flip winding.",
+      "A known roof/ground corner aligns in both geometry and top-down UVs; distinguish top-origin image V from Blender bottom-origin V.",
+      "Core spans 80000cm per horizontal dimension; actor scale is 1 and buildings remain separately addressable.",
+      "Closed-solid topology, self-intersection checks and confidence diagnostics pass before any destructive-fracture conversion."
+    ],
+    "performance_intent": {
+      "hardware_target_from_user": "RTX4090 Laptop 16GB, i9-13950HX, 64GB RAM",
+      "target_fps": 60,
+      "measured_runtime_fps": null,
+      "recommendation": "Keep 800m patch bounded; validate one 100-200m block before expanding. Chunk static ground around 100m with LODs, instance vegetation, simplify distant buildings and use modest texture mips. Proposed 2m cleaned-ground sampling gives 401x401 vertices / 320000 triangles across the core, before chunk borders/LOD. Keep fracture activation, debris limits, crater updates and water effects local and separately budgeted in the later stage.",
+      "limitation": "Neither triangle counts nor laptop GPU branding prove >=60FPS. No engine, destruction, thermal/power or memory profiling was performed. Rendering the original 3.63M-triangle city plus display scene is not a valid destruction-performance proxy."
+    }
+  },
+  "licenses_and_attribution": {
+    "verified_on": "2026-09-08",
+    "lidar_and_original_orthophotos": {
+      "license": "CC BY 4.0",
+      "credit": "2015 Aerial Laser and Photogrammetry Survey of Dublin City - Debra F. Laefer, Saleh Abuwarda, Anh-Vu Vo, Linh Truong-Hong, Hamid Gharibi.",
+      "changes_notice": "Derived cropped, filtered and reconstructed geometry; roof/ground classification and any material resampling are modifications. Artistic facade/foundation/water assumptions must be identified.",
+      "requirements_summary": "Retain attribution, source/license links and an indication of changes; do not imply endorsement. The licence permits adaptation and commercial use subject to its conditions.",
+      "source_urls": [
+        "https://archive.nyu.edu/handle/2451/38684",
+        "https://archive.nyu.edu/handle/2451/38601?mode=full",
+        "https://archive.nyu.edu/handle/2451/38586?mode=full",
+        "https://creativecommons.org/licenses/by/4.0/"
+      ]
+    },
+    "osm": {
+      "license": "ODbL 1.0",
+      "credit": "\u00a9 OpenStreetMap contributors",
+      "source_url": "https://www.openstreetmap.org/copyright",
+      "requirements_summary": "Retain OSM attribution and licence notice with downloaded/derived data and in publicly used game/simulation credits. Consider ODbL derivative-database/share-alike obligations for an OSM-based building dataset enriched with LiDAR; a rendered Produced Work and its source database have different obligations. Do not assume this licenses the entire game, and do not assume retaining separate files automatically avoids derivative-database obligations.",
+      "release_gate": "Keep source OSM and LiDAR provenance distinguishable and review public database/mesh distribution obligations before shipping; do not upload changes to OSM as part of this pipeline.",
+      "guidelines": [
+        "https://osmfoundation.org/wiki/Licence/Attribution_Guidelines",
+        "https://osmfoundation.org/wiki/Licence/Community_Guidelines/Produced_Work_-_Guideline"
+      ]
+    },
+    "esri": "Separate provider rights; NOT covered by NYU CC BY or OSM ODbL. Preserve existing credits but treat standalone UE texture use as uncleared.",
+    "attribution_placement": "Carry a machine-readable source record per output plus visible game credits/license information. Packed BLEND text alone does not ensure attribution survives export."
+  },
+  "primary_sources_verified": [
+    {"url": "https://serv.cusp.nyu.edu/projects/ALSDublin15/ALSDublin15.html", "supports": "2015-03-26 survey, 335 points/m2 nominal core density, 500m tiles, LAZ format, 5cm RGBi orthophotos and listed defect"},
+    {"url": "https://archive.nyu.edu/handle/2451/38684", "supports": "Authors, source components and CC BY 4.0 collection licence"},
+    {"url": "https://archive.nyu.edu/handle/2451/38601?mode=full", "supports": "Individual tile includes orthophotos and explicit CC BY 4.0 dc.rights"},
+    {"url": "https://archive.nyu.edu/handle/2451/38586?mode=full", "supports": "North-west central orthophoto tile and explicit CC BY 4.0 dc.rights"},
+    {"url": "https://www.arcgis.com/sharing/rest/content/items/10df2279f9684e4a9f6a7f08febac2a9?f=json", "supports": "World Imagery item, current accessInformation and licence/export limitations; fetched as JSON"},
+    {"url": "https://www.esri.com/arcgis-blog/products/arcgis-living-atlas/imagery/wayback-export", "supports": "Official exported-tile ArcGIS-only guidance, not a blanket UE texture licence"},
+    {"url": "https://www.esri.com/arcgis-blog/products/arcgis-living-atlas/imagery/learn-to-use-ai-to-extract-information-from-world-imagery", "supports": "Official additional restrictions on information extraction/derivatives"},
+    {"url": "https://www.openstreetmap.org/copyright", "supports": "OSM licensing and credit requirements"},
+    {"url": "https://osmfoundation.org/wiki/Licence/Attribution_Guidelines", "supports": "Attribution placement including computer games and simulations"},
+    {"url": "https://dev.overpass-api.de/command_line.html", "supports": "Bounded query transport and error handling"},
+    {"url": "https://dev.overpass-api.de/overpass-doc/en/preface/commons.html", "supports": "Timeout/maxsize and responsible public server use"},
+    {"url": "https://pyproj4.github.io/pyproj/stable/api/transformer.html", "supports": "Explicit axis order and transform provenance"},
+    {"url": "https://dev.epicgames.com/documentation/en-us/unreal-engine/coordinate-system-and-spaces-in-unreal-engine", "supports": "UE left-handed Z-up coordinates"},
+    {"url": "https://dev.epicgames.com/documentation/en-us/unreal-engine/units-of-measurement-in-unreal-engine", "supports": "UE default length units centimetres"}
+  ],
+  "remaining_implementation_gates": [
+    "OSM geometry is not persisted locally; reacquire the bounded query into a new generated-data directory with provenance before reconstruction.",
+    "Ground must be re-estimated; cached terrain contains roofs.",
+    "Register footprints against stable 2015 geometry, accounting for source custom-CRS and half-cell conventions plus 2026/2015 changes.",
+    "Clear or replace Esri imagery. Official 2015 orthophotos are licensed but not locally available, and tested archive endpoint ignored Range; no large download was performed.",
+    "Per-building reconstruction, closed-solid QA, actual UE import calibration, destruction and >=60FPS verification belong to later implementation, not this recovery."
+  ],
+  "inspection_scope_completed": {
+    "source_data_writes": false,
+    "unreal_asset_editor_runtime_or_config_changes": false,
+    "builds_or_installs": false,
+    "agent_delegation": false,
+    "external_uploads_of_private_data": false,
+    "raw_tiles_sampled": 1,
+    "raw_points_sampled": 200000,
+    "large_downloads": false,
+    "output": "C:\\Code\\tmp\\messing\\dublin-lidar\\DublinFlight\\Saved\\Automation\\city-data-handoff.json",
+    "evidence_basis": "Existing scripts/manifests, cached-array measurements, one LAZ header/point sample, one ZIP directory, bounded OSM response, official source/terms pages and two imagery HEAD requests plus an aborted non-partial Range response. No meshes or textures were rebuilt."
+  }
+}

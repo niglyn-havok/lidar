@@ -1,0 +1,35 @@
+{
+  "source": "OpenStreetMap",
+  "endpoint": "https://overpass-api.de/api/interpreter",
+  "query": "[out:json][timeout:40][maxsize:67108864];(way[\"building\"](53.3432878,-6.2657463,53.3512733,-6.2524015);relation[\"building\"](53.3432878,-6.2657463,53.3512733,-6.2524015);way[\"building:part\"](53.3432878,-6.2657463,53.3512733,-6.2524015);relation[\"building:part\"](53.3432878,-6.2657463,53.3512733,-6.2524015););out body geom;",
+  "bboxSouthWestNorthEast": [
+    53.34328782529877,
+    -6.265746327362666,
+    53.35127331818866,
+    -6.252401520452229
+  ],
+  "coreBoundsEN": [
+    315605,
+    234009,
+    316373,
+    234777
+  ],
+  "haloBoundsEN": [
+    315555,
+    233959,
+    316423,
+    234827
+  ],
+  "acquiredUtc": "2026-09-08T17:00:52.100306+00:00",
+  "osmBaseTimestampUtc": "2026-09-08T16:59:35Z",
+  "bytes": 1365790,
+  "sha256": "475ad85a9a1be4fe49fecf94a069a7e69c9058ac6663baa383feda105b2fd3c5",
+  "elements": 1462,
+  "seconds": 1.613,
+  "attempts": 1,
+  "earlierErrors": [],
+  "responseLimitBytes": 10000000,
+  "attribution": "\u00a9 OpenStreetMap contributors",
+  "license": "ODbL 1.0",
+  "licenseUrl": "https://www.openstreetmap.org/copyright"
+}
