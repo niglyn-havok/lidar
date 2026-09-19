@@ -1,6 +1,18 @@
 # Normalize text while leaving binary/LFS content untouched.
 * text=auto
 
+# Preserve original downloaded bytes used by source SHA-256 checks.
+generated-data/sources/osm-hydrology.json -text
+generated-data/imagery/originals/315500_234000/315500_234000.tfw -text
+generated-data/imagery/originals/315500_234500/315500_234500.tfw -text
+generated-data/imagery/originals/316000_234000/316000_234000.tfw -text
+generated-data/imagery/originals/316000_234500/316000_234500.tfw -text
+
+# These generated JSON hashes bind their original, deliberately different endings.
+DublinFlight/Content/Data/facade-provenance.json text eol=lf
+DublinFlight/Content/Data/dublin-ortho-georeference.json text eol=crlf
+generated-data/imagery/partial-import-contract.json text eol=crlf
+
 # Unreal authored assets
 *.uasset filter=lfs diff=lfs merge=lfs -text
 *.umap filter=lfs diff=lfs merge=lfs -text

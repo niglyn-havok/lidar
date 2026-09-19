@@ -9,6 +9,7 @@
 #include "Engine/World.h"
 #include "EngineUtils.h"
 #include "GameFramework/PlayerController.h"
+#include "ProfilingDebugging/CpuProfilerTrace.h"
 #include "UnrealClient.h"
 #include "Weapons/DublinProjectile.h"
 
@@ -92,6 +93,19 @@ bool UDublinWeaponComponent::IsCityReady() const { return City.IsValid() && City
 ADublinProjectile* UDublinWeaponComponent::GetLastProjectile() const { return LastProjectile.Get(); }
 ADublinCityWorld* UDublinWeaponComponent::GetCity() const { return City.Get(); }
 
+bool UDublinWeaponComponent::GetCannonLaunch(FTransform& OutTransform, FVector& OutVelocity) const
+{
+	const ADublinFlightPawn* Plane = Cast<ADublinFlightPawn>(GetOwner());
+	if (!Plane) { return false; }
+	const FVector Aim = (Plane->IsGodMode() ? Plane->GetViewRotation() : Plane->GetActorRotation()).Vector();
+	const FVector Position = Plane->GetActorLocation() + Aim * 650.0;
+	const FVector Velocity = Plane->GetVelocity() + Aim * 35000.0;
+	if (Position.ContainsNaN() || Velocity.ContainsNaN()) { return false; }
+	OutTransform = FTransform(Aim.Rotation(), Position);
+	OutVelocity = Velocity;
+	return true;
+}
+
 int32 UDublinWeaponComponent::GetActiveProjectileCount() const
 {
 	int32 Count = 0;
@@ -102,21 +116,50 @@ int32 UDublinWeaponComponent::GetActiveProjectileCount() const
 	return Count;
 }
 
+TArray<ADublinProjectile*> UDublinWeaponComponent::GetActiveBombs() const
+{
+	TArray<ADublinProjectile*> Bombs;
+	for (const TWeakObjectPtr<ADublinProjectile>& Candidate : Projectiles)
+	{
+		ADublinProjectile* Projectile = Candidate.Get();
+		if (!IsValid(Projectile) || Projectile->IsActorBeingDestroyed() || Projectile->HasResolvedImpact()
+			|| Projectile->GetImpactKind() != EDublinImpactKind::Bomb) { continue; }
+		Bombs.Add(Projectile);
+	}
+	return Bombs;
+}
+
 bool UDublinWeaponComponent::Launch(EDublinImpactKind Kind)
 {
+	TRACE_CPUPROFILER_EVENT_SCOPE(DublinFlight_LaunchProjectile);
 	ADublinFlightPawn* Plane = Cast<ADublinFlightPawn>(GetOwner());
 	if (!Plane || !IsCityReady()) { Fail(TEXT("City not READY; projectile launch refused.")); return false; }
+	if (!City->HasWeaponImpactCapacity())
+	{
+		Fail(TEXT("Impact processing busy; launch withheld to reserve capacity for every live projectile."));
+		return false;
+	}
 	if (GetActiveProjectileCount() >= FMath::Clamp(MaximumActiveProjectiles, 1, 64))
 	{
 		Fail(TEXT("Projectile budget full; wait for impacts or expiry."));
 		return false;
 	}
-	const FVector Aim = (Plane->IsGodMode() ? Plane->GetViewRotation() : Plane->GetActorRotation()).Vector();
 	const bool bBomb = Kind == EDublinImpactKind::Bomb;
-	const FVector Position = Plane->GetActorLocation()
-		+ (bBomb ? FVector(0.0, 0.0, -540.0) : Aim * 650.0);
-	const FVector Velocity = Plane->GetVelocity() + (bBomb ? FVector::ZeroVector : Aim * 35000.0);
-	if (Position.ContainsNaN() || Velocity.ContainsNaN()) { Fail(TEXT("Nonfinite weapon launch rejected.")); return false; }
+	FTransform Transform = FTransform::Identity;
+	FVector Velocity = FVector::ZeroVector;
+	if (bBomb)
+	{
+		const FVector Aim = (Plane->IsGodMode() ? Plane->GetViewRotation() : Plane->GetActorRotation()).Vector();
+		const FVector Position = Plane->GetActorLocation() + FVector(0.0, 0.0, -540.0);
+		Velocity = Plane->GetVelocity() + FVector::ZeroVector;
+		if (Position.ContainsNaN() || Velocity.ContainsNaN()) { Fail(TEXT("Nonfinite weapon launch rejected.")); return false; }
+		Transform = FTransform(Aim.Rotation(), Position);
+	}
+	else if (!GetCannonLaunch(Transform, Velocity))
+	{
+		Fail(TEXT("Nonfinite weapon launch rejected."));
+		return false;
+	}
 	DublinWeapons::FBombCurve Curve;
 	Curve.RadiusAtOneCm = BombRadiusAtOneCm;
 	Curve.DepthAtOneCm = BombDepthAtOneCm;
@@ -128,7 +171,6 @@ bool UDublinWeaponComponent::Launch(EDublinImpactKind Kind)
 	FDublinImpact Payload = DublinWeapons::MakeImpact(Kind, BombYieldTonsTNT, Curve);
 	Payload.Seed = NextSeed;
 	NextSeed = NextSeed == MAX_int32 ? 1 : NextSeed + 1;
-	const FTransform Transform(Aim.Rotation(), Position);
 	ADublinProjectile* Projectile = GetWorld()->SpawnActorDeferred<ADublinProjectile>(ADublinProjectile::StaticClass(),
 		Transform, Plane, Plane, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	if (!Projectile) { Fail(TEXT("Projectile spawn failed.")); return false; }
@@ -151,6 +193,7 @@ bool UDublinWeaponComponent::Launch(EDublinImpactKind Kind)
 
 bool UDublinWeaponComponent::DispatchImpact(const FDublinImpact& Impact)
 {
+	TRACE_CPUPROFILER_EVENT_SCOPE(DublinFlight_DispatchProjectileImpact);
 	LastImpact = Impact;
 	if (!Impact.IsValid() || Impact.Normal.IsNearlyZero() || !IsCityReady())
 	{
@@ -158,7 +201,9 @@ bool UDublinWeaponComponent::DispatchImpact(const FDublinImpact& Impact)
 		Fail(TEXT("Impact rejected: invalid payload or city not READY."));
 		return false;
 	}
-	if (!City->ApplyImpact(Impact))
+	const bool bDeferredPresentation = DublinImpactFX::WantsMaximumPresentation(Impact);
+	uint64 EventId = 0;
+	if (!(bDeferredPresentation ? City->ApplyImpactWithPresentation(Impact, this, EventId) : City->ApplyImpact(Impact)))
 	{
 		++RejectedImpacts;
 		Fail(TEXT("City rejected impact: destruction/fracture data not ready or target unsupported. No impact FX emitted."));
@@ -168,6 +213,7 @@ bool UDublinWeaponComponent::DispatchImpact(const FDublinImpact& Impact)
 	AcceptedCannonImpacts += Impact.Kind == EDublinImpactKind::Cannon ? 1 : 0;
 	AcceptedBombImpacts += Impact.Kind == EDublinImpactKind::Bomb ? 1 : 0;
 	AcceptedWaterImpacts += Impact.bWater ? 1 : 0;
+	if (bDeferredPresentation) { return true; }
 	if (UDublinImpactEffectsSubsystem* Effects = GetWorld()->GetSubsystem<UDublinImpactEffectsSubsystem>())
 	{
 		Effects->EmitImpact(Impact);
@@ -178,6 +224,14 @@ bool UDublinWeaponComponent::DispatchImpact(const FDublinImpact& Impact)
 		Fail(TEXT("Impact accepted by city, but impact effects subsystem unavailable."));
 	}
 	return true;
+}
+
+void UDublinWeaponComponent::NotifyDeferredImpactEffectsRequested(const FGuid& Epoch, uint64 EventId)
+{
+	// The city consumes the event before calling EmitImpact and is the sole deduplication owner.
+	LastDeferredEffectsEpoch = Epoch;
+	LastDeferredEffectsEventId = EventId;
+	++EffectsRequests;
 }
 
 void UDublinWeaponComponent::Fail(const FString& Message)

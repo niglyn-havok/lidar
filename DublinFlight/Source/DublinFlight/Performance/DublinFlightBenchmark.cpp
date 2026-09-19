@@ -15,7 +15,9 @@
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/WorldSettings.h"
 #include "GenericPlatform/GenericWindow.h"
+#include "GeometryCollection/GeometryCollectionComponent.h"
 #include "HAL/IConsoleManager.h"
+#include "HAL/PlatformTime.h"
 #include "InputKeyEventArgs.h"
 #include "Misc/App.h"
 #include "Misc/CoreDelegates.h"
@@ -29,6 +31,11 @@
 #include "UnrealClient.h"
 #include "Weapons/DublinWeaponComponent.h"
 #include "Widgets/SWindow.h"
+#if WITH_DEV_AUTOMATION_TESTS
+#include "GeometryCollection/GeometryCollectionObject.h"
+#include "Misc/AutomationTest.h"
+#include "Misc/ScopeExit.h"
+#endif
 
 namespace DublinFlight::Performance
 {
@@ -36,6 +43,7 @@ namespace DublinFlight::Performance
 	{
 		constexpr double OrbitRadius = FFlightTuning::StartSpeedCmPerSecond
 			/ (FFlightTuning::YawRateDegreesPerSecond * PI / 180.0);
+		const FVector StressObserverPosition(0, -48000, 75000);
 
 		TSharedPtr<FJsonValue> Point(const FVector& P)
 		{
@@ -73,7 +81,124 @@ namespace DublinFlight::Performance
 			Out->SetNumberField(TEXT("bombMaximumStrength"), W.BombMaximumStrength);
 			return Out;
 		}
+
+		TOptional<FString> BlockerSourceId(const FHitResult& Hit)
+		{
+			const ADublinCityWorld* Owner = Cast<ADublinCityWorld>(Hit.GetActor());
+			const UGeometryCollectionComponent* Component = Cast<UGeometryCollectionComponent>(Hit.GetComponent());
+			if (!Owner || !Component || Component->GetOwner() != Owner || !Owner->FractureLibrary ||
+				!Component->GetRestCollection()) { return {}; }
+			TOptional<FString> SourceId;
+			for (const FDublinFractureRecord& Record : Owner->FractureLibrary->Records)
+			{
+				if (Record.Collection.Get() == Component->GetRestCollection() && !Record.SourceId.IsEmpty())
+				{
+					if (SourceId.IsSet() && SourceId.GetValue() != Record.SourceId) { return {}; }
+					SourceId = Record.SourceId;
+				}
+			}
+			return SourceId;
+		}
+
+		void WriteVisibilityDiagnostics(FJsonObject& Event, const FDublinImpact& Impact,
+			const FHitResult* Hit, bool bBlockingHit)
+		{
+			Event.SetBoolField(TEXT("visibilityTracePerformed"), Hit != nullptr);
+			for (const TCHAR* Name : { TEXT("visibilityBlockerActorClass"), TEXT("visibilityBlockerComponentClass"),
+				TEXT("visibilityBlockerSourceId"), TEXT("visibilityHitPointCm"), TEXT("visibilityHitDistanceFromTraceStartCm"),
+				TEXT("visibilityImpactRadiusCm"), TEXT("visibilityRadiusMarginCm"), TEXT("visibilityHitGeometryValid") })
+			{
+				Event.SetField(Name, MakeShared<FJsonValueNull>());
+			}
+			if (FMath::IsFinite(Impact.RadiusCm)) { Event.SetNumberField(TEXT("visibilityImpactRadiusCm"), Impact.RadiusCm); }
+			if (!Hit || !bBlockingHit) { return; }
+			if (const AActor* Actor = Hit->GetActor())
+			{
+				Event.SetStringField(TEXT("visibilityBlockerActorClass"), Actor->GetClass()->GetName());
+			}
+			if (const UPrimitiveComponent* Component = Hit->GetComponent())
+			{
+				Event.SetStringField(TEXT("visibilityBlockerComponentClass"), Component->GetClass()->GetName());
+			}
+			if (const TOptional<FString> SourceId = BlockerSourceId(*Hit); SourceId.IsSet())
+			{
+				Event.SetStringField(TEXT("visibilityBlockerSourceId"), SourceId.GetValue());
+			}
+			const FVector HitPoint(Hit->ImpactPoint);
+			const double Distance = FVector::Distance(HitPoint, Impact.PositionCm);
+			const bool bGeometryValid = !HitPoint.ContainsNaN() && FMath::IsFinite(Distance) &&
+				FMath::IsFinite(Impact.RadiusCm) && FMath::IsFinite(Hit->Distance) && Hit->Distance >= 0;
+			Event.SetBoolField(TEXT("visibilityHitGeometryValid"), bGeometryValid);
+			if (bGeometryValid)
+			{
+				Event.SetField(TEXT("visibilityHitPointCm"), Point(HitPoint));
+				Event.SetNumberField(TEXT("visibilityHitDistanceFromTraceStartCm"), Hit->Distance);
+				Event.SetNumberField(TEXT("visibilityRadiusMarginCm"), Impact.RadiusCm - Distance);
+			}
+		}
 	}
+
+#if WITH_DEV_AUTOMATION_TESTS
+	IMPLEMENT_SIMPLE_AUTOMATION_TEST(FDublinVisibilityDiagnosticsTest,
+		"DublinFlight.Performance.Diagnostics.VisibilityHitShapeAndPrivacy",
+		EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+	bool FDublinVisibilityDiagnosticsTest::RunTest(const FString& Parameters)
+	{
+		FDublinImpact Impact;
+		Impact.PositionCm = FVector::ZeroVector;
+		Impact.RadiusCm = 3374.0478515625f;
+		const TSharedRef<FJsonObject> Event = MakeShared<FJsonObject>();
+		WriteVisibilityDiagnostics(*Event, Impact, nullptr, false);
+		TestFalse(TEXT("Unperformed ray is explicit"), Event->GetBoolField(TEXT("visibilityTracePerformed")));
+		for (const TCHAR* Name : { TEXT("visibilityBlockerActorClass"), TEXT("visibilityBlockerComponentClass"),
+			TEXT("visibilityBlockerSourceId"), TEXT("visibilityHitPointCm"), TEXT("visibilityHitDistanceFromTraceStartCm"),
+			TEXT("visibilityRadiusMarginCm"), TEXT("visibilityHitGeometryValid") })
+		{
+			TestTrue(FString::Printf(TEXT("Unknown visibility field is null: %s"), Name), Event->GetField<EJson::Null>(Name).IsValid());
+		}
+		UWorld* World = UWorld::CreateWorld(EWorldType::Game, false);
+		if (!TestNotNull(TEXT("Visibility metadata fixture world"), World)) { return false; }
+		ON_SCOPE_EXIT { World->DestroyWorld(false); };
+		ADublinCityWorld* City = World->SpawnActorDeferred<ADublinCityWorld>(ADublinCityWorld::StaticClass(),
+			FTransform::Identity, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+		if (!TestNotNull(TEXT("Visibility metadata fixture actor"), City)) { return false; }
+		City->bAutoBuild = false;
+		City->FinishSpawning(FTransform::Identity);
+		UGeometryCollectionComponent* Component = NewObject<UGeometryCollectionComponent>(City, TEXT("PrivateInstanceToken"));
+		UGeometryCollection* Collection = NewObject<UGeometryCollection>(City);
+		Component->SetRestCollection(Collection, false);
+		City->FractureLibrary = NewObject<UDublinCityFractureLibrary>(City);
+		FDublinFractureRecord& Record = City->FractureLibrary->Records.AddDefaulted_GetRef();
+		Record.SourceId = TEXT("osm/relation/diagnostic-fixture");
+		Record.Collection = Collection;
+		FHitResult Hit(City, Component, FVector(3478.432547278317, 0, 0), FVector::UpVector);
+		Hit.Distance = 75000;
+		const bool bBefore = StressImpactUnoccluded(Impact, true, Hit.ImpactPoint);
+		WriteVisibilityDiagnostics(*Event, Impact, &Hit, true);
+		TestTrue(TEXT("Ray execution recorded"), Event->GetBoolField(TEXT("visibilityTracePerformed")));
+		TestEqual(TEXT("Actor class, not instance label"), Event->GetStringField(TEXT("visibilityBlockerActorClass")), City->GetClass()->GetName());
+		TestEqual(TEXT("Component class, not instance name"), Event->GetStringField(TEXT("visibilityBlockerComponentClass")), Component->GetClass()->GetName());
+		TestEqual(TEXT("Exact resident collection identity resolved"), Event->GetStringField(TEXT("visibilityBlockerSourceId")), Record.SourceId);
+		TestEqual(TEXT("Trace-start distance recorded"), Event->GetNumberField(TEXT("visibilityHitDistanceFromTraceStartCm")), 75000.0);
+		TestEqual(TEXT("Hit position has three coordinates"), Event->GetArrayField(TEXT("visibilityHitPointCm")).Num(), 3);
+		TestTrue(TEXT("Repeat failure has negative radius margin"), FMath::IsNearlyEqual(Event->GetNumberField(TEXT("visibilityRadiusMarginCm")), -104.38469571581709, 1.e-6));
+		TestFalse(TEXT("Visibility failure remains a failure"), bBefore);
+		TestEqual(TEXT("Diagnostic does not change visibility predicate"), StressImpactUnoccluded(Impact, true, Hit.ImpactPoint), bBefore);
+		const FString Serialized = JsonText(Event);
+		TestFalse(TEXT("No component instance name leaked"), Serialized.Contains(Component->GetName()));
+		TestFalse(TEXT("No actor instance path leaked"), Serialized.Contains(City->GetPathName()));
+
+		FDublinFractureRecord Ambiguous = Record;
+		Ambiguous.SourceId = TEXT("osm/relation/different-fixture");
+		City->FractureLibrary->Records.Add(Ambiguous);
+		WriteVisibilityDiagnostics(*Event, Impact, &Hit, true);
+		TestTrue(TEXT("Ambiguous source identity remains null"), Event->GetField<EJson::Null>(TEXT("visibilityBlockerSourceId")).IsValid());
+		WriteVisibilityDiagnostics(*Event, Impact, &Hit, false);
+		TestTrue(TEXT("A missed ray has no invented hit point"), Event->GetField<EJson::Null>(TEXT("visibilityHitPointCm")).IsValid());
+		return true;
+	}
+#endif
 
 	bool ParseBenchmarkArguments(const TArray<FString>& Args, EBenchmark& Kind, FOptions& Options, FString& Error)
 	{
@@ -112,9 +237,19 @@ namespace DublinFlight::Performance
 		return Count;
 	}
 
-	bool BenchmarkPassed(bool Completed, bool Valid, bool Admitted, bool FrameTargetMet)
+	bool BenchmarkPassed(bool Completed, bool Valid, bool Admitted, bool FrameTargetMet, bool FrameTargetRequired)
 	{
-		return Completed && Valid && Admitted && FrameTargetMet;
+		return Completed && Valid && Admitted && (!FrameTargetRequired || FrameTargetMet);
+	}
+
+	bool StressQueueHasCapacity(int32 QueuedImpacts)
+	{
+		return QueuedImpacts >= 0 && QueuedImpacts < DublinDestruction::MaxQueuedImpacts;
+	}
+
+	bool StressImpactUnoccluded(const FDublinImpact& Impact, bool bBlockingHit, const FVector& HitPositionCm)
+	{
+		return !bBlockingHit || FVector::Distance(HitPositionCm, Impact.PositionCm) <= Impact.RadiusCm;
 	}
 
 	int32 FBenchmarkSlots::Take(double Elapsed, double Duration, double Period)
@@ -127,6 +262,63 @@ namespace DublinFlight::Performance
 		Next = Latest + 1;
 		LastAdmission = Elapsed;
 		return Latest;
+	}
+
+	bool FDeferredBenchmarkSlots::Observe(double Elapsed, double Duration, bool Ending)
+	{
+		if (!FMath::IsFinite(Elapsed) || !FMath::IsFinite(Duration) || Elapsed < 0 ||
+			Elapsed < ObservedElapsed || Duration < 1 || Duration > 300) { return false; }
+		if (Elapsed > ObservedElapsed) { TakenThisBoundary = 0; }
+		ObservedElapsed = Elapsed;
+		const int32 Planned = FMath::CeilToInt(Duration / MaximalSlotPeriodSeconds);
+		Due = Elapsed >= Duration ? Planned :
+			FMath::Min(Planned, FMath::FloorToInt(Elapsed / MaximalSlotPeriodSeconds) + 1);
+		PeakPending = FMath::Max(PeakPending, Pending());
+		bCanAdmit = !Ending && Elapsed < Duration;
+		return true;
+	}
+
+	int32 FDeferredBenchmarkSlots::Peek() const
+	{
+		return bCanAdmit && Next < Due && TakenThisBoundary < MaximalAttemptsPerBoundary ? Next : INDEX_NONE;
+	}
+
+	int32 FDeferredBenchmarkSlots::Take()
+	{
+		const int32 Slot = Peek();
+		if (Slot == INDEX_NONE) { return INDEX_NONE; }
+		++Next;
+		++TakenThisBoundary;
+		PeakBatch = FMath::Max(PeakBatch, TakenThisBoundary);
+		return Slot;
+	}
+
+	bool FSaturationBenchmarkSlots::Observe(double Elapsed, double Duration, bool Ending)
+	{
+		if (!FMath::IsFinite(Elapsed) || !FMath::IsFinite(Duration) || Elapsed < 0 ||
+			Elapsed < ObservedElapsed || Duration < 1 || Duration > 300) { return false; }
+		if (Elapsed > ObservedElapsed) { TakenThisBoundary = 0; }
+		ObservedElapsed = Elapsed;
+		// Preserve the original duration-sized operation count, not its former 2Hz timing.
+		Due = FMath::CeilToInt(Duration * 2.0);
+		PeakPending = FMath::Max(PeakPending, Pending());
+		bCanAdmit = !Ending && Elapsed < Duration;
+		return true;
+	}
+
+	int32 FSaturationBenchmarkSlots::Peek() const
+	{
+		return bCanAdmit && Next < Due && TakenThisBoundary < MaximalAttemptsPerBoundary ? Next : INDEX_NONE;
+	}
+
+	int32 FSaturationBenchmarkSlots::Take()
+	{
+		const int32 Slot = Peek();
+		if (Slot == INDEX_NONE) { return INDEX_NONE; }
+		++Next;
+		++TakenThisBoundary;
+		PeakBatch = FMath::Max(PeakBatch, TakenThisBoundary);
+		return Slot;
 	}
 
 	FDublinRuntimeBenchmark::FDublinRuntimeBenchmark(EBenchmark InKind, const FOptions& InOptions)
@@ -217,7 +409,7 @@ namespace DublinFlight::Performance
 		if (Kind == EBenchmark::Maximal)
 		{
 			Plane->ToggleGodMode();
-			Observer = World.SpawnActor<ACameraActor>(ACameraActor::StaticClass(), FVector(0, -48000, 75000),
+			Observer = World.SpawnActor<ACameraActor>(ACameraActor::StaticClass(), StressObserverPosition,
 				FRotator(-57.38, 90, 0), Params);
 			if (!Observer.IsValid()) { Error = TEXT("notReady: stress observer camera spawn failed"); return false; }
 			Observer->GetCameraComponent()->SetFieldOfView(90);
@@ -266,6 +458,15 @@ namespace DublinFlight::Performance
 				&& FMath::Abs(Impact.PositionCm.X) + Impact.RadiusCm < 38400
 				&& FMath::Abs(Impact.PositionCm.Y) + Impact.RadiusCm < 38400;
 		};
+		const FCollisionQueryParams SightQuery(SCENE_QUERY_STAT(DublinBenchmarkSelectionVisibility), false,
+			World.GetFirstPlayerController()->GetPawn());
+		const auto VisibleFromObserver = [&World, &SightQuery](const FDublinImpact& Impact)
+		{
+			FHitResult Hit;
+			const bool bBlockingHit = World.LineTraceSingleByChannel(Hit, StressObserverPosition,
+				Impact.PositionCm, ECC_Visibility, SightQuery);
+			return StressImpactUnoccluded(Impact, bBlockingHit, Hit.ImpactPoint);
+		};
 		FDublinImpact Water = DublinWeapons::MakeImpact(EDublinImpactKind::Bomb, 1, DublinWeapons::FBombCurve());
 		Water.bWater = true;
 		Water.Seed = 58017;
@@ -300,28 +501,29 @@ namespace DublinFlight::Performance
 					if (bClear && DublinDestruction::SourceWaterZ(Source.Water, FVector(X, Y, 0), Z))
 					{
 						Water.PositionCm = FVector(X, Y, Z);
-						bWaterFound = Safe(Water);
+						bWaterFound = Safe(Water) && VisibleFromObserver(Water);
 						if (bWaterFound) { break; }
 					}
 				}
 			}
 		}
-		if (!bWaterFound) { Error = TEXT("notReady: no bridge-free safe stress water corridor"); return false; }
+		if (!bWaterFound) { Error = TEXT("notReady: no bridge-free safe stress water corridor with a clear observer sightline"); return false; }
 		TArray<FVector> Centers;
 		for (int32 Index : Sorted)
 		{
 			const FBox& Box = Bounds[Index];
 			const FDublinFractureRecord* Record = City->FractureLibrary->Find(Source.Buildings[Index].Id);
 			if (Box.GetSize().Z < 500 || Box.GetSize().Z > 10000 || !Record || !Record->bReady
-				|| Record->PieceCount < 2 || Record->PieceCount > 128 || Record->RootTransform == INDEX_NONE
+				|| !DublinFractureBake::HasValidPieceBudget(*Record) || Record->RootTransform == INDEX_NONE
 				|| Record->LeafTransforms.Num() != Record->PieceCount || Record->Anchors.IsEmpty()
-				|| Record->Collection.IsNull() || Record->SourceDigest != DublinDestruction::BuildingDigest(Source.Buildings[Index]))
+				|| Record->Collection.IsNull() || !DublinFractureBake::IsCurrentRecord(Source.Buildings[Index], *Record))
 			{ continue; }
 			FDublinImpact Impact = DublinWeapons::MakeImpact(EDublinImpactKind::Bomb, 1000, DublinWeapons::FBombCurve());
 			Impact.PositionCm = FVector(Box.GetCenter().X, Box.GetCenter().Y, Box.Min.Z + 100);
 			Impact.Seed = 58100 + Centers.Num();
 			if (!Safe(Impact) || Centers.ContainsByPredicate([&Impact](const FVector& P)
-				{ return FVector::DistXY(P, Impact.PositionCm) < 5000; })) { continue; }
+				{ return FVector::DistXY(P, Impact.PositionCm) < 5000; })
+				|| !VisibleFromObserver(Impact)) { continue; }
 			Centers.Add(Impact.PositionCm);
 			SelectedIds.Add(Source.Buildings[Index].Id);
 			Sequence.Add(Impact);
@@ -329,7 +531,7 @@ namespace DublinFlight::Performance
 			if (Centers.Num() % 3 == 0) { Sequence.Add(Water); SequenceIds.Add(TEXT("water_corridor")); }
 			if (Centers.Num() == 24) { break; }
 		}
-		if (Centers.Num() < 8) { Error = TEXT("notReady: fewer than eight separated bounded stress neighborhoods"); return false; }
+		if (Centers.Num() < 8) { Error = TEXT("notReady: fewer than eight separated bounded stress neighborhoods with clear observer sightlines"); return false; }
 		return true;
 	}
 
@@ -378,6 +580,11 @@ namespace DublinFlight::Performance
 		if (!City.IsValid()) { Invalidate(TEXT("cityLost")); return; }
 		MaxCollections = FMath::Max(MaxCollections, City->ActiveFractureCollections);
 		MaxPieces = FMath::Max(MaxPieces, City->ActiveFracturePieces);
+		MaxAllocatedCollections = FMath::Max(MaxAllocatedCollections, City->AllocatedFractureCollections);
+		MaxAllocatedPieces = FMath::Max(MaxAllocatedPieces, City->AllocatedFracturePieces);
+		MaxAllocatedHullSlots = FMath::Max(MaxAllocatedHullSlots, static_cast<int64>(City->AllocatedFractureHullSlots));
+		MaxPendingAssetLoads = FMath::Max(MaxPendingAssetLoads, City->PendingFractureAssetLoads);
+		MaxRegistrationsPerFrame = FMath::Max(MaxRegistrationsPerFrame, City->PeakFrameFractureRegistrations);
 		MaxQueued = FMath::Max(MaxQueued, City->QueuedImpactCount);
 		MaxQueuedBuildings = FMath::Max(MaxQueuedBuildings, City->QueuedBuildingHitCount);
 		Fractured = City->FracturedBuildingCount;
@@ -391,11 +598,16 @@ namespace DublinFlight::Performance
 			if (It->GetWorld() != &World || !It->IsActive() || !It->GetAsset()) { continue; }
 			const FString Path = It->GetAsset()->GetPathName();
 			FX += Path.StartsWith(TEXT("/Game/FX/NS_WaterImpact.")) || Path.StartsWith(TEXT("/Game/FX/NS_BombExplosion."))
-				|| Path.StartsWith(TEXT("/Game/FX/NS_CannonImpact.")) ? 1 : 0;
+				|| Path.StartsWith(TEXT("/Game/FX/NS_CannonImpact.")) || Path.StartsWith(TEXT("/Game/FX/NS_MaxBombExplosion.")) ? 1 : 0;
 		}
 		MaxFX = FMath::Max(MaxFX, FX);
 		if (City->bImpactQueueBlocked || MaxQueued > DublinDestruction::MaxQueuedImpacts
 			|| MaxCollections > DublinDestruction::MaxActiveCollections || MaxPieces > DublinDestruction::MaxActivePieces
+			|| !City->bCatalogBudgetValid || MaxAllocatedCollections > DublinDestruction::MaxActiveCollections
+			|| MaxAllocatedPieces > DublinDestruction::MaxActivePieces
+			|| MaxAllocatedHullSlots > DublinDestruction::MaxCatalogHullSlots
+			|| MaxPendingAssetLoads > DublinDestruction::MaxConcurrentFractureLoads
+			|| MaxRegistrationsPerFrame > DublinDestruction::MaxRegistrationsPerFrame
 			|| MaxFX > DublinImpactFX::MaxSystems) { Invalidate(TEXT("nativeQueuePhysicsOrFXBudgetFailure")); }
 		if (Plane.IsValid() && Plane->Weapons)
 		{
@@ -452,6 +664,11 @@ namespace DublinFlight::Performance
 		EndSettings = Settings;
 		ObserveEnvironment(World, Settings);
 		Sample(World);
+		if (Kind == EBenchmark::Maximal && !StressSlots.Observe(LastElapsed, Options.DurationSeconds, Ending))
+		{
+			Invalidate(TEXT("invalidMaximalScheduleBoundary"));
+			return;
+		}
 		if (Ending || LastElapsed >= Options.DurationSeconds) { return; }
 		if (Kind == EBenchmark::Light)
 		{
@@ -497,52 +714,81 @@ namespace DublinFlight::Performance
 		}
 		else if (Kind == EBenchmark::Maximal && City.IsValid())
 		{
-			const int32 Slot = Slots.Take(LastElapsed, Options.DurationSeconds, 0.5);
-			if (Slot == INDEX_NONE) { return; }
-			const TSharedRef<FJsonObject> Event = MakeShared<FJsonObject>();
-			Event->SetNumberField(TEXT("slot"), Slot);
-			Event->SetNumberField(TEXT("plannedSeconds"), Slot * 0.5);
-			Event->SetNumberField(TEXT("actualSeconds"), LastElapsed);
-			FDublinImpact Impact = Sequence[Slot % Sequence.Num()];
-			Event->SetStringField(TEXT("selectedId"), SequenceIds[Slot % SequenceIds.Num()]);
-			Impact.Seed += Slot;
-			Event->SetField(TEXT("positionCm"), Point(Impact.PositionCm));
-			Event->SetNumberField(TEXT("yieldTonsTNT"), Impact.YieldTonsTNT);
-			Event->SetBoolField(TEXT("water"), Impact.bWater);
-			APlayerController* Player = World.GetFirstPlayerController();
-			FVector2D Pixel;
-			const bool bProjected = Player && Player->ProjectWorldLocationToScreen(Impact.PositionCm, Pixel)
-				&& Pixel.X >= 0 && Pixel.X < 1920 && Pixel.Y >= 0 && Pixel.Y < 1080;
-			bool bVisible = bProjected && Player->PlayerCameraManager;
-			if (bVisible)
+			static_assert(MaximalAttemptsPerBoundary <= DublinDestruction::MaxCollectionImpactsPerFrame);
+			int32 BoundaryAdmissions = 0;
+			while (StressSlots.Peek() != INDEX_NONE)
 			{
-				FHitResult Hit;
-				FCollisionQueryParams Query(SCENE_QUERY_STAT(DublinBenchmarkVisibility), false, Plane.Get());
-				bVisible = !World.LineTraceSingleByChannel(Hit, Player->PlayerCameraManager->GetCameraLocation(),
-					Impact.PositionCm, ECC_Visibility, Query) || FVector::Distance(Hit.ImpactPoint, Impact.PositionCm) <= Impact.RadiusCm;
-			}
-			Event->SetBoolField(TEXT("damageFootprintInViewAndUnoccluded"), bVisible);
-			if (!bVisible) { Invalidate(TEXT("stressDamageNotVisible")); }
-			if (City->QueuedImpactCount >= DublinDestruction::MaxQueuedImpacts / 4)
-			{
-				++BackpressureSkipped;
-				Event->SetStringField(TEXT("result"), TEXT("skippedBackpressure"));
-			}
-			else
-			{
+				if (!StressQueueHasCapacity(City->QueuedImpactCount))
+				{
+					++StressBackpressureBoundaries;
+					break;
+				}
+				// A costly earlier admission cannot move more requests outside the original window.
+				if (FPlatformTime::Seconds() - MeasurementStart >= Options.DurationSeconds) { break; }
+				const int32 Slot = StressSlots.Peek();
+				const TSharedRef<FJsonObject> Event = MakeShared<FJsonObject>();
+				Event->SetNumberField(TEXT("slot"), Slot);
+				Event->SetNumberField(TEXT("plannedSeconds"), 0);
+				Event->SetNumberField(TEXT("releaseSeconds"), 0);
+				Event->SetNumberField(TEXT("boundaryIndex"), Window.GetAccumulator().Num());
+				Event->SetNumberField(TEXT("boundarySeconds"), LastElapsed);
+				Event->SetNumberField(TEXT("batchIndex"), StressSlots.TakenThisBoundary);
+				Event->SetNumberField(TEXT("pendingDueOperationsBeforeAttempt"), StressSlots.Pending());
+				Event->SetField(TEXT("admittedSeconds"), MakeShared<FJsonValueNull>());
+				FDublinImpact Impact = Sequence[Slot % Sequence.Num()];
+				Event->SetStringField(TEXT("selectedId"), SequenceIds[Slot % SequenceIds.Num()]);
+				Impact.Seed += Slot;
+				Event->SetField(TEXT("positionCm"), Point(Impact.PositionCm));
+				Event->SetNumberField(TEXT("yieldTonsTNT"), Impact.YieldTonsTNT);
+				Event->SetBoolField(TEXT("water"), Impact.bWater);
+				WriteVisibilityDiagnostics(*Event, Impact, nullptr, false);
+				APlayerController* Player = World.GetFirstPlayerController();
+				FVector2D Pixel;
+				const bool bProjected = Player && Player->ProjectWorldLocationToScreen(Impact.PositionCm, Pixel)
+					&& Pixel.X >= 0 && Pixel.X < 1920 && Pixel.Y >= 0 && Pixel.Y < 1080;
+				Event->SetBoolField(TEXT("impactProjected"), bProjected);
+				bool bVisible = bProjected && Player->PlayerCameraManager;
+				if (bVisible)
+				{
+					FHitResult Hit;
+					FCollisionQueryParams Query(SCENE_QUERY_STAT(DublinBenchmarkVisibility), false, Plane.Get());
+					const bool bBlockingHit = World.LineTraceSingleByChannel(Hit, Player->PlayerCameraManager->GetCameraLocation(),
+						Impact.PositionCm, ECC_Visibility, Query);
+					bVisible = StressImpactUnoccluded(Impact, bBlockingHit, Hit.ImpactPoint);
+					Event->SetBoolField(TEXT("visibilityBlockingHit"), bBlockingHit);
+					WriteVisibilityDiagnostics(*Event, Impact, &Hit, bBlockingHit);
+					if (bBlockingHit)
+					{
+						Event->SetNumberField(TEXT("visibilityHitDistanceFromImpactCm"), FVector::Distance(Hit.ImpactPoint, Impact.PositionCm));
+					}
+				}
+				Event->SetBoolField(TEXT("damageFootprintInViewAndUnoccluded"), bVisible);
+				if (!bVisible) { Invalidate(TEXT("stressDamageNotVisible")); }
+				const double ActualSeconds = FPlatformTime::Seconds() - MeasurementStart;
+				if (ActualSeconds >= Options.DurationSeconds) { break; }
+				StressSlots.Take();
+				Event->SetNumberField(TEXT("actualSeconds"), ActualSeconds);
 				++Attempted;
 				UDublinImpactEffectsSubsystem* FX = World.GetSubsystem<UDublinImpactEffectsSubsystem>();
 				if (FX && City->ApplyImpact(Impact))
 				{
+					const double AdmittedSeconds = FPlatformTime::Seconds() - MeasurementStart;
+					Event->SetNumberField(TEXT("admittedSeconds"), AdmittedSeconds);
+					Event->SetNumberField(TEXT("admissionDelaySeconds"), AdmittedSeconds);
+					LastStressAdmissionSeconds = AdmittedSeconds;
+					MaxStressAdmissionDelaySeconds = FMath::Max(MaxStressAdmissionDelaySeconds, AdmittedSeconds);
+					if (AdmittedSeconds >= Options.DurationSeconds) { Invalidate(TEXT("stressAdmissionCompletedOutsideRequestedWindow")); }
 					FX->EmitImpact(Impact);
 					++Accepted;
+					++BoundaryAdmissions;
 					++EffectsRequests;
 					Event->SetStringField(TEXT("result"), TEXT("accepted"));
 				}
 				else { ++Rejected; Event->SetStringField(TEXT("result"), TEXT("rejected")); }
+				Events.Add(MakeShared<FJsonValueObject>(Event));
+				Sample(World);
 			}
-			Events.Add(MakeShared<FJsonValueObject>(Event));
-			Sample(World);
+			PeakStressAdmissionsPerBoundary = FMath::Max(PeakStressAdmissionsPerBoundary, BoundaryAdmissions);
 		}
 	}
 
@@ -577,10 +823,12 @@ namespace DublinFlight::Performance
 
 	bool FDublinRuntimeBenchmark::WorkloadAdmitted() const
 	{
-		if (!bMeasured || BackpressureSkipped || Slots.Skipped || Rejected || RejectedImpactCount) { return false; }
+		if (!bMeasured || BackpressureSkipped || Rejected || RejectedImpactCount) { return false; }
 		if (Kind == EBenchmark::Maximal)
 		{
 			return Accepted == FMath::CeilToInt(Options.DurationSeconds * 2.0) && CityImpacts == Accepted
+				&& StressSlots.Pending() == 0 && StressSlots.Next == Accepted
+				&& LastStressAdmissionSeconds < Options.DurationSeconds
 				&& Fractured > 0 && Moved > 0 && MaxFX > 0;
 		}
 		if (DistanceCm < FFlightTuning::StartSpeedCmPerSecond * Options.DurationSeconds * 0.9) { return false; }
@@ -603,7 +851,31 @@ namespace DublinFlight::Performance
 		Out->SetNumberField(TEXT("measurementStartSharedWallSeconds"), MeasurementStart);
 		if (WeaponSettings) { Out->SetObjectField(TEXT("weaponSettingsAtStart"), WeaponSettings.ToSharedRef()); }
 		if (EndWeaponSettings) { Out->SetObjectField(TEXT("weaponSettingsAtEnd"), EndWeaponSettings.ToSharedRef()); }
-		Out->SetStringField(TEXT("schedule"), TEXT("Shared OnBeginFrame wall clock; no destructive warmup; 7Hz native cannon held first 2s of every 5s, bombs at 5/20s; maximal 0.5s absolute slots AND minimum 0.5s admission spacing, one per boundary, missed slots not replayed. Scheduling drift/under-admission fails rather than reducing the workload target."));
+		Out->SetStringField(TEXT("schedule"), Kind == EBenchmark::Maximal
+			? TEXT("V3 maximal downstream saturation stress, not weapon flight: release the entire unchanged workload at the first measured boundary (60 operations for 30 seconds), preserving target order and yields. Attempt at most eight per actual OnBeginFrame boundary, retaining backpressure requests. No 2Hz or half-second admission-spacing claim. Actual attempt/admission times and delay from release are recorded. No destructive warmup, post-deadline flush, reduced workload, delayed measurement or filtered frames. Any end backlog, rejection or deadline overrun fails; native city work budgets remain independent.")
+			: TEXT("Shared OnBeginFrame wall clock; no destructive warmup; 7Hz native cannon held first 2s of every 5s, bombs at 5/20s. Native input/cooldown scheduling has no catch-up; drift/under-admission fails rather than reducing the workload target."));
+		if (Kind == EBenchmark::Maximal)
+		{
+			Out->SetNumberField(TEXT("maximalSchedulePolicyVersion"), MaximalSchedulePolicyVersion);
+			const TSharedRef<FJsonObject> Schedule = MakeShared<FJsonObject>();
+			Schedule->SetStringField(TEXT("releasePolicy"), TEXT("allAtFirstMeasuredBoundary"));
+			Schedule->SetNumberField(TEXT("releaseSeconds"), bMeasured ? 0 : -1);
+			Schedule->SetNumberField(TEXT("releaseBoundaryIndex"), bMeasured ? 0 : -1);
+			Schedule->SetNumberField(TEXT("releasedOperations"), StressSlots.Due);
+			Schedule->SetNumberField(TEXT("maxAttemptsPerBoundary"), MaximalAttemptsPerBoundary);
+			Schedule->SetNumberField(TEXT("dueOperations"), StressSlots.Due);
+			Schedule->SetNumberField(TEXT("pendingOperations"), StressSlots.Pending());
+			Schedule->SetNumberField(TEXT("peakPendingOperations"), StressSlots.PeakPending);
+			Schedule->SetNumberField(TEXT("peakAttemptsPerBoundary"), StressSlots.PeakBatch);
+			Schedule->SetNumberField(TEXT("peakAdmissionsPerBoundary"), PeakStressAdmissionsPerBoundary);
+			Schedule->SetNumberField(TEXT("backpressureBoundaries"), StressBackpressureBoundaries);
+			Schedule->SetNumberField(TEXT("lastAdmissionSeconds"), LastStressAdmissionSeconds);
+			Schedule->SetNumberField(TEXT("maxAdmissionDelaySeconds"), MaxStressAdmissionDelaySeconds);
+			TArray<TSharedPtr<FJsonValue>> PendingSlots;
+			for (int32 Slot = StressSlots.Next; Slot < StressSlots.Due; ++Slot) { PendingSlots.Add(MakeShared<FJsonValueNumber>(Slot)); }
+			Schedule->SetArrayField(TEXT("pendingSlots"), PendingSlots);
+			Out->SetObjectField(TEXT("maximalSchedule"), Schedule);
+		}
 		Out->SetStringField(TEXT("flightRoute"), TEXT("New native pawn at (0,-radius,altitude), yaw0; hold E through native input, 40m/s and 25deg/s yaw, level clockwise orbit. No pose writes during measurement; original pawn restored after end."));
 		Out->SetField(TEXT("routeStartCm"), Point(RouteStart));
 		Out->SetNumberField(TEXT("routeRadiusCm"), OrbitRadius);
@@ -633,7 +905,7 @@ namespace DublinFlight::Performance
 		Out->SetNumberField(TEXT("attemptedOperations"), Kind == EBenchmark::Light ? CannonShots + Attempted : Attempted);
 		Out->SetNumberField(TEXT("acceptedOperations"), Kind == EBenchmark::Light ? CannonShots + BombShots : Accepted);
 		Out->SetNumberField(TEXT("rejectedOperations"), Kind == EBenchmark::Light ? FMath::Max(0, Attempted - BombShots - BackpressureSkipped) : Rejected);
-		Out->SetNumberField(TEXT("skippedOperations"), BackpressureSkipped + Slots.Skipped);
+		Out->SetNumberField(TEXT("skippedOperations"), BackpressureSkipped);
 		Out->SetNumberField(TEXT("cannonShots"), CannonShots);
 		Out->SetNumberField(TEXT("bombsDropped"), BombShots);
 		Out->SetNumberField(TEXT("acceptedBombImpacts"), BombImpacts);
@@ -657,7 +929,22 @@ namespace DublinFlight::Performance
 		Out->SetNumberField(TEXT("maxMovedFragments"), Moved);
 		Out->SetNumberField(TEXT("craterChangedNodes"), CraterNodes);
 		Out->SetNumberField(TEXT("maxWaterDisplacementCm"), MaxWater);
-		Out->SetStringField(TEXT("nativeCaps"), TEXT("24 awake collections;1536 awake pieces;64 queued impacts;16 FX;maximal gate queue<16; no budget changed"));
+		Out->SetNumberField(TEXT("budgetPolicyVersion"), DublinDestruction::BudgetPolicyVersion);
+		Out->SetNumberField(TEXT("maxAllocatedCollections"), MaxAllocatedCollections);
+		Out->SetNumberField(TEXT("maxAllocatedPieces"), MaxAllocatedPieces);
+		Out->SetNumberField(TEXT("maxAllocatedHullSlots"), static_cast<double>(MaxAllocatedHullSlots));
+		Out->SetNumberField(TEXT("maxPendingAssetLoads"), MaxPendingAssetLoads);
+		Out->SetNumberField(TEXT("maxRegistrationsPerFrame"), MaxRegistrationsPerFrame);
+		const TSharedRef<FJsonObject> Limits = MakeShared<FJsonObject>();
+		Limits->SetNumberField(TEXT("collections"), DublinDestruction::MaxActiveCollections);
+		Limits->SetNumberField(TEXT("pieces"), DublinDestruction::MaxActivePieces);
+		Limits->SetNumberField(TEXT("hullSlots"), static_cast<double>(DublinDestruction::MaxCatalogHullSlots));
+		Limits->SetNumberField(TEXT("queuedImpacts"), DublinDestruction::MaxQueuedImpacts);
+		Limits->SetNumberField(TEXT("pendingAssetLoads"), DublinDestruction::MaxConcurrentFractureLoads);
+		Limits->SetNumberField(TEXT("registrationsPerFrame"), DublinDestruction::MaxRegistrationsPerFrame);
+		Limits->SetNumberField(TEXT("impactFX"), DublinImpactFX::MaxSystems);
+		Out->SetObjectField(TEXT("budgetLimits"), Limits);
+		Out->SetStringField(TEXT("nativeCaps"), TEXT("Catalog-reserved finite resident budgets, bounded async loading/registrations; sleeping bodies remain charged. See budgetLimits."));
 		Out->SetStringField(TEXT("sampling"), TEXT("Environment and maxima observed at every shared engine boundary, plus immediately after direct admissions. Not an intra-frame peak or display-present measurement."));
 		Out->SetStringField(TEXT("cleanup"), TEXT("Inputs released and benchmark pawn/projectiles removed only after capture end; native accepted city queues/physics/FX not cleared."));
 		if (StartSettings) { Out->SetObjectField(TEXT("measurementStartSettings"), StartSettings.ToSharedRef()); }

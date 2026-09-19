@@ -15,6 +15,22 @@ class USphereComponent;
 class USpringArmComponent;
 class UDublinWeaponComponent;
 
+namespace DublinFlight
+{
+class DUBLINFLIGHT_API FCameraOrbit
+{
+public:
+	static constexpr double OrbitMouseDegreesPerUnit = 0.36;
+
+	bool ApplyMouseDelta(const FVector2D& MouseDelta, const FRotator& AircraftRotation);
+	void Reset();
+	FRotator GetRotation(const FRotator& AircraftRotation) const;
+
+private:
+	FVector2D OffsetDegrees = FVector2D::ZeroVector;
+};
+}
+
 UCLASS(Blueprintable)
 class DUBLINFLIGHT_API ADublinFlightPawn : public APawn
 {
@@ -124,7 +140,10 @@ protected:
 private:
 	DublinFlight::FFlightSimulation Simulation;
 	DublinFlight::FInputState InputState;
+	DublinFlight::FCameraOrbit CameraOrbit;
 	FVector2D PendingMouseDelta = FVector2D::ZeroVector;
+	double PendingSpeedSteps = 0.0;
+	uint64 MouseInputSuppressedFrame = MAX_uint64;
 	bool bAircraftHiddenForCamera = false;
 	bool bAircraftVisualsReady = false;
 	float PropellerUpdateSeconds = 0.0f;
@@ -140,6 +159,7 @@ private:
 	void HandleKeyReleased(FKey Key);
 	void HandleMouseX(float Value);
 	void HandleMouseY(float Value);
+	void HandleMouseWheel(float Value);
 	void ToggleCredits();
 	void SuppressHeldInput();
 	DublinFlight::FControlInput ReadControlInput();

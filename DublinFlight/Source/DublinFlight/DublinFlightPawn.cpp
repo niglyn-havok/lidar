@@ -6,9 +6,11 @@
 #include "Components/InputComponent.h"
 #include "Components/SceneComponent.h"
 #include "Components/SphereComponent.h"
+#include "CoreGlobals.h"
 #include "Engine/GameViewportClient.h"
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
+#include "GameFramework/PlayerInput.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Materials/MaterialInterface.h"
@@ -23,6 +25,43 @@ DEFINE_LOG_CATEGORY_STATIC(LogDublinFlight, Log, All);
 
 namespace DublinFlight
 {
+bool FCameraOrbit::ApplyMouseDelta(const FVector2D& MouseDelta, const FRotator& AircraftRotation)
+{
+	if (!FMath::IsFinite(MouseDelta.X) || !FMath::IsFinite(MouseDelta.Y) || AircraftRotation.ContainsNaN())
+	{
+		return false;
+	}
+	const double MaxMouseDelta = FFlightTuning::MaxAimDegreesPerFrame / OrbitMouseDegreesPerUnit;
+	const double YawDelta = FMath::Clamp(MouseDelta.X, -MaxMouseDelta, MaxMouseDelta)
+		* OrbitMouseDegreesPerUnit;
+	const double PitchDelta = FMath::Clamp(MouseDelta.Y, -MaxMouseDelta, MaxMouseDelta)
+		* OrbitMouseDegreesPerUnit;
+	OffsetDegrees.X = FRotator::NormalizeAxis(OffsetDegrees.X + YawDelta);
+	if (PitchDelta != 0.0)
+	{
+		const double BasePitch = FRotator::NormalizeAxis(AircraftRotation.Pitch) - 28.0;
+		const double CurrentPitch = FMath::Clamp(BasePitch + OffsetDegrees.Y, -85.0, 85.0);
+		OffsetDegrees.Y = FMath::Clamp(CurrentPitch + PitchDelta, -85.0, 85.0) - BasePitch;
+	}
+	return true;
+}
+
+void FCameraOrbit::Reset()
+{
+	OffsetDegrees = FVector2D::ZeroVector;
+}
+
+FRotator FCameraOrbit::GetRotation(const FRotator& AircraftRotation) const
+{
+	if (!ensureMsgf(!AircraftRotation.ContainsNaN(), TEXT("Camera orbit requires a finite aircraft rotation")))
+	{
+		return FRotator(-28.0, 0.0, 0.0);
+	}
+	return FRotator(
+		FMath::Clamp(FRotator::NormalizeAxis(AircraftRotation.Pitch) - 28.0 + OffsetDegrees.Y, -85.0, 85.0),
+		FRotator::NormalizeAxis(AircraftRotation.Yaw + OffsetDegrees.X), 0.0);
+}
+
 struct FNativeKey
 {
 	FKey Key;
@@ -225,6 +264,7 @@ void ADublinFlightPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindKey(EKeys::Home, IE_Pressed, this, &ADublinFlightPawn::ResetFlight);
 	PlayerInputComponent->BindAxisKey(EKeys::MouseX, this, &ADublinFlightPawn::HandleMouseX);
 	PlayerInputComponent->BindAxisKey(EKeys::MouseY, this, &ADublinFlightPawn::HandleMouseY);
+	PlayerInputComponent->BindAxisKey(EKeys::MouseWheelAxis, this, &ADublinFlightPawn::HandleMouseWheel);
 	PlayerInputComponent->BindKey(EKeys::F1, IE_Pressed, this, &ADublinFlightPawn::ToggleCredits);
 	Weapons->BindInput(PlayerInputComponent);
 }
@@ -233,10 +273,16 @@ void ADublinFlightPawn::PawnClientRestart()
 {
 	Super::PawnClientRestart();
 	InputState.Clear();
+	CameraOrbit.Reset();
 	PendingMouseDelta = FVector2D::ZeroVector;
+	PendingSpeedSteps = 0.0;
+	MouseInputSuppressedFrame = GFrameCounter;
 	Weapons->SuppressInput();
 	if (APlayerController* Player = Cast<APlayerController>(GetController()); Player && Player->IsLocalController())
 	{
+		// Flushing releases held keys but leaves unprocessed axis accumulators intact.
+		Player->FlushPressedKeys();
+		if (Player->PlayerInput) { Player->PlayerInput->DiscardPlayerInput(); }
 		Player->bShowMouseCursor = false;
 		Player->SetInputMode(FInputModeGameOnly());
 		Player->SetViewTarget(this);
@@ -246,7 +292,10 @@ void ADublinFlightPawn::PawnClientRestart()
 void ADublinFlightPawn::UnPossessed()
 {
 	InputState.Clear();
+	CameraOrbit.Reset();
 	PendingMouseDelta = FVector2D::ZeroVector;
+	PendingSpeedSteps = 0.0;
+	MouseInputSuppressedFrame = GFrameCounter;
 	Weapons->SuppressInput();
 	Super::UnPossessed();
 }
@@ -277,12 +326,17 @@ void ADublinFlightPawn::HandleKeyReleased(FKey Key)
 
 void ADublinFlightPawn::HandleMouseX(float Value)
 {
-	PendingMouseDelta.X += Value;
+	if (MouseInputSuppressedFrame != GFrameCounter) { PendingMouseDelta.X += Value; }
 }
 
 void ADublinFlightPawn::HandleMouseY(float Value)
 {
-	PendingMouseDelta.Y += Value;
+	if (MouseInputSuppressedFrame != GFrameCounter) { PendingMouseDelta.Y += Value; }
+}
+
+void ADublinFlightPawn::HandleMouseWheel(float Value)
+{
+	if (MouseInputSuppressedFrame != GFrameCounter) { PendingSpeedSteps += Value; }
 }
 
 void ADublinFlightPawn::ToggleCredits()
@@ -293,6 +347,7 @@ void ADublinFlightPawn::ToggleCredits()
 void ADublinFlightPawn::SuppressHeldInput()
 {
 	Weapons->SuppressInput();
+	CameraOrbit.Reset();
 	if (const APlayerController* Player = Cast<APlayerController>(GetController()))
 	{
 		for (const DublinFlight::FNativeKey& Key : DublinFlight::GetNativeKeys())
@@ -302,6 +357,9 @@ void ADublinFlightPawn::SuppressHeldInput()
 	}
 	InputState.SuppressHeldKeys();
 	PendingMouseDelta = FVector2D::ZeroVector;
+	PendingSpeedSteps = 0.0;
+	// Key actions run before summed mouse axes, so clearing the buffer alone is insufficient.
+	MouseInputSuppressedFrame = GFrameCounter;
 }
 
 DublinFlight::FControlInput ADublinFlightPawn::ReadControlInput()
@@ -314,6 +372,8 @@ DublinFlight::FControlInput ADublinFlightPawn::ReadControlInput()
 	{
 		InputState.Clear();
 		PendingMouseDelta = FVector2D::ZeroVector;
+		PendingSpeedSteps = 0.0;
+		MouseInputSuppressedFrame = GFrameCounter;
 		return DublinFlight::FControlInput();
 	}
 	// Reconcile dropped releases (focus changes, input flushes) without inventing presses.
@@ -324,8 +384,15 @@ DublinFlight::FControlInput ADublinFlightPawn::ReadControlInput()
 			InputState.SetKey(Key.Control, false);
 		}
 	}
-	const DublinFlight::FControlInput Input = InputState.BuildInput(Simulation.GetState().Mode, PendingMouseDelta);
+	const DublinFlight::EFlightMode Mode = Simulation.GetState().Mode;
+	if (Mode == DublinFlight::EFlightMode::Flight
+		&& !CameraOrbit.ApplyMouseDelta(PendingMouseDelta, Simulation.GetState().Orientation.Rotator()))
+	{
+		UE_LOG(LogDublinFlight, Warning, TEXT("Nonfinite flight camera input rejected."));
+	}
+	const DublinFlight::FControlInput Input = InputState.BuildInput(Mode, PendingMouseDelta, PendingSpeedSteps);
 	PendingMouseDelta = FVector2D::ZeroVector;
+	PendingSpeedSteps = 0.0;
 	return Input;
 }
 
@@ -452,7 +519,7 @@ void ADublinFlightPawn::UpdateReadableState()
 	HeadingDegrees = static_cast<float>(DublinFlight::FFlightSimulation::HeadingFromYaw(Rotation.Yaw));
 	FlightTransform = FTransform(State.Orientation, State.PositionCm, GetActorScale3D());
 	CollisionRoot->ComponentVelocity = State.VelocityCmPerSecond;
-	CameraBoom->SetWorldRotation(FRotator(FMath::Clamp(Rotation.Pitch - 18.0, -85.0, 85.0), Rotation.Yaw, 0.0));
+	CameraBoom->SetWorldRotation(CameraOrbit.GetRotation(Rotation));
 }
 
 FVector ADublinFlightPawn::GetVelocity() const

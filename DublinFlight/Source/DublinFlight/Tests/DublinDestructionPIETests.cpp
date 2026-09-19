@@ -2,6 +2,9 @@
 
 #if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
 
+#include "Camera/CameraActor.h"
+#include "Camera/CameraComponent.h"
+#include "Camera/PlayerCameraManager.h"
 #include "Containers/Ticker.h"
 #include "CoreGlobals.h"
 #include "Dom/JsonObject.h"
@@ -11,6 +14,7 @@
 #include "Effects/DublinImpactEffectsSubsystem.h"
 #include "Engine/Engine.h"
 #include "Engine/GameViewportClient.h"
+#include "Engine/LocalPlayer.h"
 #include "Engine/World.h"
 #include "EngineUtils.h"
 #include "GameFramework/PlayerController.h"
@@ -27,6 +31,7 @@
 #include "NiagaraComponent.h"
 #include "NiagaraSystem.h"
 #include "Policies/CondensedJsonPrintPolicy.h"
+#include "SceneView.h"
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
 #include "Tests/AutomationEditorCommon.h"
@@ -540,9 +545,9 @@ struct FSelectedScene
 			Bounds.Add(Box);
 			Sorted.Add(I);
 			const FDublinFractureRecord* R = City.FractureLibrary->Find(Building.Id);
-			Ready.Add(R && R->bReady && R->PieceCount >= 2 && R->PieceCount <= 128 && R->RootTransform != INDEX_NONE
+			Ready.Add(R && R->bReady && DublinFractureBake::HasValidPieceBudget(*R) && R->RootTransform != INDEX_NONE
 				&& R->LeafTransforms.Num() == R->PieceCount && !R->Anchors.IsEmpty() && !R->Collection.IsNull()
-				&& R->SourceDigest == DublinDestruction::BuildingDigest(Building)
+				&& DublinFractureBake::IsCurrentRecord(Building, *R)
 				&& FPackageName::DoesPackageExist(R->Collection.ToSoftObjectPath().GetLongPackageName()));
 		}
 		Sorted.Sort([this](int32 A, int32 B) { return Source->Buildings[A].Id < Source->Buildings[B].Id; });
@@ -618,6 +623,561 @@ void SuppressPlayer(UWorld& World)
 		}
 	}
 }
+
+class FSmokeAndCannonWaterVisuals final : public IAutomationLatentCommand
+{
+public:
+	explicit FSmokeAndCannonWaterVisuals(FAutomationTestBase& InTest)
+		: Test(InTest), StartedWall(FPlatformTime::Seconds())
+	{
+		RunName = TEXT("SmokeAndCannonWaterVisuals-") + FGuid::NewGuid().ToString(EGuidFormats::Digits);
+		Directory = FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("Screenshots"), TEXT("Feedback-20260918"));
+	}
+	virtual ~FSmokeAndCannonWaterVisuals() override { Cleanup(); }
+
+	virtual bool Update() override
+	{
+		if (FPlatformTime::Seconds() - StartedWall > 90.0)
+		{
+			Fail(TEXT("Smoke/water visual fixture exceeded its 90-second wall timeout."));
+			return Finish();
+		}
+		if (bFailed && !bCapturePending) { return Finish(); }
+		if (!bStarted) { return Bootstrap(); }
+		if (!IsDublinPIE(World.Get()) || !City.IsValid() || !Player.IsValid()
+			|| !Player->PlayerCameraManager || !Camera.IsValid())
+		{
+			Fail(TEXT("Owned visual-test PIE, city, player or camera was lost."));
+			return Finish();
+		}
+		if (!WithinBudgets(*City.Get()) || ActiveImpactEffects(*World.Get()) > DublinImpactFX::MaxSystems)
+		{
+			Fail(TEXT("Visual-test impact queue or live effect budget exceeded."));
+			return Finish();
+		}
+		const double Now = World->GetTimeSeconds();
+		if (Now > LastWorldTime) { LastWorldTime = Now; ++Frames; }
+		if (Phase == 0 || Phase == 3)
+		{
+			if (Frames < 3 || Now - PhaseStart < 0.35) { return false; }
+			Player->PlayerCameraManager->UpdateCamera(0.0f);
+			FVector Position;
+			FRotator Rotation;
+			Player->GetPlayerViewPoint(Position, Rotation);
+			if (Player->GetViewTarget() != Camera.Get() || !Position.Equals(Camera->GetActorLocation(), 1.0)
+				|| !Rotation.Equals(Camera->GetActorRotation(), 0.1))
+			{
+				Fail(TEXT("Player camera cache did not settle on the owned effect observer before impact admission."));
+				return Finish();
+			}
+			if (!ValidateObserver()) { return Finish(); }
+			if (Phase == 0)
+			{
+				if (!SubmitImpact(*City.Get(), Scene.GroundBomb))
+				{
+					Fail(TEXT("Selected real dry-ground bomb was rejected."));
+					return Finish();
+				}
+				SmokeStart = Now;
+				Phase = 1;
+			}
+			else
+			{
+				WaterStart = Now;
+				NextCannon = Now;
+				Phase = 4;
+			}
+		}
+		if (Phase == 1 && Capture(TEXT("Smoke-04s"), 4.0, SmokeStart))
+		{
+			Phase = 2;
+		}
+		if (Phase == 2 && Now - SmokeStart >= 12.0)
+		{
+			if (!bSmokeChecked)
+			{
+				bSmokeChecked = true;
+				BombComponentsAt12 = LiveBombComponents();
+				SmokeCheckAge = Now - SmokeStart;
+				if (BombComponentsAt12 == 0)
+				{
+					Fail(TEXT("No live NS_BombExplosion route at 12 seconds; a short burst is not sustained smoke."));
+				}
+			}
+			// Still request the late image on route failure; do not substitute component counts for rendered proof.
+			if (Capture(TEXT("Smoke-12s"), 12.0, SmokeStart))
+			{
+				if (bFailed) { return Finish(); }
+				UseObserver(WaterObserver);
+				BeginPhase(3);
+			}
+		}
+		if (Phase == 4)
+		{
+			const double Age = Now - WaterStart;
+			if (Age < 2.0 && Now >= NextCannon)
+			{
+				FDublinImpact Impact = DublinWeapons::MakeImpact(EDublinImpactKind::Cannon, 0, DublinWeapons::FBombCurve());
+				Impact.PositionCm = Scene.WaterBomb.PositionCm;
+				Impact.Normal = FVector::UpVector;
+				Impact.bWater = true;
+				Impact.Seed = 580180 + CannonImpacts;
+				if (!SubmitImpact(*City.Get(), Impact)) { Fail(TEXT("Default cannon water impact was rejected.")); return Finish(); }
+				++CannonImpacts;
+				LastCannon = Now;
+				NextCannon = Now + 0.2;
+				CannonAges.Add(MakeShared<FJsonValueNumber>(Age));
+			}
+			const double TargetAge = WaterCapture == 0 ? 0.7 : 1.5;
+			if (WaterCapture < 2 && Age >= TargetAge)
+			{
+				if (ActiveImpactEffects(*World.Get(), true) == 0)
+				{
+					Fail(TEXT("No live NS_WaterImpact component during the cannon-water capture interval."));
+					return Finish();
+				}
+				if (Capture(WaterCapture == 0 ? TEXT("CannonWater-00_7s") : TEXT("CannonWater-01_5s"), TargetAge, WaterStart))
+				{
+					++WaterCapture;
+				}
+			}
+			if (Age >= 2.0 && WaterCapture == 2)
+			{
+				if (CannonImpacts < 8) { Fail(TEXT("Too few real advancing-frame cannon impacts for the approximately 5 Hz, 2-second sequence.")); }
+				BeginPhase(5);
+			}
+		}
+		if (Phase == 5 && Now - LastCannon >= 6.0)
+		{
+			if (ActiveImpactEffects(*World.Get(), true) == 0)
+			{
+				bWaterExpired = true;
+				return Finish();
+			}
+			if (Now - LastCannon > 12.0) { Fail(TEXT("Transient cannon-water components did not expire within 12 seconds after firing stopped.")); }
+		}
+		return bFailed && !bCapturePending ? Finish() : false;
+	}
+
+private:
+	struct FObserver
+	{
+		FVector Position = FVector::ZeroVector;
+		FVector Target = FVector::ZeroVector;
+		FVector ContextPoint = FVector::ZeroVector;
+		FBox EffectBounds = FBox(ForceInit);
+		TArray<FVector> ColumnPoints;
+	};
+
+	FAutomationTestBase& Test;
+	FSelectedScene Scene;
+	TWeakObjectPtr<UWorld> World;
+	TWeakObjectPtr<ADublinCityWorld> City;
+	TWeakObjectPtr<APlayerController> Player;
+	TWeakObjectPtr<AActor> PreviousViewTarget;
+	TWeakObjectPtr<ACameraActor> Camera;
+	FObserver GroundObserver;
+	FObserver WaterObserver;
+	const FObserver* CurrentObserver = nullptr;
+	TArray<TSharedPtr<FJsonValue>> Captures;
+	TArray<TSharedPtr<FJsonValue>> CannonAges;
+	TArray<TSharedPtr<FJsonValue>> Errors;
+	TSharedPtr<FJsonObject> PendingCapture;
+	FString Directory;
+	FString RunName;
+	FString PendingPath;
+	double StartedWall;
+	double LastWorldTime = 0;
+	double PhaseStart = 0;
+	double SmokeStart = 0;
+	double WaterStart = 0;
+	double NextCannon = 0;
+	double LastCannon = 0;
+	double CaptureWaitWall = 0;
+	double SmokeCheckAge = 0;
+	int32 Phase = 0;
+	int32 Frames = 0;
+	int32 WaterCapture = 0;
+	int32 CannonImpacts = 0;
+	int32 BombComponentsAt12 = 0;
+	bool bStarted = false;
+	bool bFailed = false;
+	bool bFinished = false;
+	bool bCleaned = false;
+	bool bCapturePending = false;
+	bool bSmokeChecked = false;
+	bool bWaterExpired = false;
+
+	void Fail(const FString& Message)
+	{
+		bFailed = true;
+		Test.AddError(Message);
+		Errors.Add(MakeShared<FJsonValueString>(Message));
+	}
+	void BeginPhase(int32 Next)
+	{
+		Phase = Next;
+		Frames = 0;
+		PhaseStart = World->GetTimeSeconds();
+	}
+	int32 LiveBombComponents() const
+	{
+		int32 Count = 0;
+		for (TObjectIterator<UNiagaraComponent> It; It; ++It)
+		{
+			if (It->GetWorld() == World.Get() && It->IsActive() && It->GetAsset()
+				&& It->GetAsset()->GetPathName().StartsWith(TEXT("/Game/FX/NS_BombExplosion."))) { ++Count; }
+		}
+		return Count;
+	}
+	void AimCamera(const FVector& Target, const FVector& Position)
+	{
+		Camera->SetActorLocationAndRotation(Position, (Target - Position).Rotation());
+		Player->SetViewTarget(Camera.Get());
+		Player->PlayerCameraManager->UpdateCamera(0.0f);
+	}
+	void UseObserver(const FObserver& Observer)
+	{
+		CurrentObserver = &Observer;
+		AimCamera(Observer.Target, Observer.Position);
+	}
+	bool ClearSight(const FVector& Position, const FVector& Point) const
+	{
+		FHitResult Hit;
+		return !Trace(*World.Get(), Position, Point, Hit)
+			|| (!Hit.bStartPenetrating && Hit.ImpactPoint.Equals(Point, 25.0));
+	}
+	bool ClearCamera(const FVector& Position, const FBox& EffectBounds) const
+	{
+		if (EffectBounds.ExpandBy(300.0).IsInsideOrOn(Position)
+			|| FMath::Abs(Position.X) > 38300.0 || FMath::Abs(Position.Y) > 38300.0) { return false; }
+		for (const FBox& Building : Scene.Bounds)
+		{
+			if (Building.ExpandBy(100.0).IsInsideOrOn(Position)) { return false; }
+		}
+		FCollisionQueryParams Query(SCENE_QUERY_STAT(DublinVisualObserver), false);
+		Query.AddIgnoredActor(Camera.Get());
+		if (Player->GetPawn()) { Query.AddIgnoredActor(Player->GetPawn()); }
+		if (World->OverlapBlockingTestByChannel(Position, FQuat::Identity, ECC_Visibility,
+			FCollisionShape::MakeSphere(100.0f), Query)) { return false; }
+		FHitResult Hit;
+		// A collision-free point below a roof/terrain surface is not a usable exterior camera.
+		return !Trace(*World.Get(), Position + FVector(0, 0, 30000), Position, Hit)
+			&& Trace(*World.Get(), Position, Position - FVector(0, 0, 30000), Hit)
+			&& Hit.Distance > 100.0f;
+	}
+	TArray<FVector> ContextPoints(const FDublinImpact& Impact) const
+	{
+		TArray<FVector> Points;
+		if (!Impact.bWater)
+		{
+			TArray<int32> Nearest = Scene.Sorted;
+			Nearest.Sort([this, &Impact](int32 A, int32 B)
+			{
+				return FVector::DistSquaredXY(Scene.Bounds[A].GetCenter(), Impact.PositionCm)
+					< FVector::DistSquaredXY(Scene.Bounds[B].GetCenter(), Impact.PositionCm);
+			});
+			for (int32 Index : Nearest)
+			{
+				if (FVector::DistXY(Scene.Bounds[Index].GetCenter(), Impact.PositionCm) > 12000.0 || Points.Num() >= 16) { break; }
+				FVector Roof;
+				if (Scene.RoofProbe(*City.Get(), Index, Roof)) { Points.Add(Roof + FVector(0, 0, 50)); }
+			}
+		}
+		else
+		{
+			for (double Radius : { 1600.0, 3200.0, 4800.0, 6400.0 })
+			{
+				for (int32 Bearing = 0; Bearing < 16; ++Bearing)
+				{
+					const double Angle = Bearing * PI / 8.0;
+					const FVector Point = Impact.PositionCm + FVector(FMath::Cos(Angle), FMath::Sin(Angle), 0) * Radius;
+					float WaterZ;
+					if (DublinDestruction::SourceWaterZ(Scene.Source->Water, Point, WaterZ)) { continue; }
+					FHitResult Hit;
+					if (Trace(*World.Get(), Point + FVector(0, 0, 10000), Point - FVector(0, 0, 2000), Hit)
+						&& Hit.GetActor() == City.Get() && Hit.GetComponent()
+						&& Hit.GetComponent()->GetName().StartsWith(TEXT("DublinTerrain_")))
+					{
+						Points.Add(Hit.ImpactPoint + FVector(0, 0, 50));
+					}
+				}
+			}
+		}
+		return Points;
+	}
+	bool SelectObserver(const FDublinImpact& Impact, FObserver& Out)
+	{
+		const DublinImpactFX::FSmokeColumn Smoke = DublinImpactFX::MakeSmokeColumn(Impact, 0);
+		const FQuat Rotation = FQuat::FindBetweenNormals(FVector::UpVector, Impact.Normal.GetSafeNormal());
+		Out.EffectBounds = DublinImpactFX::EffectBounds(Impact, Smoke).TransformBy(
+			FTransform(Rotation, Impact.PositionCm + Impact.Normal.GetSafeNormal() * 8.0));
+		const double ColumnHeight = Smoke.IsEnabled()
+			? Smoke.VelocityCmPerSecond.Z * DublinImpactFX::SmokeParticleLifetimeSeconds + Smoke.RadiusCm * 4.0
+			: Out.EffectBounds.Max.Z - Impact.PositionCm.Z;
+		Out.Target = Impact.PositionCm + FVector(0, 0, ColumnHeight * 0.6);
+		for (int32 Level = 0; Level <= 4; ++Level)
+		{
+			Out.ColumnPoints.Add(Impact.PositionCm + FVector(0, 0, ColumnHeight * Level / 4.0));
+		}
+		if (Smoke.IsEnabled())
+		{
+			Out.ColumnPoints.Add(Impact.PositionCm + Smoke.VelocityCmPerSecond * DublinImpactFX::SmokeParticleLifetimeSeconds);
+		}
+		const TArray<FVector> Context = ContextPoints(Impact);
+		const UCameraComponent* Lens = Camera->GetCameraComponent();
+		const FIntPoint Size = World->GetGameViewport()->Viewport->GetSizeXY();
+		const double Aspect = Lens->bConstrainAspectRatio ? Lens->AspectRatio : static_cast<double>(Size.X) / Size.Y;
+		const double TanHorizontal = FMath::Tan(FMath::DegreesToRadians(Lens->FieldOfView * 0.5));
+		const double TanVertical = TanHorizontal / Aspect;
+		int32 CameraRejected = 0;
+		int32 ColumnRejected = 0;
+		int32 ContextRejected = 0;
+		for (double Distance : { 6500.0, 8500.0, 11000.0, 14000.0 })
+		{
+			for (double DownDegrees : { 32.5, 25.0, 40.0 })
+			{
+				for (int32 Bearing = 0; Bearing < 16; ++Bearing)
+				{
+					const double Angle = Bearing * PI / 8.0;
+					const FVector Position = Out.Target + FVector(FMath::Cos(Angle) * Distance,
+						FMath::Sin(Angle) * Distance, Distance * FMath::Tan(FMath::DegreesToRadians(DownDegrees)));
+					if (!ClearCamera(Position, Out.EffectBounds)) { ++CameraRejected; continue; }
+					const FQuat View = (Out.Target - Position).Rotation().Quaternion();
+					const auto Framed = [Position, View, TanHorizontal, TanVertical](const FVector& Point, bool bColumn)
+					{
+						const FVector Local = View.UnrotateVector(Point - Position);
+						if (Local.X <= 0.0) { return false; }
+						const double X = 0.5 + Local.Y / (2.0 * Local.X * TanHorizontal);
+						const double Y = 0.5 - Local.Z / (2.0 * Local.X * TanVertical);
+						// Keep the column below the HUD's top panels/warnings, with ground visible below it.
+						return X >= 0.1 && X <= 0.9 && Y >= (bColumn ? 0.27 : 0.08) && Y <= 0.82;
+					};
+					bool bColumnClear = true;
+					for (const FVector& Point : Out.ColumnPoints)
+					{
+						if (!Framed(Point, true) || !ClearSight(Position, Point)) { bColumnClear = false; break; }
+					}
+					if (!bColumnClear) { ++ColumnRejected; continue; }
+					for (const FVector& Point : Context)
+					{
+						if (!Framed(Point, false) || !ClearSight(Position, Point)) { continue; }
+						Out.Position = Position;
+						Out.ContextPoint = Point;
+						Test.AddInfo(FString::Printf(TEXT("Selected %s oblique camera: pitch=-%.1f, distance=%.0fcm, position=%s. "
+							"Original impact base, upward column and real %s have clear sightlines; camera is outside FX/mesh bounds."),
+							Impact.bWater ? TEXT("water") : TEXT("ground"), DownDegrees, Distance, *Position.ToString(),
+							Impact.bWater ? TEXT("dry riverbank") : TEXT("city roof")));
+						return true;
+					}
+					++ContextRejected;
+				}
+			}
+		}
+		Fail(FString::Printf(TEXT("No eligible 25-40 degree oblique %s view at original impact %s: context points=%d, "
+			"camera/FX/mesh rejects=%d, column framing/LOS rejects=%d, context rejects=%d. No nadir fallback or relocated impact."),
+			Impact.bWater ? TEXT("water") : TEXT("ground"), *Impact.PositionCm.ToString(), Context.Num(),
+			CameraRejected, ColumnRejected, ContextRejected));
+		return false;
+	}
+	bool ValidateObserver()
+	{
+		if (!CurrentObserver) { Fail(TEXT("No selected oblique observer.")); return false; }
+		const FObserver& View = *CurrentObserver;
+		FVector Position;
+		FRotator Rotation;
+		Player->GetPlayerViewPoint(Position, Rotation);
+		const double DownDegrees = -FRotator::NormalizeAxis(Rotation.Pitch);
+		if (DownDegrees < 24.99 || DownDegrees > 40.01 || !ClearCamera(Position, View.EffectBounds))
+		{
+			Fail(TEXT("Actual player camera is not a clear exterior 25-40 degree oblique view."));
+			return false;
+		}
+		ULocalPlayer* Local = Player->GetLocalPlayer();
+		FSceneViewProjectionData Projection;
+		if (!Local || !Local->GetProjectionData(World->GetGameViewport()->Viewport, Projection, INDEX_NONE))
+		{
+			Fail(TEXT("Oblique observer has no actual viewport projection."));
+			return false;
+		}
+		const FIntRect Rect = Projection.GetConstrainedViewRect();
+		if (Rect.Width() <= 0 || Rect.Height() <= 0)
+		{
+			Fail(TEXT("Oblique observer has an empty constrained viewport."));
+			return false;
+		}
+		TArray<FVector> Points = View.ColumnPoints;
+		Points.Add(View.ContextPoint);
+		for (int32 Index = 0; Index < Points.Num(); ++Index)
+		{
+			FVector2D Pixel;
+			const bool bProjected = FSceneView::ProjectWorldToScreen(Points[Index], Rect, Projection.ComputeViewProjectionMatrix(), Pixel);
+			const bool bColumn = Index < View.ColumnPoints.Num();
+			if (!bProjected || Pixel.ContainsNaN()
+				|| Pixel.X < Rect.Min.X + Rect.Width() * 0.1 || Pixel.X > Rect.Min.X + Rect.Width() * 0.9
+				|| Pixel.Y < Rect.Min.Y + Rect.Height() * (bColumn ? 0.27 : 0.08) || Pixel.Y > Rect.Min.Y + Rect.Height() * 0.82
+				|| !ClearSight(Position, Points[Index]))
+			{
+				Fail(FString::Printf(TEXT("Actual oblique view lost clear, framed %s probe %d at %s; no screenshot accepted."),
+					bColumn ? TEXT("original impact/column") : TEXT("city/riverbank"), Index, *Points[Index].ToString()));
+				return false;
+			}
+		}
+		return true;
+	}
+	bool Bootstrap()
+	{
+		if (!GEngine) { Fail(TEXT("No engine for rendered visual fixture.")); return Finish(); }
+		for (const FWorldContext& Context : GEngine->GetWorldContexts())
+		{
+			UWorld* Candidate = Context.World();
+			if (!Candidate || Candidate->WorldType != EWorldType::PIE || Candidate->bIsTearingDown) { continue; }
+			World = Candidate;
+			if (!IsDublinPIE(Candidate)) { Fail(TEXT("Visual fixture requires saved Dublin PIE.")); return Finish(); }
+			City = FindCity(*Candidate);
+			Player = Candidate->GetFirstPlayerController();
+			const ADublinFlightPawn* Pawn = Player.IsValid() ? Cast<ADublinFlightPawn>(Player->GetPawn()) : nullptr;
+			UGameViewportClient* Client = Candidate->GetGameViewport();
+			if (!City.IsValid() || !City->bCityReady || !City->bDestructionReady || !Player.IsValid()
+				|| !Player->IsLocalController() || !Player->PlayerCameraManager || !Pawn || !Pawn->bSpawnCaptured
+				|| !Pawn->Weapons || !Client || !Client->Viewport
+				|| Client->Viewport->GetSizeXY().X <= 0 || Client->Viewport->GetSizeXY().Y <= 0) { continue; }
+			for (TObjectIterator<UNiagaraSystem> It; It; ++It)
+			{
+				const FString Path = It->GetPathName();
+				if ((Path.StartsWith(TEXT("/Game/FX/NS_BombExplosion.")) || Path.StartsWith(TEXT("/Game/FX/NS_WaterImpact.")))
+					&& It->HasOutstandingCompilationRequests(true))
+				{
+					It->PollForCompilationComplete();
+					return false;
+				}
+			}
+			if (City->AcceptedImpactCount != 0 || City->FracturedBuildingCount != 0 || City->CraterChangedNodeCount != 0
+				|| City->WaterActiveNodeCount != 0 || City->QueuedImpactCount != 0 || ActiveImpactEffects(*Candidate) != 0)
+			{
+				Fail(TEXT("Visual fixture requires fresh PIE without prior impacts, craters, waves or impact effects."));
+				return Finish();
+			}
+			if (!Scene.Initialize(*City.Get())) { Fail(Scene.Error); return Finish(); }
+			if (!IFileManager::Get().MakeDirectory(*Directory, true)) { Fail(TEXT("Could not create visual evidence directory.")); return Finish(); }
+			PreviousViewTarget = Player->GetViewTarget();
+			if (!PreviousViewTarget.IsValid()) { Fail(TEXT("Player has no view target to restore.")); return Finish(); }
+			SuppressPlayer(*Candidate);
+			Camera = Candidate->SpawnActor<ACameraActor>();
+			if (!Camera.IsValid()) { Fail(TEXT("Could not spawn owned visual observer camera.")); return Finish(); }
+			Camera->GetCameraComponent()->SetFieldOfView(65.0f);
+			FDublinImpact WaterCannon = DublinWeapons::MakeImpact(EDublinImpactKind::Cannon, 0, DublinWeapons::FBombCurve());
+			WaterCannon.PositionCm = Scene.WaterBomb.PositionCm;
+			WaterCannon.bWater = true;
+			if (!SelectObserver(Scene.GroundBomb, GroundObserver) || !SelectObserver(WaterCannon, WaterObserver)) { return Finish(); }
+			UseObserver(GroundObserver);
+			LastWorldTime = Candidate->GetTimeSeconds();
+			bStarted = true;
+			BeginPhase(0);
+			Test.AddInfo(TEXT("SmokeAndCannonWaterVisuals uses accepted native impact dispatch, NOT physical gun input. "
+				"Live Niagara components are route evidence, not rendered proof; all screenshots require parent visual inspection."));
+			return false;
+		}
+		return false;
+	}
+	bool Capture(const TCHAR* Label, double TargetAge, double Start)
+	{
+		const double Age = World->GetTimeSeconds() - Start;
+		if (Age < TargetAge) { return false; }
+		const double Wall = FPlatformTime::Seconds();
+		if (CaptureWaitWall == 0) { CaptureWaitWall = Wall; }
+		if (bCapturePending)
+		{
+			if (!FScreenshotRequest::IsScreenshotRequested() && IFileManager::Get().FileSize(*PendingPath) > 0)
+			{
+				PendingCapture->SetBoolField(TEXT("file_written"), true);
+				PendingCapture->SetNumberField(TEXT("observed_file_world_age_seconds"), Age);
+				Test.AddInfo(TEXT("Viewport image written; parent inspection required: ") + PendingPath);
+				bCapturePending = false;
+				PendingCapture.Reset();
+				CaptureWaitWall = 0;
+				return true;
+			}
+			if (Wall - CaptureWaitWall > 10.0)
+			{
+				bCapturePending = false;
+				Fail(TEXT("Queued viewport screenshot did not produce a nonempty file within 10 seconds: ") + PendingPath);
+			}
+			return false;
+		}
+		if (FScreenshotRequest::IsScreenshotRequested())
+		{
+			if (Wall - CaptureWaitWall > 5.0) { Fail(TEXT("Another screenshot request remained pending for 5 seconds; it was not overwritten.")); }
+			return false;
+		}
+		if (!ValidateObserver()) { return false; }
+		PendingPath = FPaths::Combine(Directory, RunName + TEXT("-") + Label + TEXT(".png"));
+		PendingCapture = MakeShared<FJsonObject>();
+		PendingCapture->SetStringField(TEXT("path"), PendingPath);
+		PendingCapture->SetNumberField(TEXT("target_world_age_seconds"), TargetAge);
+		PendingCapture->SetNumberField(TEXT("requested_world_age_seconds"), Age);
+		PendingCapture->SetNumberField(TEXT("live_bomb_components"), LiveBombComponents());
+		PendingCapture->SetNumberField(TEXT("live_water_components"), ActiveImpactEffects(*World.Get(), true));
+		PendingCapture->SetBoolField(TEXT("file_written"), false);
+		PendingCapture->SetBoolField(TEXT("visual_inspection_required"), true);
+		SetPoint(*PendingCapture, TEXT("camera_position_cm"), Camera->GetActorLocation());
+		SetPoint(*PendingCapture, TEXT("camera_direction"), Camera->GetActorForwardVector());
+		PendingCapture->SetNumberField(TEXT("camera_down_degrees"), -Camera->GetActorRotation().Pitch);
+		PendingCapture->SetBoolField(TEXT("impact_column_context_los_and_framing_checked"), true);
+		SetPoint(*PendingCapture, TEXT("original_impact_cm"), CurrentObserver->ColumnPoints[0]);
+		SetPoint(*PendingCapture, TEXT("column_top_cm"), CurrentObserver->ColumnPoints[4]);
+		SetPoint(*PendingCapture, TEXT("city_or_riverbank_context_probe_cm"), CurrentObserver->ContextPoint);
+		SetPoint(*PendingCapture, TEXT("excluded_effect_bounds_min_cm"), CurrentObserver->EffectBounds.Min);
+		SetPoint(*PendingCapture, TEXT("excluded_effect_bounds_max_cm"), CurrentObserver->EffectBounds.Max);
+		Captures.Add(MakeShared<FJsonValueObject>(PendingCapture));
+		CaptureWaitWall = Wall;
+		bCapturePending = true;
+		FScreenshotRequest::RequestScreenshot(PendingPath, false, false);
+		Test.AddInfo(FString::Printf(TEXT("Queued %s at actual age %.3fs (target %.1fs): %s"), Label, Age, TargetAge, *PendingPath));
+		return false;
+	}
+	void Cleanup()
+	{
+		if (bCleaned) { return; }
+		bCleaned = true;
+		if (Player.IsValid() && PreviousViewTarget.IsValid())
+		{
+			Player->SetViewTarget(PreviousViewTarget.Get());
+			if (Player->PlayerCameraManager) { Player->PlayerCameraManager->UpdateCamera(0.0f); }
+		}
+		if (Camera.IsValid()) { Camera->Destroy(); }
+		if (GEditor && World.IsValid() && GEditor->PlayWorld == World.Get()) { GEditor->RequestEndPlayMap(); }
+	}
+	bool Finish()
+	{
+		if (bFinished) { return true; }
+		bFinished = true;
+		TSharedRef<FJsonObject> Result = City.IsValid() ? Scene.Describe() : MakeShared<FJsonObject>();
+		Result->SetStringField(TEXT("test"), TEXT("DublinFlight.Effects.PIE.SmokeAndCannonWaterVisuals"));
+		Result->SetStringField(TEXT("utc"), FDateTime::UtcNow().ToIso8601());
+		Result->SetStringField(TEXT("status"), bFailed ? TEXT("failed") : TEXT("native_checks_passed_visual_inspection_required"));
+		Result->SetStringField(TEXT("scope"), TEXT("Accepted cannon-impact route, NOT physical gun input. Live component != rendered proof."));
+		Result->SetBoolField(TEXT("visual_inspection_required"), true);
+		Result->SetNumberField(TEXT("elapsed_wall_seconds"), FPlatformTime::Seconds() - StartedWall);
+		Result->SetNumberField(TEXT("bomb_components_at_12s"), BombComponentsAt12);
+		Result->SetNumberField(TEXT("actual_smoke_check_age_seconds"), SmokeCheckAge);
+		Result->SetNumberField(TEXT("accepted_cannon_water_impacts"), CannonImpacts);
+		Result->SetBoolField(TEXT("transient_water_components_expired"), bWaterExpired);
+		Result->SetArrayField(TEXT("cannon_impact_ages_seconds"), CannonAges);
+		Result->SetArrayField(TEXT("screenshots"), Captures);
+		Result->SetArrayField(TEXT("errors"), Errors);
+		Result->SetObjectField(TEXT("world_diagnostics"), WorldDiagnostics(World.Get(), City.Get()));
+		const FString Path = FPaths::Combine(Directory, RunName + TEXT(".json"));
+		if (!IFileManager::Get().MakeDirectory(*Directory, true)
+			|| !FFileHelper::SaveStringToFile(DiagnosticText(Result), *Path, FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM))
+		{
+			Test.AddError(TEXT("Could not persist smoke/water visual evidence JSON: ") + Path);
+		}
+		else { Test.AddInfo(TEXT("Visual evidence manifest: ") + Path); }
+		Cleanup();
+		return true;
+	}
+};
 
 enum class EVerificationScope : uint8 { ActualCityDamage, TerrainAndWater };
 
@@ -1479,6 +2039,23 @@ bool FDublinDestructionRecoveredBuildingPIETest::RunTest(const FString& Paramete
 	ADD_LATENT_AUTOMATION_COMMAND(FStartPIECommand(false));
 	ADD_LATENT_AUTOMATION_COMMAND(DublinDestruction::PIETests::FActualCityDamage(*this,
 		DublinDestruction::PIETests::EVerificationScope::ActualCityDamage, true));
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FDublinSmokeAndCannonWaterVisualPIETest, "DublinFlight.Effects.PIE.SmokeAndCannonWaterVisuals",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FDublinSmokeAndCannonWaterVisualPIETest::RunTest(const FString& Parameters)
+{
+	UWorld* EditorWorld = GEditor ? GEditor->GetEditorWorldContext().World() : nullptr;
+	if (!EditorWorld || EditorWorld->GetPackage()->GetName() != TEXT("/Game/Maps/Dublin")
+		|| !FPackageName::DoesPackageExist(TEXT("/Game/Maps/Dublin")) || EditorWorld->GetOutermost()->IsDirty()
+		|| GEditor->PlayWorld)
+	{
+		AddError(TEXT("Save /Game/Maps/Dublin and end existing PIE; run this visual test alone so it owns a fresh rendered PIE session."));
+		return false;
+	}
+	ADD_LATENT_AUTOMATION_COMMAND(FStartPIECommand(false));
+	ADD_LATENT_AUTOMATION_COMMAND(DublinDestruction::PIETests::FSmokeAndCannonWaterVisuals(*this));
 	return true;
 }
 

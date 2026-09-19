@@ -10,6 +10,7 @@
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/PlayerInput.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "GenericPlatform/GenericPlatformInputDeviceMapper.h"
 #include "HAL/PlatformTime.h"
 #include "InputKeyEventArgs.h"
@@ -17,6 +18,7 @@
 #include "Tests/AutomationEditorCommon.h"
 #include "UnrealClient.h"
 #include "UObject/Package.h"
+#include "Weapons/DublinWeaponComponent.h"
 
 namespace DublinFlight::Tests
 {
@@ -42,8 +44,8 @@ class FActualPlayerInputScenario final : public IAutomationLatentCommand
 {
 public:
 	FActualPlayerInputScenario(FAutomationTestBase& InTest, UWorld& InWorld, APlayerController& InPlayer,
-		ADublinFlightPawn& InPlane)
-		: Test(InTest), World(&InWorld), Player(&InPlayer), Plane(&InPlane)
+		ADublinFlightPawn& InPlane, bool bInSpeedAndBodyAxesOnly = false)
+		: Test(InTest), World(&InWorld), Player(&InPlayer), Plane(&InPlane), bSpeedAndBodyAxesOnly(bInSpeedAndBodyAxesOnly)
 	{
 		FEditorDelegates::PrePIEEnded.AddRaw(this, &FActualPlayerInputScenario::OnPrePIEEnded);
 	}
@@ -64,7 +66,7 @@ public:
 			Cleanup();
 			return true;
 		}
-		if (!CaptureFlightPIEViewport(*World.Get(), *Player.Get()))
+		if (!bIntentionallyUncaptured && !bWaitingForCaptureRestore && !CaptureFlightPIEViewport(*World.Get(), *Player.Get()))
 		{
 			Test.AddError(TEXT("Native PIE viewport focus/mouse capture could not be maintained during actual-input acceptance."));
 			Cleanup();
@@ -89,6 +91,12 @@ public:
 		{
 			Test.AddError(FString::Printf(TEXT("PIE input scenario timed out at '%s'. Keep PIE unpaused and the viewport focused."),
 				*Steps[StepIndex].Name));
+			Cleanup();
+			return true;
+		}
+		if ((bIntentionallyUncaptured || bWaitingForCaptureRestore) && FPlatformTime::Seconds() - CaptureScopeStartedWall > 5.0)
+		{
+			Test.AddError(TEXT("Scoped capture-loss phase did not complete within five wall seconds. ") + CaptureDiagnostics());
 			Cleanup();
 			return true;
 		}
@@ -126,9 +134,14 @@ public:
 		{
 			Step.Observe();
 		}
+		if (bAbort)
+		{
+			Cleanup();
+			return true;
+		}
 		// Both elapsed game time and separate world frames are required. No Tick() or
 		// ProcessPlayerInput() calls are used to manufacture a passing result.
-		if (StepFrames < 2 || Now - StepStartedAt < Step.Seconds)
+		if (StepFrames < 2 || Now - StepStartedAt < Step.Seconds || (Step.Until && !Step.Until()))
 		{
 			return false;
 		}
@@ -163,6 +176,7 @@ private:
 		TFunction<void()> Start;
 		TFunction<void()> Observe;
 		TFunction<void()> Finish;
+		TFunction<bool()> Until;
 		bool bAllowsReset = false;
 	};
 
@@ -175,6 +189,11 @@ private:
 	FInputDeviceId InputDevice = INPUTDEVICEID_NONE;
 	FTransform Spawn;
 	FTransform Snapshot;
+	FTransform CameraSnapshot;
+	FVector CameraOffsetSnapshot = FVector::ZeroVector;
+	FVector OrbitVelocitySnapshot = FVector::ZeroVector;
+	FVector OrbitCannonDirection = FVector::ZeroVector;
+	FVector2D OrbitDisplacement = FVector2D::ZeroVector;
 	FVector PreviousPosition = FVector::ZeroVector;
 	FVector StationaryPosition = FVector::ZeroVector;
 	double SnapshotSpeed = 0.0;
@@ -188,6 +207,24 @@ private:
 	bool bCleanedUp = false;
 	bool bAbort = false;
 	bool bSessionEnding = false;
+	bool bSpeedAndBodyAxesOnly = false;
+	bool bIgnoringLookForTest = false;
+	bool bIgnoringMoveForTest = false;
+	bool bIntentionallyUncaptured = false;
+	bool bWaitingForCaptureRestore = false;
+	TWeakObjectPtr<UGameViewportClient> CaptureScopeViewport;
+	EMouseCaptureMode SavedMouseCaptureMode = EMouseCaptureMode::NoCapture;
+	EMouseLockMode SavedMouseLockMode = EMouseLockMode::DoNotLock;
+	bool bSavedHideCursorDuringCapture = false;
+	bool bSavedShowMouseCursor = false;
+	double CaptureScopeStartedWall = 0.0;
+	int32 UncapturedWorldFrames = 0;
+	int32 RecapturedWorldFrames = 0;
+	FQuat BodyPreviousOrientation = FQuat::Identity;
+	double BodyPreviousTime = 0.0;
+	double BodyMaximumErrorRatio = 0.0;
+	double BodyMaximumErrorDegrees = 0.0;
+	int32 BodySamples = 0;
 
 	void OnPrePIEEnded(bool bSimulating)
 	{
@@ -221,12 +258,15 @@ private:
 	{
 		Send(EKeys::MouseX, IE_Axis, 0.0f);
 		Send(EKeys::MouseY, IE_Axis, 0.0f);
+		Send(EKeys::MouseWheelAxis, IE_Axis, 0.0f);
 	}
 
 	void Setup()
 	{
 		InputDevice = IPlatformInputDeviceMapper::Get().GetPrimaryInputDeviceForUser(Player->GetPlatformUserId());
 		Require(TEXT("Local PIE player has a mapped input device"), InputDevice != INPUTDEVICEID_NONE);
+		Require(TEXT("Orbit acceptance has the native camera and weapon components"),
+			Plane->CameraBoom && Plane->ChaseCamera && Plane->Weapons);
 		Player->FlushPressedKeys();
 		Player->SetInputMode(FInputModeGameOnly());
 		if (UGameViewportClient* Viewport = World->GetGameViewport(); Viewport && Viewport->Viewport)
@@ -255,8 +295,12 @@ private:
 		ZeroMouse();
 		if (Player.IsValid())
 		{
+			if (bIgnoringLookForTest) { Player->SetIgnoreLookInput(false); bIgnoringLookForTest = false; }
+			if (bIgnoringMoveForTest) { Player->SetIgnoreMoveInput(false); bIgnoringMoveForTest = false; }
 			Player->FlushPressedKeys();
 		}
+		RestoreCaptureScope();
+		bWaitingForCaptureRestore = false;
 		if (Plane.IsValid() && !Plane->IsGodMode())
 		{
 			Plane->ToggleGodMode();
@@ -264,7 +308,8 @@ private:
 	}
 
 	void AddStep(const TCHAR* Name, double Seconds, TFunction<void()> Start,
-		TFunction<void()> Finish, TFunction<void()> Observe = {}, bool bAllowsReset = false)
+		TFunction<void()> Finish, TFunction<void()> Observe = {}, bool bAllowsReset = false,
+		TFunction<bool()> Until = {})
 	{
 		FStep Step;
 		Step.Name = Name;
@@ -272,6 +317,7 @@ private:
 		Step.Start = MoveTemp(Start);
 		Step.Observe = MoveTemp(Observe);
 		Step.Finish = MoveTemp(Finish);
+		Step.Until = MoveTemp(Until);
 		Step.bAllowsReset = bAllowsReset;
 		Steps.Add(MoveTemp(Step));
 	}
@@ -298,6 +344,22 @@ private:
 		MaximumDriftCm = FMath::Max(MaximumDriftCm, FVector::Distance(Plane->GetActorLocation(), StationaryPosition));
 	}
 
+	FTransform ReadPlayerCamera() const
+	{
+		FVector Location;
+		FRotator Rotation;
+		Player->GetPlayerViewPoint(Location, Rotation);
+		return FTransform(Rotation, Location);
+	}
+
+	void RequireChaseView(const TCHAR* Description)
+	{
+		const FRotator Aircraft = Plane->GetActorRotation();
+		const FRotator Expected(FMath::Clamp(Aircraft.Pitch - 28.0, -85.0, 85.0), Aircraft.Yaw, 0.0);
+		Require(Description, Plane->CameraBoom->GetComponentRotation().Equals(Expected, 0.01)
+			&& ReadPlayerCamera().Rotator().Equals(Expected, 0.01));
+	}
+
 	void HoldControl(const TCHAR* Name, const FKey& Key, double Seconds, TFunction<void()> Verify)
 	{
 		AddStep(Name, Seconds, [this, Key]() { Press(Key); }, MoveTemp(Verify));
@@ -308,6 +370,11 @@ private:
 
 	void BuildSteps()
 	{
+		if (bSpeedAndBodyAxesOnly)
+		{
+			BuildSpeedAndBodyAxisSteps();
+			return;
+		}
 		AddStep(TEXT("Initial possessed flight"), 0.25, {}, [this]()
 		{
 			Require(TEXT("Initial mode is FLIGHT"), !Plane->IsGodMode());
@@ -323,6 +390,125 @@ private:
 			UGameViewportClient* Viewport = World->GetGameViewport();
 			Require(TEXT("PIE viewport has focus and mouse capture for actual input"),
 				Viewport && Viewport->Viewport && Viewport->Viewport->HasFocus() && Viewport->Viewport->HasMouseCapture());
+			RequireChaseView(TEXT("Initial player camera retains the default chase view"));
+		});
+
+		AddStep(TEXT("Flight mouse orbits without a held button"), 0.25, [this]()
+		{
+			CameraSnapshot = ReadPlayerCamera();
+			CameraOffsetSnapshot = CameraSnapshot.GetLocation() - Plane->GetActorLocation();
+			OrbitVelocitySnapshot = Plane->GetVelocity();
+			FTransform Launch;
+			FVector Velocity;
+			const bool bHasLaunch = Plane->Weapons->GetCannonLaunch(Launch, Velocity);
+			Require(TEXT("Native flight cannon launch is available before orbit"), bHasLaunch);
+			if (!bHasLaunch) { return; }
+			OrbitCannonDirection = Velocity.GetSafeNormal();
+			Send(EKeys::MouseX, IE_Axis, 120.0f);
+			Send(EKeys::MouseY, IE_Axis, 80.0f);
+		}, [this]()
+		{
+			const FTransform Camera = ReadPlayerCamera();
+			OrbitDisplacement = FVector2D(
+				FMath::FindDeltaAngleDegrees(CameraSnapshot.Rotator().Yaw, Camera.Rotator().Yaw),
+				Camera.Rotator().Pitch - CameraSnapshot.Rotator().Pitch);
+			Require(TEXT("Mouse orbit requires neither mouse button"),
+				!Player->IsInputKeyDown(EKeys::LeftMouseButton) && !Player->IsInputKeyDown(EKeys::RightMouseButton));
+			Require(TEXT("Flight MouseX changes actual player-camera yaw"),
+				FMath::Abs(FMath::FindDeltaAngleDegrees(CameraSnapshot.Rotator().Yaw, Camera.Rotator().Yaw)) > 0.1);
+			Require(TEXT("Flight MouseY changes actual player-camera pitch"),
+				FMath::Abs(Camera.Rotator().Pitch - CameraSnapshot.Rotator().Pitch) > 0.1);
+			Require(TEXT("Orbit moves the camera around the aircraft, not just its look direction"),
+				FVector::Distance(Camera.GetLocation() - Plane->GetActorLocation(), CameraOffsetSnapshot) > 5.0);
+			Require(TEXT("Flight mouse cannot steer aircraft attitude"),
+				Plane->GetActorQuat().Equals(Snapshot.GetRotation(), 0.00001));
+			Test.TestNearlyEqual(TEXT("Flight mouse preserves velocity magnitude"),
+				Plane->GetVelocity().Size(), OrbitVelocitySnapshot.Size(), 0.01);
+			Require(TEXT("Flight mouse preserves velocity direction"),
+				Plane->GetVelocity().Equals(OrbitVelocitySnapshot, 0.01));
+			Require(TEXT("Weapon view rotation remains aircraft attitude, not orbit"),
+				Plane->GetViewRotation().Equals(Snapshot.Rotator(), 0.00001));
+			FTransform Launch;
+			FVector Velocity;
+			const bool bHasLaunch = Plane->Weapons->GetCannonLaunch(Launch, Velocity);
+			Require(TEXT("Native cannon launch remains available while orbited"), bHasLaunch);
+			if (bHasLaunch)
+			{
+				Require(TEXT("Orbit cannot redirect the cannon launch"),
+					Velocity.GetSafeNormal().Equals(OrbitCannonDirection, 0.00001));
+			}
+			Require(TEXT("Aircraft continues flying forward while the camera orbits"),
+				FVector::DotProduct(Plane->GetActorLocation() - Snapshot.GetLocation(),
+					Snapshot.GetRotation().GetForwardVector()) > 500.0);
+		});
+		AddStep(TEXT("Flight orbit holds without more mouse motion"), 0.25, [this]()
+		{
+			CameraSnapshot = ReadPlayerCamera();
+			ZeroMouse();
+		}, [this]()
+		{
+			Require(TEXT("A consumed mouse displacement does not repeat on later frames"),
+				ReadPlayerCamera().GetRotation().Equals(CameraSnapshot.GetRotation(), 0.0001));
+			Require(TEXT("Retaining the orbit does not stop flight"),
+				FVector::Distance(Plane->GetActorLocation(), Snapshot.GetLocation()) > 500.0);
+		}, [this]() { ZeroMouse(); });
+		AddStep(TEXT("G clears flight orbit and queued mouse"), 0.15, [this]()
+		{
+			// Key actions dispatch before summed axes, even when the mouse was queued first.
+			Send(EKeys::MouseX, IE_Axis, 240.0f);
+			Send(EKeys::MouseY, IE_Axis, 160.0f);
+			Press(EKeys::G);
+		}, [this]()
+		{
+			Require(TEXT("Orbited flight enters GOD through actual G input"), Plane->IsGodMode());
+			Require(TEXT("Queued flight mouse cannot become GOD aim on the transition frame"),
+				Plane->GetActorQuat().Equals(Snapshot.GetRotation(), 0.00001));
+			Require(TEXT("Orbit-to-GOD transition stops flight velocity"), Plane->GetVelocity().IsNearlyZero(0.001));
+			RequireChaseView(TEXT("G removes the flight orbit from boom and actual player view"));
+		});
+		AddStep(TEXT("Release orbit-test G"), 0.15, [this]() { Release(EKeys::G); }, [this]()
+		{
+			Require(TEXT("Orbit-test G is released"), !Player->IsInputKeyDown(EKeys::G));
+			Require(TEXT("No stale flight mouse aims GOD on later frames"),
+				Plane->GetActorQuat().Equals(Snapshot.GetRotation(), 0.00001));
+			RequireChaseView(TEXT("Cleared orbit stays centered in GOD"));
+		});
+		AddStep(TEXT("Same actual mouse displacement retains one-third GOD sensitivity"), 0.25, [this]()
+		{
+			Send(EKeys::MouseX, IE_Axis, 120.0f);
+			Send(EKeys::MouseY, IE_Axis, 80.0f);
+		}, [this]()
+		{
+			const FRotator Aim = Plane->GetActorRotation();
+			const double YawDelta = FMath::FindDeltaAngleDegrees(Snapshot.Rotator().Yaw, Aim.Yaw);
+			const double PitchDelta = Aim.Pitch - Snapshot.Rotator().Pitch;
+			Test.TestNearlyEqual(TEXT("Real flight mouse yaw is three times GOD aim for the same input"),
+				OrbitDisplacement.X, YawDelta * 3.0, 0.01);
+			Test.TestNearlyEqual(TEXT("Real flight mouse pitch is three times GOD aim for the same input"),
+				OrbitDisplacement.Y, PitchDelta * 3.0, 0.01);
+			Require(TEXT("Sensitivity comparison cannot translate GOD aircraft"),
+				Plane->GetActorLocation().Equals(Snapshot.GetLocation(), 0.001));
+			RequireChaseView(TEXT("GOD sensitivity comparison still has no separate orbit"));
+		});
+		AddStep(TEXT("G resumes without queued GOD mouse orbit"), 0.15, [this]()
+		{
+			Send(EKeys::MouseX, IE_Axis, -240.0f);
+			Send(EKeys::MouseY, IE_Axis, -160.0f);
+			Press(EKeys::G);
+		}, [this]()
+		{
+			Require(TEXT("Orbit-test G resumes FLIGHT"), !Plane->IsGodMode());
+			Require(TEXT("Queued GOD mouse cannot steer resumed flight"),
+				Plane->GetActorQuat().Equals(Snapshot.GetRotation(), 0.00001));
+			RequireChaseView(TEXT("Queued GOD mouse cannot create a flight orbit on transition"));
+			Require(TEXT("Clearing mouse input still permits forward flight"),
+				FVector::DotProduct(Plane->GetActorLocation() - Snapshot.GetLocation(),
+					Snapshot.GetRotation().GetForwardVector()) > 100.0);
+		});
+		AddStep(TEXT("Release orbit-test resume G"), 0.1, [this]() { Release(EKeys::G); }, [this]()
+		{
+			Require(TEXT("Orbit-test resume G is released"), !Player->IsInputKeyDown(EKeys::G));
+			RequireChaseView(TEXT("No stale mouse orbit appears after resumed world frames"));
 		});
 
 		HoldControl(TEXT("D bank right"), EKeys::D, 0.25, [this]()
@@ -357,12 +543,12 @@ private:
 		HoldControl(TEXT("Shift throttle up"), EKeys::LeftShift, 0.4, [this]()
 		{
 			Require(TEXT("Held Shift increases throttle"), Plane->CruiseSpeedMetersPerSecond > SnapshotSpeed + 2.0);
-			Require(TEXT("Throttle remains at or below 65 m/s"), Plane->CruiseSpeedMetersPerSecond <= 65.01f);
+			Require(TEXT("Throttle remains at or below 100 m/s"), Plane->CruiseSpeedMetersPerSecond <= 100.01f);
 		});
 		HoldControl(TEXT("Ctrl throttle down"), EKeys::LeftControl, 0.4, [this]()
 		{
 			Require(TEXT("Held Ctrl decreases throttle"), Plane->CruiseSpeedMetersPerSecond < SnapshotSpeed - 2.0);
-			Require(TEXT("Throttle remains at or above 20 m/s"), Plane->CruiseSpeedMetersPerSecond >= 19.99f);
+			Require(TEXT("Throttle remains at or above 5 m/s"), Plane->CruiseSpeedMetersPerSecond >= 4.99f);
 		});
 
 		AddStep(TEXT("Hold W before switching"), 0.15, [this]() { Press(EKeys::W); }, [this]()
@@ -445,6 +631,17 @@ private:
 			Require(TEXT("PlayerController MouseY changes pitch"),
 				FMath::Abs(Plane->GetActorRotation().Pitch - Snapshot.Rotator().Pitch) > 0.1);
 			Require(TEXT("Mouse aiming cannot translate GOD aircraft"), MaximumDriftCm < 1.0);
+			Require(TEXT("GOD mouse still aims the aircraft weapon view"),
+				Plane->GetViewRotation().Equals(Plane->GetActorRotation(), 0.00001));
+			FTransform Launch;
+			FVector Velocity;
+			const bool bHasLaunch = Plane->Weapons->GetCannonLaunch(Launch, Velocity);
+			Require(TEXT("GOD cannon launch remains available after mouse aim"), bHasLaunch);
+			if (bHasLaunch)
+			{
+				Require(TEXT("Stationary GOD cannon follows the aimed aircraft"),
+					Velocity.GetSafeNormal().Equals(Plane->GetActorForwardVector(), 0.00001));
+			}
 			ZeroMouse();
 		}, [this]()
 		{
@@ -453,7 +650,11 @@ private:
 			Send(EKeys::MouseY, IE_Axis, 6.0f);
 		});
 		AddStep(TEXT("Mouse axes returned to zero"), 0.25, [this]() { ZeroMouse(); },
-			[this]() { Require(TEXT("Aiming release remains stationary"), MaximumDriftCm < 1.0); },
+			[this]()
+			{
+				Require(TEXT("Aiming release remains stationary"), MaximumDriftCm < 1.0);
+				RequireChaseView(TEXT("GOD mouse aim does not accumulate a separate camera orbit"));
+			},
 			[this]() { ZeroMouse(); WatchStationary(); });
 
 		AddStep(TEXT("G resumes without teleport"), 0.15, [this]() { Press(EKeys::G); }, [this]()
@@ -472,7 +673,25 @@ private:
 		AddStep(TEXT("Release resume G"), 0.1, [this]() { Release(EKeys::G); },
 			[this]() { Require(TEXT("Resume G released"), !Player->IsInputKeyDown(EKeys::G)); });
 
-		AddStep(TEXT("Home restores the original mid-air spawn"), 0.0, [this]() { Press(EKeys::Home); }, [this]()
+		AddStep(TEXT("Flight mouse creates an orbit before Home"), 0.25, [this]()
+		{
+			Send(EKeys::MouseX, IE_Axis, 120.0f);
+			Send(EKeys::MouseY, IE_Axis, 80.0f);
+		}, [this]()
+		{
+			const FRotator Camera = ReadPlayerCamera().Rotator();
+			const FRotator Aircraft = Plane->GetActorRotation();
+			Require(TEXT("Home trial starts with a real nonzero yaw orbit"),
+				FMath::Abs(FMath::FindDeltaAngleDegrees(Aircraft.Yaw, Camera.Yaw)) > 0.1);
+			Require(TEXT("Home trial starts with a real nonzero pitch orbit"),
+				FMath::Abs(Camera.Pitch - FMath::Clamp(Aircraft.Pitch - 28.0, -85.0, 85.0)) > 0.1);
+		});
+		AddStep(TEXT("Home restores the original mid-air spawn"), 0.0, [this]()
+		{
+			Send(EKeys::MouseX, IE_Axis, 240.0f);
+			Send(EKeys::MouseY, IE_Axis, 160.0f);
+			Press(EKeys::Home);
+		}, [this]()
 		{
 			Require(TEXT("Home returns to FLIGHT"), !Plane->IsGodMode());
 			Require(TEXT("Home is not blocked"), !Plane->bResetBlocked);
@@ -487,9 +706,14 @@ private:
 			Test.TestNearlyEqual(TEXT("Home resets throttle to 40 m/s"), Plane->CruiseSpeedMetersPerSecond, 40.0f, 0.01f);
 			Test.TestNearlyEqual(TEXT("Home HUD compass is east"), Plane->GetHeadingDegrees(), 90.0f, 0.01f);
 			Test.TestNearlyEqual(TEXT("Home HUD altitude is 180 m"), Plane->GetAltitudeMeters(), 180.0f, 0.01f);
+			RequireChaseView(TEXT("Home recenters the chase view and discards queued mouse"));
 		}, {}, true);
 		AddStep(TEXT("Release Home"), 0.08, [this]() { Release(EKeys::Home); },
-			[this]() { Require(TEXT("Home released"), !Player->IsInputKeyDown(EKeys::Home)); });
+			[this]()
+			{
+				Require(TEXT("Home released"), !Player->IsInputKeyDown(EKeys::Home));
+				RequireChaseView(TEXT("No stale mouse changes the chase view after Home"));
+			});
 		AddStep(TEXT("Final G parks for screenshot"), 0.1, [this]() { Press(EKeys::G); }, [this]()
 		{
 			Require(TEXT("Final G parks in GOD"), Plane->IsGodMode());
@@ -502,13 +726,394 @@ private:
 			Require(TEXT("Final stationary screenshot state"), Plane->IsGodMode() && MaximumDriftCm < 1.0);
 		}, [this]() { WatchStationary(); });
 	}
+
+	void RequireSelectedSpeed(float Expected)
+	{
+		const FString CurrentStepName = Steps.IsValidIndex(StepIndex) ? Steps[StepIndex].Name : TEXT("<no current step>");
+		Require(*FString::Printf(TEXT("[%s] HUD selected speed reflects the one simulation speed: "
+			"expected=%.3f m/s, HUD=%.3f m/s, simulation=%.3f m/s"),
+			*CurrentStepName, Expected, Plane->CruiseSpeedMetersPerSecond, Plane->GetFlightState().FlightSpeedCmPerSecond / 100.0),
+			FMath::IsNearlyEqual(Plane->CruiseSpeedMetersPerSecond, Expected, 0.01f)
+			&& FMath::IsNearlyEqual(Plane->GetFlightState().FlightSpeedCmPerSecond, Expected * 100.0, 0.01));
+		Require(*FString::Printf(TEXT("[%s] Actual velocity matches selected flight speed, or zero in stationary GOD: "
+			"expected=%.3f m/s, actual=%.3f m/s, mode=%s"),
+			*CurrentStepName, Plane->IsGodMode() ? 0.0f : Expected, Plane->GetSpeedMetersPerSecond(),
+			Plane->IsGodMode() ? TEXT("GOD") : TEXT("FLIGHT")),
+			FMath::IsNearlyEqual(Plane->GetSpeedMetersPerSecond(), Plane->IsGodMode() ? 0.0f : Expected, 0.01f));
+	}
+
+	FString PendingWheelDiagnostics() const
+	{
+		const FKeyState* Wheel = Player.IsValid() && Player->PlayerInput
+			? Player->PlayerInput->GetKeyState(EKeys::MouseWheelAxis) : nullptr;
+		return FString::Printf(TEXT("wheelState=%d accumulated=%.3f samples=%d raw=%.3f processed=%.3f "
+			"selected=%.3f actual=%.3f worldSeconds=%.3f"),
+			Wheel != nullptr, Wheel ? Wheel->RawValueAccumulator.X : 0.0,
+			Wheel ? static_cast<int32>(Wheel->SampleCountAccumulator) : 0,
+			Wheel ? Wheel->RawValue.X : 0.0, Wheel ? Wheel->Value.X : 0.0,
+			Plane.IsValid() ? Plane->CruiseSpeedMetersPerSecond : -1.0f,
+			Plane.IsValid() ? Plane->GetSpeedMetersPerSecond() : -1.0f,
+			World.IsValid() ? World->GetTimeSeconds() : -1.0);
+	}
+
+	FString CaptureDiagnostics() const
+	{
+		UGameViewportClient* Client = CaptureScopeViewport.Get();
+		const FViewport* Viewport = Client ? Client->Viewport : nullptr;
+		return FString::Printf(TEXT("captureMode=%d lockMode=%d focus=%d captured=%d viewportIgnored=%d "
+			"moveIgnored=%d lookIgnored=%d uncapturedFrames=%d restoring=%d recapturedFrames=%d selected=%.3f actual=%.3f"),
+			Client ? static_cast<int32>(Client->GetMouseCaptureMode()) : -1,
+			Client ? static_cast<int32>(Client->GetMouseLockMode()) : -1,
+			Viewport && Viewport->HasFocus(), Viewport && Viewport->HasMouseCapture(), Client && Client->IgnoreInput(),
+			Player.IsValid() && Player->IsMoveInputIgnored(), Player.IsValid() && Player->IsLookInputIgnored(),
+			UncapturedWorldFrames, bWaitingForCaptureRestore, RecapturedWorldFrames,
+			Plane.IsValid() ? Plane->CruiseSpeedMetersPerSecond : -1.0f,
+			Plane.IsValid() ? Plane->GetSpeedMetersPerSecond() : -1.0f);
+	}
+
+	bool HasUncapturedInputViewport() const
+	{
+		UGameViewportClient* Client = CaptureScopeViewport.Get();
+		return Client && World.IsValid() && Client == World->GetGameViewport() && Client->Viewport
+			&& Client->GetMouseCaptureMode() == EMouseCaptureMode::NoCapture
+			&& Client->GetMouseLockMode() == EMouseLockMode::DoNotLock
+			&& Client->Viewport->HasFocus() && !Client->Viewport->HasMouseCapture()
+			&& !Client->IgnoreInput() && Player.IsValid() && !Player->IsMoveInputIgnored() && !Player->IsLookInputIgnored();
+	}
+
+	bool HasRestoredCapture() const
+	{
+		const UGameViewportClient* Client = CaptureScopeViewport.Get();
+		return Client && Client->Viewport && Client->Viewport->HasFocus() && Client->Viewport->HasMouseCapture()
+			&& Client->GetMouseCaptureMode() == SavedMouseCaptureMode && Client->GetMouseLockMode() == SavedMouseLockMode
+			&& Client->HideCursorDuringCapture() == bSavedHideCursorDuringCapture
+			&& Player.IsValid() && Player->bShowMouseCursor == bSavedShowMouseCursor;
+	}
+
+	void BeginCaptureScope()
+	{
+		UGameViewportClient* Client = World->GetGameViewport();
+		Require(TEXT("Capture-loss fixture has its live game viewport"), Client && Client->Viewport);
+		if (bAbort) { return; }
+		CaptureScopeViewport = Client;
+		SavedMouseCaptureMode = Client->GetMouseCaptureMode();
+		SavedMouseLockMode = Client->GetMouseLockMode();
+		bSavedHideCursorDuringCapture = Client->HideCursorDuringCapture();
+		bSavedShowMouseCursor = Player->bShowMouseCursor;
+		bIntentionallyUncaptured = true;
+		CaptureScopeStartedWall = FPlatformTime::Seconds();
+		UncapturedWorldFrames = 0;
+		FInputModeGameAndUI InputMode;
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		InputMode.SetHideCursorDuringCapture(false);
+		Player->bShowMouseCursor = true;
+		// SetInputMode queues release through the local player's Slate operations, not a transient viewport reply.
+		Player->SetInputMode(InputMode);
+		Client->SetMouseCaptureMode(EMouseCaptureMode::NoCapture);
+		Test.AddInfo(TEXT("Requested scoped NoCapture; wheel not yet sent. ") + CaptureDiagnostics());
+	}
+
+	void RestoreCaptureScope()
+	{
+		if (!bIntentionallyUncaptured && !bWaitingForCaptureRestore) { return; }
+		if (Player.IsValid())
+		{
+			Player->bShowMouseCursor = bSavedShowMouseCursor;
+			if (World.IsValid() && !World->bIsTearingDown && !bSessionEnding)
+			{
+				// The fixture started in GameOnly. Restore its Slate capture operations before the saved viewport settings.
+				Player->SetInputMode(FInputModeGameOnly());
+			}
+		}
+		if (UGameViewportClient* Client = CaptureScopeViewport.Get())
+		{
+			Client->SetMouseCaptureMode(SavedMouseCaptureMode);
+			Client->SetMouseLockMode(SavedMouseLockMode);
+			Client->SetHideCursorDuringCapture(bSavedHideCursorDuringCapture);
+		}
+		bIntentionallyUncaptured = false;
+	}
+
+	void WheelStep(const TCHAR* Name, float WheelSteps, float Expected)
+	{
+		AddStep(Name, 0.2, [this, WheelSteps]()
+		{
+			CameraSnapshot = ReadPlayerCamera();
+			Send(EKeys::MouseWheelAxis, IE_Axis, WheelSteps);
+		}, [this, Expected]()
+		{
+			RequireSelectedSpeed(Expected);
+			Require(TEXT("Wheel speed input does not steer the aircraft or weapon view"),
+				Plane->GetActorQuat().Equals(Snapshot.GetRotation(), 0.00001)
+				&& Plane->GetViewRotation().Equals(Snapshot.Rotator(), 0.00001));
+			Require(TEXT("Wheel speed input does not orbit or aim the actual camera"),
+				ReadPlayerCamera().GetRotation().Equals(CameraSnapshot.GetRotation(), 0.00001));
+			if (Plane->IsGodMode())
+			{
+				Require(TEXT("Wheel input cannot translate stationary GOD aircraft"),
+					Plane->GetActorLocation().Equals(Snapshot.GetLocation(), 0.001));
+			}
+		});
+		AddStep(TEXT("Wheel displacement is consumed, not held/repeated"), 0.15, [this]() { ZeroMouse(); },
+			[this, Expected]() { RequireSelectedSpeed(Expected); });
+	}
+
+	void BodyAxisStep(const TCHAR* Name, const FKey& Key, const FRotator& LocalRate)
+	{
+		AddStep(Name, 0.35, [this, Key]()
+		{
+			const FRotator Attitude = Plane->GetActorRotation();
+			Require(TEXT("Actual body-axis trial starts banked, pitched and yawed, clear of envelope limits"),
+				FMath::Abs(Attitude.Roll) > 20.0 && FMath::Abs(Attitude.Roll) < 60.0
+				&& FMath::Abs(Attitude.Pitch) > 5.0 && FMath::Abs(Attitude.Pitch) < 50.0
+				&& FMath::Abs(Attitude.Yaw) > 10.0);
+			BodyPreviousOrientation = Plane->GetActorQuat();
+			BodyPreviousTime = World->GetTimeSeconds();
+			BodySamples = 0;
+			BodyMaximumErrorRatio = BodyMaximumErrorDegrees = 0.0;
+			Press(Key);
+			Send(EKeys::MouseX, IE_Axis, 40.0f);
+			Send(EKeys::MouseY, IE_Axis, 20.0f);
+		}, [this, Key]()
+		{
+			Release(Key);
+			Require(TEXT("Body-axis assertion observed at least three actual held-input world frames"), BodySamples >= 3);
+			Require(*FString::Printf(TEXT("Actual banked body-axis input matches local rotation despite camera orbit "
+				"(samples=%d, worst error=%.6f deg, error/tolerance=%.3f)"),
+				BodySamples, BodyMaximumErrorDegrees, BodyMaximumErrorRatio), BodyMaximumErrorRatio <= 1.0);
+			Require(TEXT("Actual mouse moved the camera away from aircraft heading during body steering"),
+				FMath::Abs(FMath::FindDeltaAngleDegrees(Plane->GetActorRotation().Yaw, ReadPlayerCamera().Rotator().Yaw)) > 0.1);
+			Require(TEXT("Weapon view remains the real aircraft attitude"), Plane->GetViewRotation().Equals(Plane->GetActorRotation(), 0.001));
+			FTransform Launch;
+			FVector Velocity;
+			Require(TEXT("Camera orbit cannot redirect flight cannon launch"),
+				Plane->Weapons->GetCannonLaunch(Launch, Velocity)
+				&& Velocity.GetSafeNormal().Equals(Plane->GetActorForwardVector(), 0.00001));
+		}, [this, Key, LocalRate]()
+		{
+			const double Now = World->GetTimeSeconds();
+			const double Seconds = Now - BodyPreviousTime;
+			const FQuat Actual = Plane->GetActorQuat();
+			if (StepFrames > 2 && Seconds > 0.0 && Seconds <= 1.0 / 30.0)
+			{
+				Require(TEXT("Body-axis sample uses a genuinely held PlayerController key"), Player->IsInputKeyDown(Key));
+				FFlightSimulation Idle;
+				Idle.Initialize(Plane->GetActorLocation(), BodyPreviousOrientation);
+				Idle.Advance(FControlInput(), Seconds);
+				const FQuat Local = (Idle.GetState().Orientation.Inverse() * Actual).GetNormalized();
+				const double Error = FMath::RadiansToDegrees(Local.AngularDistance((LocalRate * Seconds).Quaternion()));
+				const double Rate = FMath::Max(FMath::Abs(LocalRate.Pitch), FMath::Abs(LocalRate.Yaw));
+				const double Tolerance = 0.003
+					+ FMath::DegreesToRadians(2.0 * Rate * FFlightTuning::BankTurnRateDegreesPerSecond * Seconds * Seconds);
+				BodyMaximumErrorDegrees = FMath::Max(BodyMaximumErrorDegrees, Error);
+				BodyMaximumErrorRatio = FMath::Max(BodyMaximumErrorRatio, Error / Tolerance);
+				++BodySamples;
+			}
+			BodyPreviousOrientation = Actual;
+			BodyPreviousTime = Now;
+		});
+		AddStep(TEXT("Release body-axis control"), 0.1, [this]() { ZeroMouse(); },
+			[this, Key]() { Require(TEXT("Body-axis control released"), !Player->IsInputKeyDown(Key)); });
+	}
+
+	void BuildSpeedAndBodyAxisSteps()
+	{
+		AddStep(TEXT("Initial speed control fixture settles"), 0.2, {}, [this]()
+		{
+			Require(TEXT("Speed control fixture starts in FLIGHT"), !Plane->IsGodMode());
+			RequireSelectedSpeed(40.0f);
+		});
+		WheelStep(TEXT("Actual wheel up selects 45 m/s"), 1.0f, 45.0f);
+		WheelStep(TEXT("Actual wheel down returns to 40 m/s"), -1.0f, 40.0f);
+		WheelStep(TEXT("Three actual wheel steps select 55 m/s"), 3.0f, 55.0f);
+		HoldControl(TEXT("Shift adjusts the wheel-selected speed"), EKeys::LeftShift, 0.3, [this]()
+		{
+			Require(TEXT("Held Shift raises the same selected speed"), Plane->CruiseSpeedMetersPerSecond > SnapshotSpeed + 2.0);
+		});
+		HoldControl(TEXT("Ctrl adjusts the same selected speed"), EKeys::LeftControl, 0.3, [this]()
+		{
+			Require(TEXT("Held Ctrl lowers the same selected speed"), Plane->CruiseSpeedMetersPerSecond < SnapshotSpeed - 2.0);
+		});
+		WheelStep(TEXT("Actual wheel input reaches the 100 m/s ceiling"), 19.0f, 100.0f);
+		WheelStep(TEXT("Actual wheel input reaches the 5 m/s floor"), -19.0f, 5.0f);
+		AddStep(TEXT("Home discards same-frame wheel and restores 40 m/s"), 0.0, [this]()
+		{
+			Send(EKeys::MouseWheelAxis, IE_Axis, 3.0f);
+			Press(EKeys::Home);
+		}, [this]()
+		{
+			RequireSelectedSpeed(40.0f);
+			RequireChaseView(TEXT("Home also restores the chase camera"));
+		}, {}, true);
+		AddStep(TEXT("Release speed-test Home"), 0.15, [this]() { Release(EKeys::Home); ZeroMouse(); },
+			[this]() { RequireSelectedSpeed(40.0f); });
+		WheelStep(TEXT("Select resume speed before G"), 1.0f, 45.0f);
+		AddStep(TEXT("G to GOD discards transition-frame wheel"), 0.15, [this]()
+		{
+			Send(EKeys::MouseWheelAxis, IE_Axis, 3.0f);
+			Press(EKeys::G);
+		}, [this]()
+		{
+			Require(TEXT("Actual G enters GOD"), Plane->IsGodMode());
+			RequireSelectedSpeed(45.0f);
+			Release(EKeys::G);
+		});
+		WheelStep(TEXT("God wheel cannot change resume speed or aim"), -19.0f, 45.0f);
+		AddStep(TEXT("G to FLIGHT discards transition-frame wheel"), 0.15, [this]()
+		{
+			Send(EKeys::MouseWheelAxis, IE_Axis, 3.0f);
+			Press(EKeys::G);
+		}, [this]()
+		{
+			Require(TEXT("Actual G resumes flight"), !Plane->IsGodMode());
+			RequireSelectedSpeed(45.0f);
+			Release(EKeys::G);
+		});
+		AddStep(TEXT("Ignored look input rejects wheel"), 0.15, [this]()
+		{
+			Player->SetIgnoreLookInput(true);
+			bIgnoringLookForTest = true;
+			Send(EKeys::MouseWheelAxis, IE_Axis, 2.0f);
+		}, [this]() { RequireSelectedSpeed(45.0f); });
+		AddStep(TEXT("Look input restoration cannot replay discarded wheel"), 0.15, [this]()
+		{
+			Player->SetIgnoreLookInput(false);
+			bIgnoringLookForTest = false;
+			ZeroMouse();
+		}, [this]() { RequireSelectedSpeed(45.0f); });
+		AddStep(TEXT("Ignored movement input rejects wheel"), 0.15, [this]()
+		{
+			Player->SetIgnoreMoveInput(true);
+			bIgnoringMoveForTest = true;
+			Send(EKeys::MouseWheelAxis, IE_Axis, -2.0f);
+		}, [this]() { RequireSelectedSpeed(45.0f); });
+		AddStep(TEXT("Movement input restoration cannot replay discarded wheel"), 0.15, [this]()
+		{
+			Player->SetIgnoreMoveInput(false);
+			bIgnoringMoveForTest = false;
+			ZeroMouse();
+		}, [this]() { RequireSelectedSpeed(45.0f); });
+		AddStep(TEXT("Wait for stable native NoCapture before sending wheel"), 0.0,
+			[this]() { BeginCaptureScope(); }, [this]()
+		{
+			Require(TEXT("Capture loss is confirmed across at least two focused world frames"),
+				UncapturedWorldFrames >= 2 && HasUncapturedInputViewport());
+			RequireSelectedSpeed(45.0f);
+			Test.AddInfo(TEXT("Native NoCapture is stable; gameplay input remains enabled. ") + CaptureDiagnostics());
+		}, [this]()
+		{
+			UncapturedWorldFrames = HasUncapturedInputViewport() ? UncapturedWorldFrames + 1 : 0;
+		}, false, [this]() { return UncapturedWorldFrames >= 2; });
+		AddStep(TEXT("Lost native viewport capture rejects wheel"), 0.15, [this]()
+		{
+			Require(*FString::Printf(TEXT("Wheel is injected only while native capture is absent. %s"), *CaptureDiagnostics()),
+				HasUncapturedInputViewport());
+			if (!bAbort)
+			{
+				Test.AddInfo(TEXT("Sending two actual wheel steps while uncaptured. ") + CaptureDiagnostics());
+				Send(EKeys::MouseWheelAxis, IE_Axis, 2.0f);
+			}
+		}, [this]()
+		{
+			Require(TEXT("Wheel rejection was observed while native capture was actually absent"),
+				HasUncapturedInputViewport());
+			Test.AddInfo(TEXT("Observed post-wheel state before capture restoration. ") + CaptureDiagnostics());
+			RequireSelectedSpeed(45.0f);
+		}, [this]()
+		{
+			Require(*FString::Printf(TEXT("Native capture must remain absent throughout wheel processing. %s"), *CaptureDiagnostics()),
+				HasUncapturedInputViewport());
+		});
+		AddStep(TEXT("Restored capture cannot replay old wheel"), 0.15, [this]()
+		{
+			// Do not flush or zero axes: this phase must expose any buffered wheel replay.
+			bWaitingForCaptureRestore = true;
+			RecapturedWorldFrames = 0;
+			RestoreCaptureScope();
+		}, [this]()
+		{
+			const UGameViewportClient* Client = CaptureScopeViewport.Get();
+			Require(TEXT("Native viewport capture can be restored"), Client && Client->Viewport
+				&& Client->Viewport->HasFocus() && Client->Viewport->HasMouseCapture());
+			Require(TEXT("Capture scope restores the original viewport modes and cursor policy"),
+				Client && Client->GetMouseCaptureMode() == SavedMouseCaptureMode
+				&& Client->GetMouseLockMode() == SavedMouseLockMode
+				&& Client->HideCursorDuringCapture() == bSavedHideCursorDuringCapture
+				&& Player->bShowMouseCursor == bSavedShowMouseCursor);
+			RequireSelectedSpeed(45.0f);
+			bWaitingForCaptureRestore = false;
+			Test.AddInfo(TEXT("Original native capture and viewport modes restored without flushing wheel input. ") + CaptureDiagnostics());
+		}, [this]()
+		{
+			RecapturedWorldFrames = HasRestoredCapture() ? RecapturedWorldFrames + 1 : 0;
+		}, false, [this]() { return RecapturedWorldFrames >= 2; });
+		WheelStep(TEXT("Wheel binding still works after capture restoration"), 1.0f, 50.0f);
+		WheelStep(TEXT("Restore 45 m/s using actual wheel input"), -1.0f, 45.0f);
+		AddStep(TEXT("Native possession restart discards queued wheel"), 0.2, [this]()
+		{
+			RequireSelectedSpeed(45.0f);
+			Send(EKeys::MouseWheelAxis, IE_Axis, 3.0f);
+			const FKeyState* PendingBefore = Player->PlayerInput
+				? Player->PlayerInput->GetKeyState(EKeys::MouseWheelAxis) : nullptr;
+			Test.AddInfo(TEXT("Before native possession restart: ") + PendingWheelDiagnostics());
+			Require(TEXT("Possession trial really queues three unprocessed wheel steps"),
+				PendingBefore && FMath::IsNearlyEqual(PendingBefore->RawValueAccumulator.X, 3.0, 0.000001)
+				&& PendingBefore->SampleCountAccumulator > 0);
+			if (bAbort) { return; }
+			// Exercise actual possession hooks without setting any simulation state or manually ticking input.
+			Player->UnPossess();
+			Player->Possess(Plane.Get());
+			const FKeyState* PendingAfter = Player->PlayerInput
+				? Player->PlayerInput->GetKeyState(EKeys::MouseWheelAxis) : nullptr;
+			Test.AddInfo(TEXT("After native possession restart, before another input frame: ") + PendingWheelDiagnostics());
+			Require(TEXT("Production possession restart discards the controller's pending wheel accumulator"),
+				Player->PlayerInput && (!PendingAfter || (PendingAfter->RawValueAccumulator.IsNearlyZero(0.000001)
+					&& PendingAfter->SampleCountAccumulator == 0)));
+		}, [this]()
+		{
+			Test.AddInfo(TEXT("Possession restart after elapsed world frames: ") + PendingWheelDiagnostics());
+			Require(TEXT("Original aircraft is possessed again"), Player->GetPawn() == Plane.Get());
+			RequireSelectedSpeed(45.0f);
+			RequireChaseView(TEXT("Possession restart resets the independent orbit"));
+		});
+		WheelStep(TEXT("Fresh wheel input works after possession restart"), 1.0f, 50.0f);
+		WheelStep(TEXT("Restore 45 m/s after the possession positive control"), -1.0f, 45.0f);
+		AddStep(TEXT("Home prepares body-axis input trial"), 0.0, [this]() { Press(EKeys::Home); }, [this]()
+		{
+			RequireSelectedSpeed(40.0f);
+			Release(EKeys::Home);
+		}, {}, true);
+		AddStep(TEXT("Body-axis trial input settles after Home"), 0.15, [this]() { ZeroMouse(); }, {});
+		HoldControl(TEXT("Actual S establishes pitch"), EKeys::S, 0.25, [this]()
+		{
+			Require(TEXT("Actual input pitched the aircraft"), Plane->GetActorRotation().Pitch > 5.0);
+		});
+		HoldControl(TEXT("Actual E establishes heading"), EKeys::E, 0.8, [this]()
+		{
+			Require(TEXT("Actual input yawed the aircraft"), Plane->GetActorRotation().Yaw > 10.0);
+		});
+		HoldControl(TEXT("Actual D establishes bank"), EKeys::D, 0.5, [this]()
+		{
+			Require(TEXT("Actual input banked the aircraft"), Plane->GetActorRotation().Roll > 20.0);
+		});
+		BodyAxisStep(TEXT("Actual banked S uses aircraft-local pitch with camera orbit"), EKeys::S,
+			FRotator(FFlightTuning::PitchRateDegreesPerSecond, 0.0, 0.0));
+		BodyAxisStep(TEXT("Actual banked E uses aircraft-local yaw with camera orbit"), EKeys::E,
+			FRotator(0.0, FFlightTuning::YawRateDegreesPerSecond, 0.0));
+		AddStep(TEXT("Final G parks speed/body-axis fixture"), 0.15, [this]() { Press(EKeys::G); }, [this]()
+		{
+			Require(TEXT("Final G parks the aircraft"), Plane->IsGodMode());
+			RequireSelectedSpeed(40.0f);
+			Release(EKeys::G);
+		});
+	}
 };
 
 class FWaitForPossessedDublinPIE final : public IAutomationLatentCommand
 {
 public:
-	explicit FWaitForPossessedDublinPIE(FAutomationTestBase& InTest)
-		: Test(InTest)
+	explicit FWaitForPossessedDublinPIE(FAutomationTestBase& InTest, bool bInSpeedAndBodyAxesOnly = false)
+		: Test(InTest), bSpeedAndBodyAxesOnly(bInSpeedAndBodyAxesOnly)
 	{
 	}
 
@@ -585,7 +1190,7 @@ public:
 			&& Player->GetHUD() && CaptureFlightPIEViewport(*PIEWorld, *Player))
 		{
 			Test.AddInfo(TEXT("Fixture-owned Dublin PIE is initialized, possessed and natively focused; starting actual-input acceptance."));
-			Scenario = MakeUnique<FActualPlayerInputScenario>(Test, *PIEWorld, *Player, *Plane);
+			Scenario = MakeUnique<FActualPlayerInputScenario>(Test, *PIEWorld, *Player, *Plane, bSpeedAndBodyAxesOnly);
 			return Scenario->Update();
 		}
 		if (FPlatformTime::Seconds() - WaitStartedAt > 60.0)
@@ -605,6 +1210,7 @@ private:
 	TWeakObjectPtr<ADublinFlightPawn> StartupPlane;
 	double WaitStartedAt = 0.0;
 	bool bSawPIEWorld = false;
+	bool bSpeedAndBodyAxesOnly = false;
 };
 }
 
@@ -629,6 +1235,24 @@ bool FDublinFlightActualPIEInputTest::RunTest(const FString& Parameters)
 	}
 	ADD_LATENT_AUTOMATION_COMMAND(FStartPIECommand(false));
 	ADD_LATENT_AUTOMATION_COMMAND(DublinFlight::Tests::FWaitForPossessedDublinPIE(*this));
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FDublinFlightSpeedBodyAxesPIETest,
+	"DublinFlight.PIE.ActualSpeedWheelAndBodyAxes",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FDublinFlightSpeedBodyAxesPIETest::RunTest(const FString& Parameters)
+{
+	UWorld* EditorWorld = GEditor ? GEditor->GetEditorWorldContext().World() : nullptr;
+	if (!EditorWorld || EditorWorld->WorldType != EWorldType::Editor
+		|| EditorWorld->GetPackage()->GetName() != TEXT("/Game/Maps/Dublin"))
+	{
+		AddError(TEXT("Open /Game/Maps/Dublin and run this test separately; it starts its own actual-input PIE fixture."));
+		return false;
+	}
+	ADD_LATENT_AUTOMATION_COMMAND(FStartPIECommand(false));
+	ADD_LATENT_AUTOMATION_COMMAND(DublinFlight::Tests::FWaitForPossessedDublinPIE(*this, true));
 	return true;
 }
 

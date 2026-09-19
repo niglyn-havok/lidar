@@ -77,8 +77,37 @@ void ADublinProjectile::Initialize(const FDublinImpact& InImpact, const FVector&
 void ADublinProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	if (!bInitialized) { Destroy(); }
-	else if (City.IsValid())
+	if (!bInitialized) { Destroy(); return; }
+	if (Impact.Kind == EDublinImpactKind::Bomb && GetOwner() && GetWorld()
+		&& !LaunchOwnerPosition.Equals(LaunchPosition))
+	{
+		// Deferred spawning does not sweep the displacement from the aircraft to the release point.
+		FCollisionQueryParams Query(SCENE_QUERY_STAT(DublinBombReleaseSweep), false, this);
+		FCollisionResponseParams Response;
+		CollisionRoot->InitSweepCollisionParams(Query, Response);
+		Query.AddIgnoredActor(GetOwner());
+		if (GetInstigator()) { Query.AddIgnoredActor(GetInstigator()); }
+		FHitResult Hit;
+		const bool bHit = GetWorld()->SweepSingleByChannel(Hit, LaunchOwnerPosition, LaunchPosition,
+			FQuat::Identity, CollisionRoot->GetCollisionObjectType(),
+			FCollisionShape::MakeSphere(CollisionRoot->GetScaledSphereRadius()), Query, Response);
+		FVector WaterPosition;
+		const FVector SegmentEnd = bHit ? FVector(Hit.Location) : LaunchPosition;
+		if (City.IsValid() && DublinWeapons::FindWaterCrossing(LaunchOwnerPosition, SegmentEnd,
+			[this](const FVector& Point, float& SurfaceZ) { return City->GetWaterSurfaceZ(Point, SurfaceZ); },
+			WaterPosition))
+		{
+			Resolve(WaterPosition, FVector::UpVector, true, nullptr);
+			return;
+		}
+		if (bHit)
+		{
+			Resolve(Hit.bStartPenetrating ? LaunchOwnerPosition : FVector(Hit.ImpactPoint),
+				Hit.ImpactNormal, false, Hit.GetActor());
+			return;
+		}
+	}
+	if (City.IsValid())
 	{
 		float SurfaceZ = 0.0f;
 		if (City->GetWaterSurfaceZ(LaunchPosition, SurfaceZ) && FMath::IsFinite(SurfaceZ) && LaunchPosition.Z <= SurfaceZ)

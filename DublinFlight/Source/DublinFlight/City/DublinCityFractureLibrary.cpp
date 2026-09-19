@@ -1,4 +1,6 @@
 #include "City/DublinCityFractureLibrary.h"
+#include "City/DublinCityDestruction.h"
+#include "City/DublinCityStructural.h"
 
 #include "Chaos/ImplicitObject.h"
 #include "GeometryCollection/GeometryCollection.h"
@@ -6,7 +8,86 @@
 #include "GeometryCollection/Facades/CollectionConnectionGraphFacade.h"
 #include "GeometryCollectionProxyData.h"
 #include "Misc/PackageName.h"
+#include "ProfilingDebugging/CpuProfilerTrace.h"
 #include "UObject/UObjectGlobals.h"
+
+bool DublinFractureBake::IsSupportedRecipe(EDublinFractureRecipe Recipe)
+{
+	return Recipe == EDublinFractureRecipe::SolidGrid || Recipe == EDublinFractureRecipe::StructuralPilot || IsDetailedRecipe(Recipe);
+}
+
+bool DublinFractureBake::IsDetailedRecipe(EDublinFractureRecipe Recipe)
+{
+	return Recipe == EDublinFractureRecipe::StructuralCity || Recipe == EDublinFractureRecipe::LayeredMasonry;
+}
+
+bool DublinFractureBake::HasValidPieceBudget(const FDublinFractureRecord& Record)
+{
+	if (!IsSupportedRecipe(Record.Recipe) || Record.PieceCount < 2 ||
+		Record.CollisionStorageVersion < 0 || Record.CollisionStorageVersion > 1 ||
+		(Record.CollisionStorageVersion != 0 && !IsDetailedRecipe(Record.Recipe))) { return false; }
+	if (!IsDetailedRecipe(Record.Recipe)) { return Record.PieceCount <= UDublinCityFractureLibrary::MaxPiecesPerBuilding; }
+	return (Record.DetailTier == 128 || Record.DetailTier == 384 || Record.DetailTier == 768 ||
+		(Record.DetailTier == 1536 && (Record.BroadSurfaceAreaM2 > 6000 ||
+			(Record.bDenseForOversize && Record.LargestMemberAreaM2 > 16)))) &&
+		Record.PieceCount <= Record.DetailTier && Record.HullCount == Record.PieceCount &&
+		Record.MemberCount > 0 && !Record.PlanReason.IsEmpty();
+}
+
+bool DublinFractureBake::IsCurrentRecord(const FDublinCityBuilding& Building, const FDublinFractureRecord& Record)
+{
+	return IsSupportedRecipe(Record.Recipe) && Record.SourceId == Building.Id &&
+		(Record.Recipe != EDublinFractureRecipe::StructuralPilot || DublinStructural::IsPilotId(Building.Id)) &&
+		!Record.SourceDigest.IsEmpty() && Record.SourceDigest == DublinDestruction::BuildingDigest(Building, Record.Recipe);
+}
+
+bool DublinFractureBake::HasCompleteDetailCoverage(const TArray<FDublinCityBuilding>& Buildings,
+	const UDublinCityFractureLibrary& Library, TArray<FString>& PendingIds)
+{
+	PendingIds.Reset();
+	for (const auto& Building : Buildings)
+	{
+		const FDublinFractureRecord* R = Library.Find(Building.Id);
+		if (!R || (!IsDetailedRecipe(R->Recipe) && R->Recipe != EDublinFractureRecipe::StructuralPilot) ||
+			!R->bReady || !R->bNaniteReady || !HasValidPieceBudget(*R) ||
+			!IsCurrentRecord(Building, *R) || R->Collection.IsNull() ||
+			!FPackageName::DoesPackageExist(R->Collection.ToSoftObjectPath().GetLongPackageName()))
+		{
+			PendingIds.Add(Building.Id);
+		}
+	}
+	return !Buildings.IsEmpty() && PendingIds.IsEmpty() && Library.BakeVersion == UDublinCityFractureLibrary::CurrentBakeVersion;
+}
+
+bool DublinFractureBake::ValidateBakeRequest(EDublinFractureRecipe Recipe, const TArray<FString>& Ids,
+	bool bBakeAll, FString& Error)
+{
+	if (!IsSupportedRecipe(Recipe))
+	{
+		Error = TEXT("Unsupported fracture bake recipe");
+		return false;
+	}
+	if (Recipe == EDublinFractureRecipe::StructuralPilot)
+	{
+		if (bBakeAll || Ids.IsEmpty() || Ids.Num() > 3)
+		{
+			Error = TEXT("StructuralPilot requires 1..3 explicit approved IDs and forbids BakeAll");
+			return false;
+		}
+		TSet<FString> Unique;
+		for (const FString& Id : Ids)
+		{
+			if (!DublinStructural::IsPilotId(Id) || Unique.Contains(Id))
+			{
+				Error = TEXT("StructuralPilot ID is not approved or is duplicated: ") + Id;
+				return false;
+			}
+			Unique.Add(Id);
+		}
+	}
+	Error.Reset();
+	return true;
+}
 
 const FDublinFractureRecord* UDublinCityFractureLibrary::Find(const FString& Id) const
 {
@@ -24,8 +105,14 @@ UDublinCityFractureLibrary* DublinFractureBake::FindLibrary()
 bool DublinFractureBake::ValidateCollisionData(const UGeometryCollection& Collection,
 	const FDublinFractureRecord& Record, FString& Error)
 {
+	TRACE_CPUPROFILER_EVENT_SCOPE(DublinFlight_Collision_FullStaticProof);
+	if (!IsSupportedRecipe(Record.Recipe))
+	{
+		Error = TEXT("Unsupported fracture collision recipe");
+		return false;
+	}
 	const TSharedPtr<FGeometryCollection, ESPMode::ThreadSafe> Geometry = Collection.GetGeometryCollection();
-	if (!Geometry || Record.PieceCount < 2 || Record.PieceCount > 128 ||
+	if (!Geometry || !HasValidPieceBudget(Record) ||
 		Record.LeafTransforms.Num() != Record.PieceCount || Record.Anchors.IsEmpty() ||
 		Record.Anchors.Num() >= Record.PieceCount ||
 		Record.RootTransform != Collection.GetRootIndex() || !Geometry->Children.IsValidIndex(Record.RootTransform) ||
@@ -66,6 +153,8 @@ bool DublinFractureBake::ValidateCollisionData(const UGeometryCollection& Collec
 		return false;
 	}
 	if (!Simulatable || !Implicits || !Mass || !MassToLocal ||
+		!Simulatable->IsValidIndex(Record.RootTransform) || !Implicits->IsValidIndex(Record.RootTransform) ||
+		!Mass->IsValidIndex(Record.RootTransform) || !MassToLocal->IsValidIndex(Record.RootTransform) ||
 		!(*Implicits)[Record.RootTransform] || !(*Implicits)[Record.RootTransform]->HasBoundingBox())
 	{
 		Error = FString::Printf(TEXT("Fracture is missing cooked leaf or clustered-root collision data (attributes sim=%d implicit=%d mass=%d massTransform=%d): %s"),
@@ -77,6 +166,8 @@ bool DublinFractureBake::ValidateCollisionData(const UGeometryCollection& Collec
 	for (int32 Leaf : Record.LeafTransforms)
 	{
 		if (!Geometry->Children.IsValidIndex(Leaf) || Leaves.Contains(Leaf) ||
+			!Simulatable->IsValidIndex(Leaf) || !Implicits->IsValidIndex(Leaf) || !Mass->IsValidIndex(Leaf) ||
+			!MassToLocal->IsValidIndex(Leaf) ||
 			!Geometry->Children[Leaf].IsEmpty() || !Geometry->IsRigid(Leaf) || !(*Simulatable)[Leaf] ||
 			!(*Implicits)[Leaf] || !(*Implicits)[Leaf]->HasBoundingBox() ||
 			!FMath::IsFinite((*Mass)[Leaf]) || (*Mass)[Leaf] <= 0 || (*MassToLocal)[Leaf].ContainsNaN())
@@ -102,6 +193,15 @@ bool DublinFractureBake::ValidateCollisionData(const UGeometryCollection& Collec
 			Error = TEXT("Fracture anchor is not an authored collision leaf");
 			return false;
 		}
+	}
+	if (Record.Recipe == EDublinFractureRecipe::StructuralPilot || IsDetailedRecipe(Record.Recipe))
+	{
+		if (!Record.bNaniteReady || !Collection.HasNaniteData())
+		{
+			Error = TEXT("StructuralPilot requires valid Nanite data; render fallback is not a valid bake");
+			return false;
+		}
+		if (!DublinStructural::ValidateCookedCollision(Collection, Record, Error)) { return false; }
 	}
 	Error.Reset();
 	return true;

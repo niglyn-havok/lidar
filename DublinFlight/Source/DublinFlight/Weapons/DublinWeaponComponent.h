@@ -22,10 +22,13 @@ public:
 	void SuppressInput();
 	void ClearProjectiles();
 	bool DispatchImpact(const FDublinImpact& Impact);
+	void NotifyDeferredImpactEffectsRequested(const FGuid& Epoch, uint64 EventId);
 	bool IsCityReady() const;
 	int32 GetActiveProjectileCount() const;
+	TArray<ADublinProjectile*> GetActiveBombs() const;
 	ADublinProjectile* GetLastProjectile() const;
 	ADublinCityWorld* GetCity() const;
+	bool GetCannonLaunch(FTransform& OutTransform, FVector& OutVelocity) const;
 	const FDublinImpact& GetLastImpact() const { return LastImpact; }
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dublin|Weapons", meta = (ClampMin = "0.1", ClampMax = "1000"))
@@ -45,7 +48,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Dublin|Weapons|GameTuning")
 	float BombYieldExponent = 0.25f;
 	UPROPERTY(EditAnywhere, Category = "Dublin|Weapons|GameTuning")
-	float BombMaximumRadiusCm = 5000.0f;
+	float BombMaximumRadiusCm = DublinWeapons::MaximumBombRadiusCm;
 	UPROPERTY(EditAnywhere, Category = "Dublin|Weapons|GameTuning")
 	float BombMaximumDepthCm = 2000.0f;
 	UPROPERTY(EditAnywhere, Category = "Dublin|Weapons|GameTuning")
@@ -70,6 +73,8 @@ public:
 	FString CurrentWeapon = TEXT("CANNON");
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Dublin|Weapons")
 	FString LastFailure;
+	FGuid LastDeferredEffectsEpoch;
+	uint64 LastDeferredEffectsEventId = 0;
 
 protected:
 	virtual void BeginPlay() override;

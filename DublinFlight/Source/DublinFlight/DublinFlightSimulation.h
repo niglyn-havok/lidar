@@ -31,15 +31,15 @@ enum class EControlKey : uint8
 struct FFlightTuning
 {
 	static constexpr double StartSpeedCmPerSecond = 4000.0;
-	static constexpr double MinSpeedCmPerSecond = 2000.0;
-	static constexpr double MaxSpeedCmPerSecond = 6500.0;
+	static constexpr double MinSpeedCmPerSecond = 500.0;
+	static constexpr double MaxSpeedCmPerSecond = 10000.0;
+	static constexpr double WheelSpeedStepCmPerSecond = 500.0;
 	static constexpr double ThrottleAccelerationCmPerSecondSquared = 1000.0;
 	static constexpr double PitchRateDegreesPerSecond = 40.0;
 	static constexpr double RollRateDegreesPerSecond = 65.0;
 	static constexpr double YawRateDegreesPerSecond = 25.0;
 	static constexpr double BankTurnRateDegreesPerSecond = 30.0;
 	static constexpr double MaxPitchDegrees = 80.0;
-	static constexpr double MaxBankDegrees = 70.0;
 	static constexpr double GodSpeedCmPerSecond = 3000.0;
 	static constexpr double MouseDegreesPerUnit = 0.12;
 	static constexpr double MaxAimDegreesPerFrame = 90.0;
@@ -60,6 +60,8 @@ struct FControlInput
 	// Mouse displacement in degrees for the whole frame, not an angular velocity.
 	double AimYawDegrees = 0.0;
 	double AimPitchDegrees = 0.0;
+	// Wheel displacement for the whole frame; consumed once, only in flight.
+	double SpeedSteps = 0.0;
 };
 
 class DUBLINFLIGHT_API FInputState
@@ -69,7 +71,8 @@ public:
 	bool IsHeld(EControlKey Key) const;
 	void SuppressHeldKeys();
 	void Clear();
-	FControlInput BuildInput(EFlightMode Mode, const FVector2D& MouseDelta = FVector2D::ZeroVector) const;
+	FControlInput BuildInput(EFlightMode Mode, const FVector2D& MouseDelta = FVector2D::ZeroVector,
+		double SpeedSteps = 0.0) const;
 
 private:
 	uint32 HeldKeys = 0;

@@ -23,6 +23,35 @@ double AdjustLimitedAngle(double Angle, double Delta, double Limit)
 	}
 	return FMath::Clamp(Angle + Delta, -Limit, Limit);
 }
+
+FQuat ApplyPitchLimitedBodyTurn(const FQuat& Orientation, const FVector& Axis, double Degrees)
+{
+	if (Degrees == 0.0) { return Orientation; }
+	const double Radians = FMath::DegreesToRadians(Degrees);
+	const double BeforeZ = Orientation.GetForwardVector().Z;
+	const double LimitZ = FMath::Sin(FMath::DegreesToRadians(FFlightTuning::MaxPitchDegrees));
+	const auto Turn = [&](double Fraction)
+	{
+		return (Orientation * FQuat(Axis, Radians * Fraction)).GetNormalized();
+	};
+	const auto Allowed = [&](const FQuat& Candidate)
+	{
+		const double ForwardZ = Candidate.GetForwardVector().Z;
+		return ForwardZ >= FMath::Min(-LimitZ, BeforeZ) && ForwardZ <= FMath::Max(LimitZ, BeforeZ);
+	};
+	const FQuat FullTurn = Turn(1.0);
+	if (Allowed(FullTurn)) { return FullTurn; }
+	// Shorten only this local-axis command at the vertical envelope; other commands remain usable.
+	double Low = 0.0;
+	double High = 1.0;
+	for (int32 Iteration = 0; Iteration < 20; ++Iteration)
+	{
+		const double Middle = (Low + High) * 0.5;
+		if (Allowed(Turn(Middle))) { Low = Middle; }
+		else { High = Middle; }
+	}
+	return Low > 0.0 ? Turn(Low) : Orientation;
+}
 }
 
 void FInputState::SetKey(EControlKey Key, bool bPressed)
@@ -55,7 +84,7 @@ void FInputState::Clear()
 	SuppressedKeys = 0;
 }
 
-FControlInput FInputState::BuildInput(EFlightMode Mode, const FVector2D& MouseDelta) const
+FControlInput FInputState::BuildInput(EFlightMode Mode, const FVector2D& MouseDelta, double SpeedSteps) const
 {
 	const uint32 ActiveKeys = HeldKeys & ~SuppressedKeys;
 	const auto Down = [ActiveKeys](EControlKey Key) -> double
@@ -71,6 +100,7 @@ FControlInput FInputState::BuildInput(EFlightMode Mode, const FVector2D& MouseDe
 		Input.Yaw = Down(EControlKey::YawRight) - Down(EControlKey::YawLeft);
 		Input.Throttle = FMath::Max(Down(EControlKey::ThrottleUpLeft), Down(EControlKey::ThrottleUpRight))
 			- FMath::Max(Down(EControlKey::ThrottleDownLeft), Down(EControlKey::ThrottleDownRight));
+		Input.SpeedSteps = SpeedSteps;
 	}
 	else
 	{
@@ -159,6 +189,8 @@ FControlInput FFlightSimulation::SanitizeInput(const FControlInput& Input, bool&
 	Result.Up = Sanitize(Input.Up, 1.0);
 	Result.AimYawDegrees = Sanitize(Input.AimYawDegrees, FFlightTuning::MaxAimDegreesPerFrame);
 	Result.AimPitchDegrees = Sanitize(Input.AimPitchDegrees, FFlightTuning::MaxAimDegreesPerFrame);
+	Result.SpeedSteps = Sanitize(Input.SpeedSteps,
+		(FFlightTuning::MaxSpeedCmPerSecond - FFlightTuning::MinSpeedCmPerSecond) / FFlightTuning::WheelSpeedStepCmPerSecond);
 	return Result;
 }
 
@@ -195,16 +227,21 @@ FFlightState FFlightSimulation::Integrate(const FFlightState& Previous, const FC
 		return Next;
 	}
 
-	const double Pitch = AdjustLimitedAngle(Rotation.Pitch,
-		Input.Pitch * FFlightTuning::PitchRateDegreesPerSecond * StepSeconds, FFlightTuning::MaxPitchDegrees);
-	const double Roll = AdjustLimitedAngle(Rotation.Roll,
-		Input.Roll * FFlightTuning::RollRateDegreesPerSecond * StepSeconds, FFlightTuning::MaxBankDegrees);
-	const double YawDelta = (Input.Yaw * FFlightTuning::YawRateDegreesPerSecond
-		+ FMath::Sin(FMath::DegreesToRadians((Rotation.Roll + Roll) * 0.5))
-			* FFlightTuning::BankTurnRateDegreesPerSecond) * StepSeconds;
-	Next.Orientation = FRotator(Pitch, FMath::UnwindDegrees(Rotation.Yaw + YawDelta), Roll).Quaternion();
-	const FQuat MidOrientation = FRotator((Rotation.Pitch + Pitch) * 0.5,
-		Rotation.Yaw + YawDelta * 0.5, (Rotation.Roll + Roll) * 0.5).Quaternion();
+	// UE's positive pitch/roll have the opposite sign to quaternion rotations around local +Y/+X.
+	// Roll does not change nose elevation. Apply it freely, then guard each remaining local axis independently.
+	FQuat BodyOrientation = (Previous.Orientation * FQuat(FVector::ForwardVector,
+		FMath::DegreesToRadians(-Input.Roll * FFlightTuning::RollRateDegreesPerSecond * StepSeconds))).GetNormalized();
+	BodyOrientation = ApplyPitchLimitedBodyTurn(BodyOrientation, FVector::RightVector,
+		-Input.Pitch * FFlightTuning::PitchRateDegreesPerSecond * StepSeconds);
+	BodyOrientation = ApplyPitchLimitedBodyTurn(BodyOrientation, FVector::UpVector,
+		Input.Yaw * FFlightTuning::YawRateDegreesPerSecond * StepSeconds);
+	const double MidBank = Rotation.Roll
+		+ FMath::FindDeltaAngleDegrees(Rotation.Roll, BodyOrientation.Rotator().Roll) * 0.5;
+	const double AssistDegrees = FMath::Sin(FMath::DegreesToRadians(MidBank))
+		* FFlightTuning::BankTurnRateDegreesPerSecond * StepSeconds;
+	// Coordinated bank-turn assist is deliberately a separate world-up heading rotation.
+	Next.Orientation = (FQuat(FVector::UpVector, FMath::DegreesToRadians(AssistDegrees)) * BodyOrientation).GetNormalized();
+	const FQuat MidOrientation = FQuat::Slerp(Previous.Orientation, Next.Orientation, 0.5).GetNormalized();
 
 	const double Acceleration = Input.Throttle * FFlightTuning::ThrottleAccelerationCmPerSecondSquared;
 	const double StartSpeed = Previous.FlightSpeedCmPerSecond;
@@ -254,7 +291,14 @@ FAdvanceResult FFlightSimulation::Advance(const FControlInput& Input, double Del
 
 	for (int32 Index = 0; Index < NumSteps; ++Index)
 	{
-		FFlightState Next = Integrate(State, SafeInput, StepSeconds, 1.0 / NumSteps);
+		FFlightState Previous = State;
+		if (Index == 0 && Previous.Mode == EFlightMode::Flight)
+		{
+			Previous.FlightSpeedCmPerSecond = FMath::Clamp(Previous.FlightSpeedCmPerSecond
+				+ SafeInput.SpeedSteps * FFlightTuning::WheelSpeedStepCmPerSecond,
+				FFlightTuning::MinSpeedCmPerSecond, FFlightTuning::MaxSpeedCmPerSecond);
+		}
+		FFlightState Next = Integrate(Previous, SafeInput, StepSeconds, 1.0 / NumSteps);
 		if (!IsFinitePosition(Next.PositionCm) || !IsFiniteOrientation(Next.Orientation))
 		{
 			Result.bRejectedMovement = true;

@@ -1,6 +1,9 @@
 #include "City/DublinCityDestruction.h"
 
 #include "City/DublinCityFractureLibrary.h"
+#include "City/DublinCityStructural.h"
+#include "City/DublinCityDetail.h"
+#include "Effects/DublinMaximumImpact.h"
 #include "Misc/SecureHash.h"
 
 float DublinDestruction::ImpactStrain(const FDublinImpact& Impact)
@@ -11,13 +14,86 @@ float DublinDestruction::ImpactStrain(const FDublinImpact& Impact)
 FVector DublinDestruction::ImpactVelocityChange(const FDublinImpact& Impact, const FVector& WorldMassCenter)
 {
 	if (!Impact.IsValid() || WorldMassCenter.ContainsNaN()) { return FVector::ZeroVector; }
-	const FVector Offset = WorldMassCenter - Impact.PositionCm;
+	FVector Offset = WorldMassCenter - Impact.PositionCm;
+	if (IsHeightAwareBlast(Impact)) { Offset.Z = 0; }
 	const double Distance = Offset.Size();
 	if (!FMath::IsFinite(Distance) || Distance >= Impact.RadiusCm) { return FVector::ZeroVector; }
 	// Game response is a bounded velocity change, not an impulse divided by solid-volume mass.
 	const double Speed = FMath::Clamp(static_cast<double>(Impact.Strength) * 1500.0,
 		1500.0, MaxFractureVelocityChangeCmPerSecond);
-	return (Offset + FVector(0, 0, 100)).GetSafeNormal() * Speed * (1.0 - Distance / Impact.RadiusCm);
+	const double CoreRadius = FMath::Min(6000.0, double(Impact.RadiusCm) * 0.5);
+	const double Falloff = IsHeightAwareBlast(Impact)
+		? FMath::Clamp((Impact.RadiusCm - Distance) / (Impact.RadiusCm - CoreRadius), 0.0, 1.0)
+		: 1.0 - Distance / Impact.RadiusCm;
+	return (Offset + FVector(0, 0, 100)).GetSafeNormal() * Speed * Falloff;
+}
+
+bool DublinDestruction::IsHeightAwareBlast(const FDublinImpact& Impact)
+{
+	return Impact.Kind == EDublinImpactKind::Bomb && !Impact.bWater && Impact.YieldTonsTNT >= HeightAwareBombYield;
+}
+
+int32 DublinDestruction::RegistrationLimitForImpact(const FDublinImpact& Impact)
+{
+	return DublinImpactFX::WantsMaximumPresentation(Impact) &&
+		Impact.YieldTonsTNT == DublinImpactFX::MaximumTierYield &&
+		Impact.RadiusCm <= DublinImpactFX::MaximumApprovedRadiusCm
+		? MaxRegistrationsPerFrame : MaxOrdinaryRegistrationsPerFrame;
+}
+
+double DublinDestruction::FootprintDistanceSquared(const FDublinCityBuilding& Building, const FVector& Point)
+{
+	const FVector2D P(Point - Building.PivotCm);
+	double Best = TNumericLimits<double>::Max();
+	for (int32 T = 0; T + 2 < Building.Mesh.Triangles.Num(); T += 3)
+	{
+		const FVector2D A(Building.Mesh.VerticesCm[Building.Mesh.Triangles[T]]);
+		const FVector2D B(Building.Mesh.VerticesCm[Building.Mesh.Triangles[T + 1]]);
+		const FVector2D C(Building.Mesh.VerticesCm[Building.Mesh.Triangles[T + 2]]);
+		const double Area = FVector2D::CrossProduct(B - A, C - A);
+		if (FMath::Abs(Area) < 1.e-6) { continue; }
+		const double AB = FVector2D::CrossProduct(B - A, P - A);
+		const double BC = FVector2D::CrossProduct(C - B, P - B);
+		const double CA = FVector2D::CrossProduct(A - C, P - C);
+		if ((AB >= 0 && BC >= 0 && CA >= 0) || (AB <= 0 && BC <= 0 && CA <= 0)) { return 0; }
+		const FVector2D Vertices[] = {A, B, C};
+		for (int32 E = 0; E < 3; ++E)
+		{
+			const FVector2D Edge = Vertices[(E + 1) % 3] - Vertices[E];
+			const double Alpha = Edge.SizeSquared() > 0
+				? FMath::Clamp(FVector2D::DotProduct(P - Vertices[E], Edge) / Edge.SizeSquared(), 0.0, 1.0) : 0;
+			Best = FMath::Min(Best, (P - Vertices[E] - Edge * Alpha).SizeSquared());
+		}
+	}
+	return Best;
+}
+
+int32 DublinDestruction::ReservedHullSlots(const FDublinFractureRecord& Record)
+{
+	// Legacy v3 records predate HullCount. Reserve a disclosed conservative allowance.
+	return Record.HullCount > 0 ? Record.HullCount : Record.PieceCount * LegacyHullSlotsPerLeaf;
+}
+
+bool DublinDestruction::AddCatalogRecord(const FDublinFractureRecord& Record, FCatalogBudget& Budget, FString& Error)
+{
+	const int64 Hulls = Record.HullCount > 0 ? int64(Record.HullCount) : int64(Record.PieceCount) * LegacyHullSlotsPerLeaf;
+	if (!DublinFractureBake::HasValidPieceBudget(Record) || Record.HullCount < 0 || Hulls < Record.PieceCount
+		|| int64(Budget.Collections) + 1 > MaxActiveCollections
+		|| int64(Budget.LeafSlots) + Record.PieceCount > MaxActivePieces
+		|| int64(Budget.HullSlots) + Hulls > MaxCatalogHullSlots)
+	{
+		Error = FString::Printf(TEXT("Catalog cost exceeds finite limits or has invalid piece/hull metadata at %s: "
+			"collections=%lld/%d leaves=%lld/%d hullSlots=%lld/%d"),
+			*Record.SourceId, int64(Budget.Collections) + 1, MaxActiveCollections,
+			int64(Budget.LeafSlots) + Record.PieceCount, MaxActivePieces,
+			int64(Budget.HullSlots) + Hulls, MaxCatalogHullSlots);
+		return false;
+	}
+	++Budget.Collections;
+	Budget.LeafSlots += Record.PieceCount;
+	Budget.HullSlots += static_cast<int32>(Hulls);
+	Error.Reset();
+	return true;
 }
 
 bool DublinDestruction::ValidateImpact(const FDublinImpact& Impact, FString& Error)
@@ -96,8 +172,13 @@ FString DublinDestruction::BuildingGeometryDigest(const FDublinCityBuilding& Bui
 	return BytesToHex(Digest, 16).ToLower();
 }
 
-FString DublinDestruction::BuildingDigest(const FDublinCityBuilding& Building)
+FString DublinDestruction::BuildingDigest(const FDublinCityBuilding& Building, EDublinFractureRecipe Recipe)
 {
+	if (!DublinFractureBake::IsSupportedRecipe(Recipe))
+	{
+		UE_LOG(LogTemp, Error, TEXT("Unsupported Dublin fracture recipe %d"), static_cast<int32>(Recipe));
+		return FString();
+	}
 	const FString GeometryDigest = BuildingGeometryDigest(Building);
 	FMD5 Hash;
 	const int32 BakeVersion = UDublinCityFractureLibrary::CurrentBakeVersion;
@@ -109,13 +190,26 @@ FString DublinDestruction::BuildingDigest(const FDublinCityBuilding& Building)
 		const uint8 RGBA[] = {Color.R, Color.G, Color.B, Color.A};
 		Hash.Update(RGBA, sizeof(RGBA));
 	}
+	if (Recipe == EDublinFractureRecipe::StructuralPilot)
+	{
+		const FTCHARToUTF8 Revision(DublinStructural::RecipeRevision);
+		Hash.Update(reinterpret_cast<const uint8*>(Revision.Get()), Revision.Length());
+	}
+	else if (DublinFractureBake::IsDetailedRecipe(Recipe))
+	{
+		const FTCHARToUTF8 Revision(DublinDetail::RecipeRevision);
+		Hash.Update(reinterpret_cast<const uint8*>(Revision.Get()), Revision.Length());
+		const uint8 Kind = static_cast<uint8>(Recipe);
+		Hash.Update(&Kind, sizeof(Kind));
+	}
 	uint8 Digest[16];
 	Hash.Final(Digest);
 	return BytesToHex(Digest, 16).ToLower();
 }
 
 TArray<int32> DublinDestruction::SelectImpactedFractureLeaves(const TArray<int32>& LeafTransforms,
-	const TArray<FTransform>& CurrentMassTransforms, const FTransform& ComponentToWorld, const FDublinImpact& Impact)
+	const TArray<FTransform>& CurrentMassTransforms, const FTransform& ComponentToWorld, const FDublinImpact& Impact,
+	const TArray<FBox>* MassLocalBounds)
 {
 	TArray<int32> Selected;
 	int32 Closest = INDEX_NONE;
@@ -125,7 +219,18 @@ TArray<int32> DublinDestruction::SelectImpactedFractureLeaves(const TArray<int32
 	{
 		if (!CurrentMassTransforms.IsValidIndex(Leaf) || CurrentMassTransforms[Leaf].ContainsNaN()) { continue; }
 		const FVector Position = ComponentToWorld.TransformPosition(CurrentMassTransforms[Leaf].GetLocation());
-		const double DistanceSquared = FVector::DistSquared(Position, Impact.PositionCm);
+		double DistanceSquared = FVector::DistSquared(Position, Impact.PositionCm);
+		if (IsHeightAwareBlast(Impact))
+		{
+			DistanceSquared = FVector::DistSquaredXY(Position, Impact.PositionCm);
+			if (MassLocalBounds && MassLocalBounds->IsValidIndex(Leaf) && (*MassLocalBounds)[Leaf].IsValid)
+			{
+				const FBox Bounds = (*MassLocalBounds)[Leaf].TransformBy(CurrentMassTransforms[Leaf] * ComponentToWorld);
+				const FVector Query(Impact.PositionCm.X, Impact.PositionCm.Y,
+					FMath::Clamp(Impact.PositionCm.Z, Bounds.Min.Z, Bounds.Max.Z));
+				DistanceSquared = Bounds.ComputeSquaredDistanceToPoint(Query);
+			}
+		}
 		if (DistanceSquared <= RadiusSquared) { Selected.Add(Leaf); }
 		if (DistanceSquared < ClosestDistanceSquared)
 		{
@@ -133,8 +238,8 @@ TArray<int32> DublinDestruction::SelectImpactedFractureLeaves(const TArray<int32
 			ClosestDistanceSquared = DistanceSquared;
 		}
 	}
-	// Preserve Chaos' nearest-piece fallback when a small impact misses coarse piece centers.
-	if (Selected.IsEmpty() && Closest != INDEX_NONE) { Selected.Add(Closest); }
+	// Small impacts retain their coarse-piece fallback; large blasts never damage beyond their footprint.
+	if (Selected.IsEmpty() && Closest != INDEX_NONE && !IsHeightAwareBlast(Impact)) { Selected.Add(Closest); }
 	return Selected;
 }
 

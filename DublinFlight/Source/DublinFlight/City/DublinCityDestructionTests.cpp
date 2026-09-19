@@ -3,6 +3,7 @@
 #if WITH_DEV_AUTOMATION_TESTS
 #include "City/DublinCityWorld.h"
 #include "Engine/World.h"
+#include "Engine/StreamableManager.h"
 #include "Misc/AutomationTest.h"
 #include "Misc/ScopeExit.h"
 #include <limits>
@@ -16,7 +17,11 @@
 #include "GeometryCollection/Facades/CollectionConnectionGraphFacade.h"
 #include "GeometryCollectionProxyData.h"
 #include "Materials/Material.h"
+#include "Materials/MaterialInstanceConstant.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "MaterialShared.h"
+#include "RHI.h"
+#include "UObject/Package.h"
 #endif
 
 namespace
@@ -286,6 +291,79 @@ bool FDublinDestructionReadinessTest::RunTest(const FString& Parameters)
 }
 
 #if WITH_EDITOR
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FDublinDestructionAsyncLoadTest,
+	"DublinFlight.Destruction.Readiness.PendingFractureLoadKeepsIntactState",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FDublinDestructionAsyncLoadTest::RunTest(const FString& Parameters)
+{
+	UWorld* World = UWorld::CreateWorld(EWorldType::Game, false);
+	if (!TestNotNull(TEXT("Async fracture fixture world"), World)) { return false; }
+	ON_SCOPE_EXIT { World->DestroyWorld(false); };
+	ADublinCityWorld* City = World->SpawnActorDeferred<ADublinCityWorld>(ADublinCityWorld::StaticClass(),
+		FTransform::Identity, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	if (!TestNotNull(TEXT("Async fracture fixture actor"), City)) { return false; }
+	City->bAutoBuild = false;
+	City->FinishSpawning(FTransform::Identity);
+	City->SourceData = MakeUnique<FDublinCityData>();
+	City->SourceData->Buildings.Add(BuildingFixture(0));
+	City->FractureLibrary = NewObject<UDublinCityFractureLibrary>(City);
+	FDublinFractureRecord& Record = City->FractureLibrary->Records.AddDefaulted_GetRef();
+	Record.SourceId = City->SourceData->Buildings[0].Id;
+	Record.SourceDigest = DublinDestruction::BuildingDigest(City->SourceData->Buildings[0], Record.Recipe);
+	Record.bReady = true;
+	const FSoftObjectPath Target(TEXT("/Game/Tests/DublinDeferredFracture.DublinDeferredFracture"));
+	Record.Collection = TSoftObjectPtr<UGeometryCollection>(Target);
+	FDublinQueuedWorldImpact& Queue = City->PendingImpacts.AddDefaulted_GetRef();
+	Queue.Buildings.Add(0);
+
+	FStreamableManager Loader;
+	const TSharedPtr<FStreamableHandle> Stalled = Loader.RequestAsyncLoad(Target,
+		FStreamableDelegate(), FStreamableManager::DefaultAsyncLoadPriority, false, true);
+	if (!TestTrue(TEXT("Real native stalled load handle"), Stalled.IsValid())) { return false; }
+	ON_SCOPE_EXIT { City->CancelPendingFractureLoad(); };
+	City->PendingFractureLoad = Stalled;
+	City->PendingFractureBuilding = 0;
+	City->PendingFracturePath = Target;
+	bool bReady = true;
+	TestTrue(TEXT("Pending load is deferred, not a failure"), City->PrepareFractureAsset(0, bReady));
+	TestFalse(TEXT("Pending asset cannot activate"), bReady);
+	TestTrue(TEXT("Repeated poll uses the same pending request"), City->PrepareFractureAsset(0, bReady));
+	TestTrue(TEXT("Poll never starts or synchronously flushes a stalled load"), Stalled->IsStalled());
+	TestTrue(TEXT("Only one retained load handle"), City->PendingFractureLoad == Stalled);
+	TestEqual(TEXT("Deferred building stays at queue head"), City->PendingImpacts[0].NextBuilding, 0);
+	TestEqual(TEXT("No intact faces removed while pending"), City->RemovedIntactBuildings.Num(), 0);
+	TestEqual(TEXT("No physics collection activated while pending"), City->FractureComponents.Num(), 0);
+	TestTrue(TEXT("Pending request does not report an error"), City->LastDestructionError.IsEmpty());
+
+	Stalled->CancelHandle();
+	AddExpectedError(TEXT("Fracture asset request canceled"), EAutomationExpectedErrorFlags::Contains, 1);
+	TestFalse(TEXT("Canceled request is an explicit failure"), City->PrepareFractureAsset(0, bReady));
+	TestFalse(TEXT("Canceled request is not ready"), bReady);
+	TestEqual(TEXT("Failure preserves queued building"), City->PendingImpacts[0].NextBuilding, 0);
+	TestEqual(TEXT("Failure preserves intact faces"), City->RemovedIntactBuildings.Num(), 0);
+	City->CancelPendingFractureLoad();
+	TestFalse(TEXT("Cancellation releases handle"), City->PendingFractureLoad.IsValid());
+	TestEqual(TEXT("Cancellation clears identity"), City->PendingFractureBuilding, INDEX_NONE);
+
+	UGeometryCollection* Resident = NewObject<UGeometryCollection>(City);
+	Record.Collection = Resident;
+	TestTrue(TEXT("Already resident collection needs no load"), City->PrepareFractureAsset(0, bReady));
+	TestTrue(TEXT("Resident asset can proceed to physical validation"), bReady);
+	TestFalse(TEXT("Resident path allocates no load request"), City->PendingFractureLoad.IsValid());
+
+	const TSharedPtr<FStreamableHandle> ResetLoad = Loader.RequestAsyncLoad(Target,
+		FStreamableDelegate(), FStreamableManager::DefaultAsyncLoadPriority, false, true);
+	if (!TestTrue(TEXT("Reset fixture has a native pending handle"), ResetLoad.IsValid())) { return false; }
+	City->PendingFractureLoad = ResetLoad;
+	City->PendingFractureBuilding = 0;
+	City->PendingFracturePath = Target;
+	City->ResetDestructionState();
+	TestTrue(TEXT("World reset cancels outstanding load"), ResetLoad->WasCanceled());
+	TestFalse(TEXT("World reset releases load handle"), City->PendingFractureLoad.IsValid());
+	return true;
+}
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FDublinFracturePhysicsInitializationTest,
 	"DublinFlight.Destruction.Fracture.RegisteredCollisionInitialization",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
@@ -416,14 +494,18 @@ bool FDublinFractureRetrySitesTest::RunTest(const FString& Parameters)
 {
 	const FBox Bounds(FVector::ZeroVector, FVector(800, 800, 1600));
 	const TArray<FVector> Original = DublinFractureBake::MakeFractureSites(Bounds, TEXT("retry-fixture"), 0);
-	if (!TestEqual(TEXT("Original successful-grid density is unchanged"), Original.Num(), 16)) { return false; }
-	TestTrue(TEXT("Original successful-grid placement is unchanged"), Original[0].Equals(FVector(200, 200, 200), 0));
+	if (!TestEqual(TEXT("Typical building has ten times the former sixteen fracture sites"), Original.Num(), 160)) { return false; }
+	TestFalse(TEXT("Fine fracture spacing is irregular, not a regular block grid"),
+		Original == DublinFractureBake::MakeFractureSites(Bounds, TEXT("retry-fixture"), 1));
+	TestTrue(TEXT("Saved coarse geometry is invalidated by the new bake recipe"),
+		UDublinCityFractureLibrary::CurrentBakeVersion > 2);
 	for (int32 Attempt = 0; Attempt < 3; ++Attempt)
 	{
 		const TArray<FVector> Sites = DublinFractureBake::MakeFractureSites(Bounds, TEXT("retry-fixture"), Attempt);
 		TestTrue(TEXT("Retry sites are deterministic"),
 			Sites == DublinFractureBake::MakeFractureSites(Bounds, TEXT("retry-fixture"), Attempt));
-		TestTrue(TEXT("Site counts remain bounded and destructible"), Sites.Num() >= 2 && Sites.Num() <= (Attempt == 0 ? 64 : 16));
+		TestTrue(TEXT("Site counts remain bounded and destructible"),
+			Sites.Num() >= 2 && Sites.Num() <= UDublinCityFractureLibrary::MaxFractureSites);
 		for (int32 I = 0; I < Sites.Num(); ++I)
 		{
 			TestTrue(TEXT("Every retry site lies within source bounds"), Bounds.IsInside(Sites[I]));
@@ -433,11 +515,78 @@ bool FDublinFractureRetrySitesTest::RunTest(const FString& Parameters)
 			}
 		}
 	}
+	const TArray<FVector> Uniform = DublinFractureBake::MakeFractureSites(Bounds, TEXT("retry-fixture"), 1);
+	TestEqual(TEXT("First repair keeps fine density without noisy faces"), Uniform.Num(), Original.Num());
+	for (const FVector& Site : Uniform)
+	{
+		double Nearest = TNumericLimits<double>::Max();
+		for (const FVector& Other : Uniform)
+		{
+			const double Distance = FVector::Distance(Site, Other);
+			if (Distance > 0) { Nearest = FMath::Min(Nearest, Distance); }
+		}
+		TestTrue(TEXT("Fine fixture spacing is at most two metres"), Nearest <= 200.0);
+	}
 	const TArray<FVector> Final = DublinFractureBake::MakeFractureSites(Bounds, TEXT("retry-fixture"), 2);
 	if (!TestEqual(TEXT("Last attempt is exactly two horizontal slices"), Final.Num(), 2)) { return false; }
 	TestTrue(TEXT("Last attempt avoids fragile footprint corner cuts"),
 		Final[0].X == Final[1].X && Final[0].Y == Final[1].Y && Final[0].Z < Final[1].Z);
 	TestTrue(TEXT("No fourth attempt is available"), DublinFractureBake::MakeFractureSites(Bounds, TEXT("retry-fixture"), 3).IsEmpty());
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FDublinFractureMaterialUsageTest,
+	"DublinFlight.Destruction.Materials.SavedUsageAndReadiness",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FDublinFractureMaterialUsageTest::RunTest(const FString& Parameters)
+{
+	UMaterial* FlightSurface = nullptr;
+	for (const TCHAR* Path : {
+		TEXT("/Game/Materials/M_DublinFacade.M_DublinFacade"),
+		TEXT("/Game/Materials/M_DublinAerial.M_DublinAerial"),
+		TEXT("/Game/Materials/M_FlightSurface.M_FlightSurface") })
+	{
+		UMaterial* Material = LoadObject<UMaterial>(nullptr, Path);
+		if (!TestNotNull(Path, Material)) { continue; }
+		const FString Label(Path);
+		const uint32 OriginalUsage = Material->GetUsageFlags();
+		TestEqual(Label + TEXT(": exact authored root material"), Material->GetPathName(), Label);
+		TestFalse(Label + TEXT(": package must already be saved"), Material->GetOutermost()->IsDirty());
+		// Read declared state only; requesting usages or compilation here would hide the defect.
+		for (EMaterialUsage Usage : { MATUSAGE_GeometryCollections, MATUSAGE_Nanite })
+		{
+			const FString UsageLabel = Usage == MATUSAGE_Nanite ? TEXT("Nanite") : TEXT("Geometry Collections");
+			TestTrue(Label + TEXT(": declares ") + UsageLabel, Material->GetUsageByFlag(Usage));
+			TestFalse(Label + TEXT(": usage changes must already be saved: ") + UsageLabel,
+				Material->IsUsageFlagDirty(Usage));
+		}
+		if (!GUsingNullRHI)
+		{
+			TestFalse(Label + TEXT(": no pending or failed material compilation"),
+				Material->IsCompilingOrHadCompileError(GMaxRHIShaderPlatform));
+			const FMaterialResource* Resource = Material->GetMaterialResource(GMaxRHIShaderPlatform);
+			if (TestNotNull(*(Label + TEXT(": material resource for actual RHI")), Resource))
+			{
+				TestNotNull(*(Label + TEXT(": real shader map, not a fallback")), Resource->GetGameThreadShaderMap());
+				TestTrue(Label + TEXT(": required shader map is complete"), Resource->IsGameThreadShaderMapComplete());
+			}
+		}
+		else
+		{
+			AddInfo(Label + TEXT(": NullRHI verifies saved declarations only; shader readiness is not assessed."));
+		}
+		TestEqual(Label + TEXT(": inspection cannot alter any usage flags"), Material->GetUsageFlags(), OriginalUsage);
+		if (Label == TEXT("/Game/Materials/M_FlightSurface.M_FlightSurface")) { FlightSurface = Material; }
+	}
+	UMaterialInstanceConstant* Foundation = LoadObject<UMaterialInstanceConstant>(nullptr,
+		TEXT("/Game/Materials/MI_DublinFoundation.MI_DublinFoundation"));
+	if (TestNotNull(TEXT("Existing foundation material instance"), Foundation))
+	{
+		TestTrue(TEXT("Foundation retains its exact shared M_FlightSurface root"),
+			FlightSurface && Foundation->GetMaterial() == FlightSurface);
+		TestFalse(TEXT("Foundation instance remains saved and unmodified"), Foundation->GetOutermost()->IsDirty());
+	}
 	return true;
 }
 #endif

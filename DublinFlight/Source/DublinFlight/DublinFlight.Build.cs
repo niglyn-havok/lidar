@@ -11,10 +11,10 @@ public class DublinFlight : ModuleRules
 	
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "ProceduralMeshComponent", "Niagara", "GeometryCollectionEngine", "Chaos", "FieldSystemEngine" });
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "Json", "RHI", "RenderCore", "SlateCore", "ApplicationCore" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "Json", "RHI", "RenderCore", "SlateCore", "ApplicationCore", "GeometryCore", "ChaosCore" });
 		if (Target.bBuildEditor)
 		{
-			PrivateDependencyModuleNames.AddRange(new string[] { "UnrealEd", "PlanarCut", "Voronoi", "MeshDescription", "StaticMeshDescription", "GeometryCore", "AssetRegistry" });
+			PrivateDependencyModuleNames.AddRange(new string[] { "UnrealEd", "PlanarCut", "Voronoi", "MeshDescription", "StaticMeshDescription", "AssetRegistry", "ImageWriteQueue", "GeometryAlgorithms" });
 		}
 
 		// Uncomment if you are using Slate UI

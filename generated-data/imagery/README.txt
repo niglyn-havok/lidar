@@ -12,6 +12,35 @@ Run from the project workspace root (the parent of DublinFlight):
 Uses available requests, numpy, scipy, Pillow, pyproj and tifffile. No new
 dependencies were needed. No Unreal operations are performed.
 
+Existing checkout: cache recovery and read-only validation
+---------------------------------------------------------
+Use the isolated Python environment and tested dependency set in
+generated-data\README.md when the machine's global packages are unavailable.
+From the workspace root, these commands preserve historical handoffs/reports,
+extracted TIFF/TFW originals, current PNG pixels, and Unreal assets:
+
+  python -B .\generated-data\imagery\acquire_orthophotos.py restore
+  python -B -m unittest discover -s .\generated-data\imagery -p "test_*.py" -v
+
+The four ignored ZIP caches total 1,053,351,093 bytes. Restore reads the existing
+source-manifest.json and provenance\<tile>-download.json; it neither prepares
+new metadata nor refreshes the source snapshot. It checks manifest/provenance
+agreement, the exact tile set, official HTTPS host, intended cache destinations,
+recorded sizes and SHA-256 values. Missing files download sequentially, within
+the existing 2 GB budget, with bounded delayed transient-network retries.
+Existing files are verified and reused; mismatches fail without overwriting.
+Each transfer uses its own temporary file and publishes the verified archive
+without replacing a concurrently created cache file. The cache filesystem must
+support same-volume hard links (for example NTFS); publication failures are
+reported, not bypassed. No TIFF extraction, image generation or import is done.
+
+Run tests through unittest discovery, not test_orthophotos.py or
+test_partial_import.py as scripts: those __main__ entry points rewrite saved
+test results, progress and handoffs. -B suppresses Python bytecode caches.
+The original TFW files are hash-bound source bytes, just like the TIFFs;
+.gitattributes protects all four from checkout newline conversion. Missing or
+modified originals remain explicit test failures, never skipped coverage.
+
 Scope and restart safety
 -----------------------
 Only four tiles: 315500_234000, 315500_234500, 316000_234000, 316000_234500.

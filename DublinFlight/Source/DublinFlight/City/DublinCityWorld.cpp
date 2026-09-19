@@ -1,5 +1,6 @@
 #include "City/DublinCityWorld.h"
 
+#include "City/DublinCityMeshComponent.h"
 #include "Components/SceneComponent.h"
 #include "Engine/World.h"
 #include "Materials/Material.h"
@@ -16,7 +17,7 @@ ADublinCityWorld::ADublinCityWorld()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = false;
-	PrimaryActorTick.TickInterval = 1.0f / 30;
+	PrimaryActorTick.TickInterval = DublinDestruction::OrdinaryTickIntervalSeconds;
 	CityRoot = CreateDefaultSubobject<USceneComponent>(TEXT("CityRoot"));
 	SetRootComponent(CityRoot);
 	CityRoot->SetMobility(EComponentMobility::Static);
@@ -76,7 +77,7 @@ void ADublinCityWorld::ClearGeneratedCity()
 	TSet<UProceduralMeshComponent*> ComponentsToDestroy;
 	for (UProceduralMeshComponent* Component : GeneratedComponents)
 	{
-		if (IsValid(Component) && Component->GetOwner() == this && Component->GetOuter() == this)
+		if (IsMarkedGeneratedComponent(Component))
 		{
 			ComponentsToDestroy.Add(Component);
 		}
@@ -105,7 +106,7 @@ void ADublinCityWorld::ClearGeneratedCity()
 bool ADublinCityWorld::IsMarkedGeneratedComponent(const UProceduralMeshComponent* Component) const
 {
 	if (!IsValid(Component) || Component->GetOwner() != this || Component->GetOuter() != this ||
-		Component->GetClass() != UProceduralMeshComponent::StaticClass() ||
+		!UDublinCityMeshComponent::IsGeneratedCityMeshClass(Component->GetClass()) ||
 		Component->CreationMethod != EComponentCreationMethod::Instance ||
 		Component->GetAttachParent() != CityRoot || !Component->ComponentHasTag(GeneratedMeshTag))
 	{
@@ -126,8 +127,8 @@ void ADublinCityWorld::FailBuild(const FString& Error)
 UProceduralMeshComponent* ADublinCityWorld::CreateChunkComponent(const FString& Name, const FVector& Origin,
 	const TArray<FDublinCitySection>& Sections, const TArray<UMaterialInterface*>& Materials, bool Collision)
 {
-	UProceduralMeshComponent* Component = NewObject<UProceduralMeshComponent>(this,
-		MakeUniqueObjectName(this, UProceduralMeshComponent::StaticClass(), FName(*Name)), RF_Transient);
+	UProceduralMeshComponent* Component = NewObject<UDublinCityMeshComponent>(this,
+		MakeUniqueObjectName(this, UDublinCityMeshComponent::StaticClass(), FName(*Name)), RF_Transient);
 	if (!Component) { return nullptr; }
 	Component->ComponentTags.AddUnique(GeneratedMeshTag);
 	GeneratedComponents.Add(Component);

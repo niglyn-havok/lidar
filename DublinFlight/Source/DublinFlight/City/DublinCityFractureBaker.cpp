@@ -3,6 +3,8 @@
 #if WITH_EDITOR
 #include "City/DublinCityWorld.h"
 #include "City/DublinCityDestruction.h"
+#include "City/DublinCityStructural.h"
+#include "City/DublinCityDetail.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "GeometryCollection/GeometryCollection.h"
 #include "GeometryCollection/GeometryCollectionClusteringUtility.h"
@@ -18,6 +20,7 @@
 #include "MeshDescription.h"
 #include "Misc/PackageName.h"
 #include "Misc/Paths.h"
+#include "Misc/Guid.h"
 #include "PlanarCut.h"
 #include "StaticMeshAttributes.h"
 #include "UObject/Package.h"
@@ -86,18 +89,28 @@ namespace
 		return !Size.ContainsNaN() && Size.GetMin() > 0;
 	}
 
-	FIntVector FractureGridCounts(const FVector& Size, int32 Attempt)
+	FIntVector FractureGridCounts(const FVector& Size)
 	{
-		FIntVector Counts(FMath::CeilToInt(FMath::Clamp(Size.X / 400, 2.0, 6.0)),
-			FMath::CeilToInt(FMath::Clamp(Size.Y / 400, 2.0, 6.0)),
-			FMath::CeilToInt(FMath::Clamp(Size.Z / 400, 2.0, 12.0)));
-		while (Counts.X * Counts.Y * Counts.Z > 64)
+		const double Spacing = UDublinCityFractureLibrary::TargetPieceSizeCm;
+		FIntVector Counts(FMath::CeilToInt(FMath::Clamp(Size.X / Spacing, 2.0, 24.0)),
+			FMath::CeilToInt(FMath::Clamp(Size.Y / Spacing, 2.0, 24.0)),
+			FMath::CeilToInt(FMath::Clamp(Size.Z / Spacing, 2.0, 24.0)));
+		while (Counts.X * Counts.Y * Counts.Z > UDublinCityFractureLibrary::MaxFractureSites)
 		{
-			if (Counts.Z >= Counts.X && Counts.Z >= Counts.Y && Counts.Z > 2) { --Counts.Z; }
-			else if (Counts.X >= Counts.Y && Counts.X > 2) { --Counts.X; }
-			else { --Counts.Y; }
+			int32 AxisToReduce = INDEX_NONE;
+			double SmallestCell = TNumericLimits<double>::Max();
+			for (int32 Axis = 0; Axis < 3; ++Axis)
+			{
+				if (Counts[Axis] > 2 && Size[Axis] / Counts[Axis] < SmallestCell)
+				{
+					AxisToReduce = Axis;
+					SmallestCell = Size[Axis] / Counts[Axis];
+				}
+			}
+			check(AxisToReduce != INDEX_NONE);
+			--Counts[AxisToReduce];
 		}
-		return Attempt == 1 ? FIntVector(2, 2, FMath::Min(4, Counts.Z)) : Counts;
+		return Counts;
 	}
 }
 
@@ -126,6 +139,31 @@ bool DublinFractureBake::SaveLibrary(UDublinCityFractureLibrary& Library, FStrin
 {
 	Library.BakeVersion = UDublinCityFractureLibrary::CurrentBakeVersion;
 	return SaveAsset(Library, Error);
+}
+
+bool DublinFractureBake::PublishRecord(UDublinCityFractureLibrary& Library, const FDublinFractureRecord& Record,
+	TFunctionRef<bool(UDublinCityFractureLibrary&, FString&)> Save, FString& Error)
+{
+	if (!Record.bReady || !IsSupportedRecipe(Record.Recipe) || Record.Collection.IsNull() ||
+		!FPackageName::DoesPackageExist(Record.Collection.ToSoftObjectPath().GetLongPackageName()))
+	{
+		Error = TEXT("Cannot publish a fracture record without a validated saved asset");
+		return false;
+	}
+	const int32 Index = Library.Records.IndexOfByPredicate([&Record](const FDublinFractureRecord& R) { return R.SourceId == Record.SourceId; });
+	const FDublinFractureRecord Previous = Index == INDEX_NONE ? FDublinFractureRecord() : Library.Records[Index];
+	const int32 PreviousVersion = Library.BakeVersion;
+	const bool bWasDirty = Library.GetOutermost()->IsDirty();
+	if (Index == INDEX_NONE) { Library.Records.Add(Record); }
+	else { Library.Records[Index] = Record; }
+	if (Save(Library, Error)) { return true; }
+	if (Index == INDEX_NONE) { Library.Records.Pop(); }
+	else { Library.Records[Index] = Previous; }
+	Library.BakeVersion = PreviousVersion;
+	Library.GetOutermost()->SetDirtyFlag(bWasDirty);
+	Error += TEXT("; prior library record restored. Unpublished candidate asset retained at ") +
+		Record.Collection.ToSoftObjectPath().ToString();
+	return false;
 }
 
 bool DublinFractureBake::BuildConnectionGraph(UGeometryCollection& Collection, FString& Error)
@@ -162,7 +200,7 @@ TArray<FVector> DublinFractureBake::MakeFractureSites(const FBox& Bounds, const 
 		}
 		return Sites;
 	}
-	const FIntVector Counts = FractureGridCounts(Size, Attempt);
+	const FIntVector Counts = FractureGridCounts(Size);
 	FRandomStream Random(static_cast<int32>(GetTypeHash(SourceId)));
 	TArray<double> Offsets[3];
 	for (int32 Axis = 0; Axis < 3; ++Axis)
@@ -170,7 +208,7 @@ TArray<FVector> DublinFractureBake::MakeFractureSites(const FBox& Bounds, const 
 		for (int32 I = 0; I < Counts[Axis]; ++I)
 		{
 			// Cartesian-product jitter retains irregular spacing without a fragile 3D tessellation.
-			Offsets[Axis].Add(Attempt == 0 ? 0.0 : Random.FRandRange(-.13f, .13f));
+			Offsets[Axis].Add(Attempt == 0 ? Random.FRandRange(-.18f, .18f) : 0.0);
 		}
 	}
 	for (int32 Z = 0; Z < Counts.Z; ++Z)
@@ -208,21 +246,20 @@ static bool MakeFractureCells(const FBox& Bounds, const FString& SourceId, int32
 		return true;
 	}
 
-	const FIntVector Counts = FractureGridCounts(Bounds.GetSize(), Attempt);
+	const FIntVector Counts = FractureGridCounts(Bounds.GetSize());
 	const FIntVector Strides(1, Counts.X, Counts.X * Counts.Y);
 	TArray<double> Edges[3];
 	for (int32 Axis = 0; Axis < 3; ++Axis)
 	{
-		// Equal-grid Voronoi cells are boxes. Keep the original bisectors and the original
-		// three-centimetre exterior margin, using doubles throughout (not the float grid ctor).
-		Edges[Axis].Add(Bounds.Min[Axis] - 3.0);
+		// Shared faces retain watertight cuts; the margin also contains noisy exterior faces.
+		Edges[Axis].Add(Bounds.Min[Axis] - 32.0);
 		for (int32 I = 1; I < Counts[Axis]; ++I)
 		{
 			const double A = Sites[(I - 1) * Strides[Axis]][Axis];
 			const double B = Sites[I * Strides[Axis]][Axis];
 			Edges[Axis].Add(A + (B - A) * .5);
 		}
-		Edges[Axis].Add(Bounds.Max[Axis] + 3.0);
+		Edges[Axis].Add(Bounds.Max[Axis] + 32.0);
 		for (int32 I = 1; I < Edges[Axis].Num(); ++I)
 		{
 			if (Edges[Axis][I] - Edges[Axis][I - 1] <= 2 * UE_DOUBLE_KINDA_SMALL_NUMBER ||
@@ -248,6 +285,16 @@ static bool MakeFractureCells(const FBox& Bounds, const FString& SourceId, int32
 	{
 		Error = TEXT("Native fracture boxes did not produce a complete shared-face partition");
 		return false;
+	}
+	if (Attempt == 0)
+	{
+		const FVector CellSize = Bounds.GetSize() / FVector(Counts);
+		FNoiseSettings Noise;
+		Noise.Amplitude = static_cast<float>(FMath::Min(8.0, CellSize.GetMin() / 32.0));
+		Noise.PointSpacing = static_cast<float>(FMath::Max(45.0, CellSize.GetMin() * 0.5));
+		Noise.Frequency = 0.015f;
+		Noise.Octaves = 3;
+		Cells.SetNoise(Noise);
 	}
 	return true;
 }
@@ -466,9 +513,10 @@ static bool BakeBuildingAttempt(const FDublinCityBuilding& Building, ADublinCity
 			Anchoring.SetInitialDynamicState(Bone, Chaos::EObjectStateType::Kinematic);
 		}
 	}
-	if (Record.PieceCount < 2 || Record.PieceCount > 128 || Record.Anchors.IsEmpty())
+	if (Record.PieceCount < 2 || Record.PieceCount > UDublinCityFractureLibrary::MaxPiecesPerBuilding || Record.Anchors.IsEmpty())
 	{
-		Error = TEXT("Fracture requires 2..128 real pieces and at least one ground-support anchor");
+		Error = FString::Printf(TEXT("Fracture requires 2..%d real pieces and at least one ground-support anchor"),
+			UDublinCityFractureLibrary::MaxPiecesPerBuilding);
 		Record.Error = Error;
 		return false;
 	}
@@ -511,7 +559,7 @@ static bool BakeBuildingAttempt(const FDublinCityBuilding& Building, ADublinCity
 		Record.Error = Error;
 		return false;
 	}
-	if (!DublinFractureBake::ValidateCollisionData(*Asset, Record, Error)) { Record.Error = Error; return false; }
+	if (!DublinFractureBake::CertifyCollisionData(*Asset, Building, Record, Error)) { Record.Error = Error; return false; }
 	if (!SaveAsset(*Asset, Error)) { Record.Error = Error; return false; }
 	Record.Collection = Asset;
 	Record.bReady = true;
@@ -519,8 +567,66 @@ static bool BakeBuildingAttempt(const FDublinCityBuilding& Building, ADublinCity
 }
 
 bool DublinFractureBake::BakeBuilding(const FDublinCityBuilding& Building, ADublinCityWorld& City,
-	FDublinFractureRecord& Record, FString& Error)
+	FDublinFractureRecord& Record, FString& Error, EDublinFractureRecipe Recipe)
 {
+	if (!IsSupportedRecipe(Recipe))
+	{
+		Error = TEXT("Unsupported fracture bake recipe");
+		return false;
+	}
+	if (Recipe == EDublinFractureRecipe::StructuralPilot || IsDetailedRecipe(Recipe))
+	{
+		if (Recipe == EDublinFractureRecipe::StructuralPilot && !DublinStructural::IsPilotId(Building.Id))
+		{
+			Error = TEXT("StructuralPilot refuses an unapproved building: ") + Building.Id;
+			return false;
+		}
+		EDublinFractureRecipe Resolved = Recipe;
+		if (!DublinDetail::ResolveBakeRecipe(Building, Recipe, Resolved, Error)) { return false; }
+		TArray<FString> Diagnostics;
+		for (int32 Attempt = 0; Attempt < 3; ++Attempt)
+		{
+			const FString Digest = DublinDestruction::BuildingDigest(Building, Resolved);
+			const FString AssetName = TEXT("GC_") + Digest +
+				(IsDetailedRecipe(Resolved) ? TEXT("_DT_") : TEXT("_SP_")) + FGuid::NewGuid().ToString(EGuidFormats::Digits);
+			UPackage* Package = CreatePackage(*(TEXT("/Game/Dublin/Fracture/") + AssetName));
+			UGeometryCollection* Candidate = NewObject<UGeometryCollection>(Package, *AssetName, RF_Public | RF_Standalone);
+			FGeometryCollectionEngineConversion::AppendMaterials(FractureMaterials(City), Candidate, false);
+			const bool bBuilt = IsDetailedRecipe(Resolved)
+				? DublinDetail::BuildCollection(Building, *Candidate, Record, Error, Attempt)
+				: DublinStructural::BuildCollection(Building, *Candidate, Record, Error, Attempt);
+			if (!bBuilt)
+			{
+				Diagnostics.Add(FString::Printf(TEXT("structural attempt=%d: %s"), Attempt + 1, *Error));
+				Candidate->ClearFlags(RF_Public | RF_Standalone);
+				Record.Error = Error;
+				Record.BakeDiagnostics = Diagnostics;
+				UE_LOG(LogDublinFractureBake, Warning, TEXT("%s: %s"), *Building.Id, *Diagnostics.Last());
+				continue;
+			}
+			Record.BakeDiagnostics.Append(Diagnostics);
+			if (!CertifyCollisionData(*Candidate, Building, Record, Error))
+			{
+				Record.Error = Error;
+				return false;
+			}
+			if (!SaveAsset(*Candidate, Error))
+			{
+				Error += TEXT("; candidate package may require targeted cleanup: ") + Package->GetName();
+				Record.Error = Error;
+				return false;
+			}
+			FAssetRegistryModule::AssetCreated(Candidate);
+			Record.Collection = Candidate;
+			Record.bReady = true;
+			Error.Reset();
+			return true;
+		}
+		Error = FString::Join(Diagnostics, TEXT(" | "));
+		Record.Error = Error;
+		Record.bReady = false;
+		return false;
+	}
 	TArray<FString> Diagnostics;
 	for (int32 Attempt = 0; Attempt < 3; ++Attempt)
 	{

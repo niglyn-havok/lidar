@@ -19,7 +19,10 @@ namespace DublinFlight::Performance
 	DUBLINFLIGHT_API bool ParseBenchmarkArguments(const TArray<FString>& Args, EBenchmark& Kind, FOptions& Options, FString& Error);
 	DUBLINFLIGHT_API int32 PlannedCannonShots(double Duration);
 	DUBLINFLIGHT_API bool LightBurstActive(double Elapsed, double Duration);
-	DUBLINFLIGHT_API bool BenchmarkPassed(bool Completed, bool Valid, bool Admitted, bool FrameTargetMet);
+	DUBLINFLIGHT_API bool BenchmarkPassed(bool Completed, bool Valid, bool Admitted, bool FrameTargetMet,
+		bool FrameTargetRequired = true);
+	DUBLINFLIGHT_API bool StressQueueHasCapacity(int32 QueuedImpacts);
+	DUBLINFLIGHT_API bool StressImpactUnoccluded(const FDublinImpact& Impact, bool bBlockingHit, const FVector& HitPositionCm);
 
 	// Absolute wall-clock slots: one operation per boundary, missed slots are counted, never replayed.
 	struct DUBLINFLIGHT_API FBenchmarkSlots
@@ -28,6 +31,42 @@ namespace DublinFlight::Performance
 		int32 Skipped = 0;
 		double LastAdmission = -1;
 		int32 Take(double Elapsed, double Duration, double Period);
+	};
+
+	inline constexpr int32 MaximalSchedulePolicyVersion = 3;
+	inline constexpr double MaximalSlotPeriodSeconds = 0.5;
+	inline constexpr int32 MaximalAttemptsPerBoundary = 8;
+
+	// Historical V2 policy, retained for regression coverage of its absolute-slot contract.
+	struct DUBLINFLIGHT_API FDeferredBenchmarkSlots
+	{
+		int32 Next = 0;
+		int32 Due = 0;
+		int32 PeakPending = 0;
+		int32 PeakBatch = 0;
+		int32 TakenThisBoundary = 0;
+		double ObservedElapsed = -1;
+		bool bCanAdmit = false;
+		bool Observe(double Elapsed, double Duration, bool Ending = false);
+		int32 Peek() const;
+		int32 Take();
+		int32 Pending() const { return Due - Next; }
+	};
+
+	// V3 saturation workload: release the entire unchanged operation count at measurement start.
+	struct DUBLINFLIGHT_API FSaturationBenchmarkSlots
+	{
+		int32 Next = 0;
+		int32 Due = 0;
+		int32 PeakPending = 0;
+		int32 PeakBatch = 0;
+		int32 TakenThisBoundary = 0;
+		double ObservedElapsed = -1;
+		bool bCanAdmit = false;
+		bool Observe(double Elapsed, double Duration, bool Ending = false);
+		int32 Peek() const;
+		int32 Take();
+		int32 Pending() const { return Due - Next; }
 	};
 
 	class FDublinRuntimeBenchmark
@@ -43,6 +82,7 @@ namespace DublinFlight::Performance
 		TSharedRef<FJsonObject> Report() const;
 		bool IsValid() const { return Failures.IsEmpty(); }
 		bool WorkloadAdmitted() const;
+		bool IsFrameTargetRequired() const { return Kind != EBenchmark::Maximal; }
 		const FOptions& GetOptions() const { return Options; }
 
 	private:
@@ -76,7 +116,11 @@ namespace DublinFlight::Performance
 		TArray<TSharedPtr<FJsonValue>> RouteSamples;
 		TSharedPtr<FJsonObject> StartSettings;
 		TSharedPtr<FJsonObject> EndSettings;
-		FBenchmarkSlots Slots;
+		FSaturationBenchmarkSlots StressSlots;
+		int32 PeakStressAdmissionsPerBoundary = 0;
+		int32 StressBackpressureBoundaries = 0;
+		double LastStressAdmissionSeconds = -1;
+		double MaxStressAdmissionDelaySeconds = 0;
 		int32 Attempted = 0;
 		int32 Accepted = 0;
 		int32 Rejected = 0;
@@ -95,6 +139,11 @@ namespace DublinFlight::Performance
 		int32 EffectsRequests = 0;
 		int32 MaxCollections = 0;
 		int32 MaxPieces = 0;
+		int32 MaxAllocatedCollections = 0;
+		int32 MaxAllocatedPieces = 0;
+		int64 MaxAllocatedHullSlots = 0;
+		int32 MaxPendingAssetLoads = 0;
+		int32 MaxRegistrationsPerFrame = 0;
 		int32 MaxQueued = 0;
 		int32 MaxQueuedBuildings = 0;
 		int32 MaxFX = 0;

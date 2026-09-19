@@ -6,9 +6,11 @@ from datetime import datetime, timezone
 import hashlib
 import html
 import json
-from pathlib import Path
+import os
+from pathlib import Path, PureWindowsPath
 import re
 import shutil
+import tempfile
 import threading
 import time
 from urllib.parse import urlparse
@@ -234,10 +236,97 @@ def download():
     progress("downloads_complete", next_action="Inspect TIFF/TFW and source checksums before rendering.")
 
 
+def restore_archive(tile, path, expected_hash):
+    expected_size = tile["head_bytes"]
+    if path.exists():
+        if (not path.is_file() or path.stat().st_size != expected_size or
+                sha256(path) != expected_hash or not zipfile.is_zipfile(path)):
+            raise RuntimeError(f"Existing archive differs from retained provenance; preserved: {path}")
+        print(f"Verified cache: {path.name}", flush=True)
+        return
+    path.parent.mkdir(parents=True, exist_ok=True)
+    staged = None
+    try:
+        with requests.get(tile["archive_url"], stream=True, timeout=(20, 120),
+                          headers={"Accept-Encoding": "identity"}) as response:
+            response.raise_for_status()
+            resolved = urlparse(response.url)
+            if resolved.scheme != "https" or resolved.hostname != "archive.nyu.edu":
+                raise RuntimeError("Archive redirect leaves the recorded official HTTPS host.")
+            if int(response.headers.get("Content-Length", "0")) != expected_size:
+                raise RuntimeError(f"GET size differs from retained manifest: {path.name}")
+            downloaded, digest = 0, hashlib.sha256()
+            checkpoint = time.monotonic()
+            with tempfile.NamedTemporaryFile(dir=path.parent, prefix=path.name + ".",
+                                             suffix=".part", delete=False) as output:
+                staged = Path(output.name)
+                for chunk in response.iter_content(chunk_size=1024 * 1024):
+                    downloaded += len(chunk)
+                    if downloaded > expected_size:
+                        raise RuntimeError(f"Archive body exceeds retained size: {path.name}")
+                    output.write(chunk)
+                    digest.update(chunk)
+                    if time.monotonic() - checkpoint > 15:
+                        print(f"{path.name}: {downloaded}/{expected_size} bytes", flush=True)
+                        checkpoint = time.monotonic()
+            if downloaded != expected_size:
+                raise RuntimeError(f"Incomplete archive size: {path.name}")
+            if digest.hexdigest() != expected_hash:
+                raise RuntimeError(f"Archive SHA-256 differs from retained provenance: {path.name}")
+            if not zipfile.is_zipfile(staged):
+                raise RuntimeError(f"Retained archive is not a ZIP: {path.name}")
+        # Publish without overwriting a file another process created during the transfer.
+        os.link(staged, path)
+        print(f"Restored {path.name}: {expected_size} bytes, SHA-256 {expected_hash}", flush=True)
+    finally:
+        if staged is not None:
+            staged.unlink()
+
+
+def restore():
+    """Restore pinned ZIP caches only; never change historical metadata or originals."""
+    manifest = json.loads(MANIFEST.read_bytes())
+    tiles = manifest["tiles"]
+    if tuple(tile["tile"] for tile in tiles) != TILES:
+        raise RuntimeError("Retained manifest must contain exactly the four original tiles.")
+    if any(type(tile["head_bytes"]) is not int or tile["head_bytes"] <= 0 for tile in tiles):
+        raise RuntimeError("Retained archive sizes must be positive integers.")
+    total = sum(tile["head_bytes"] for tile in tiles)
+    if total != manifest["archive_total_bytes"] or total > BUDGET:
+        raise RuntimeError("Retained archive total differs or exceeds the download budget.")
+    jobs = []
+    for tile in tiles:
+        record = json.loads((WORK / "provenance" / f"{tile['tile']}-download.json").read_bytes())
+        for key in ("tile", "archive_url", "archive_path", "head_bytes"):
+            if record[key] != tile[key]:
+                raise RuntimeError(f"Retained manifest/provenance mismatch: {tile['tile']} {key}")
+        digest = record["archive_sha256"]
+        if not re.fullmatch(r"[0-9a-f]{64}", digest) or record["actual_archive_bytes"] != tile["head_bytes"]:
+            raise RuntimeError(f"Invalid retained size/SHA-256: {tile['tile']}")
+        url = urlparse(tile["archive_url"])
+        if (url.scheme != "https" or url.hostname != "archive.nyu.edu" or
+                url.username or url.password or url.port not in (None, 443)):
+            raise RuntimeError("Restoration only permits the recorded official HTTPS archive host.")
+        path = WORK / "downloads" / Path(url.path).name
+        declared = ROOT.joinpath(*PureWindowsPath(tile["archive_path"]).parts)
+        if (path.suffix != ".zip" or path.resolve() != declared.resolve() or
+                not path.resolve().is_relative_to(WORK.resolve()) or path.is_symlink()):
+            raise RuntimeError(f"Archive destination is not the intended imagery cache: {declared}")
+        jobs.append((tile, path, digest))
+    needed = sum(tile["head_bytes"] for tile, path, _ in jobs if not path.exists())
+    if shutil.disk_usage(WORK).free < needed:
+        raise RuntimeError("Insufficient free space for the missing archive caches.")
+    for tile, path, digest in jobs:
+        retry_metadata(lambda: restore_archive(tile, path, digest))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("stage", choices=["prepare", "download"])
+    parser.add_argument("stage", choices=["prepare", "download", "restore"])
     args = parser.parse_args()
+    if args.stage == "restore":
+        restore()
+        return
     try:
         {"prepare": prepare, "download": download}[args.stage]()
     except Exception as exc:

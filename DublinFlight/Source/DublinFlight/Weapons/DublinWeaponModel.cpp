@@ -21,13 +21,26 @@ FDublinImpact MakeImpact(EDublinImpactKind Kind, float Yield, const FBombCurve& 
 	};
 	Impact.YieldTonsTNT = ClampYield(Yield);
 	const float Growth = FMath::Pow(Impact.YieldTonsTNT, Safe(Curve.Exponent, 0.25f, 0.1f, 0.5f));
-	Impact.RadiusCm = FMath::Clamp(Safe(Curve.RadiusAtOneCm, 600.0f, 100.0f, 5000.0f) * Growth,
-		100.0f, Safe(Curve.MaxRadiusCm, 5000.0f, 100.0f, 5000.0f));
+	const float RadiusGrowth = FMath::Pow(Impact.YieldTonsTNT,
+		Impact.YieldTonsTNT < 1.0f ? 0.25f : BombRadiusExponent);
+	Impact.RadiusCm = FMath::Clamp(Safe(Curve.RadiusAtOneCm, 600.0f, 100.0f, 5000.0f) * RadiusGrowth,
+		100.0f, Safe(Curve.MaxRadiusCm, MaximumBombRadiusCm, 100.0f, MaximumBombRadiusCm));
 	Impact.CraterDepthCm = FMath::Clamp(Safe(Curve.DepthAtOneCm, 250.0f, 10.0f, 2000.0f) * Growth,
 		10.0f, Safe(Curve.MaxDepthCm, 2000.0f, 10.0f, 2000.0f));
 	Impact.Strength = FMath::Clamp(Safe(Curve.StrengthAtOne, 2.0f, 0.1f, 50.0f) * Growth,
 		0.1f, Safe(Curve.MaxStrength, 50.0f, 0.1f, 50.0f));
 	return Impact;
+}
+
+FDublinImpact MakeGroundImpact(const FDublinImpact& Impact)
+{
+	FDublinImpact Ground = Impact;
+	if (Impact.Kind == EDublinImpactKind::Bomb)
+	{
+		// Keep the pre-spectacle terrain work footprint; building/FX radius is independent.
+		Ground.RadiusCm = FMath::Min(Impact.RadiusCm, 600.0f * FMath::Pow(ClampYield(Impact.YieldTonsTNT), 0.25f));
+	}
+	return Ground;
 }
 
 FVector BallisticPosition(const FVector& Start, const FVector& InheritedVelocity, double GravityZ, double Seconds)

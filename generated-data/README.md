@@ -14,8 +14,9 @@ python .\generated-data\acquire_osm.py
 python .\generated-data\city_pipeline.py
 
 # Independent checks without downloading or rewriting the output.
-python -m unittest discover -s .\generated-data -p test_city_pipeline.py -v
-python .\generated-data\city_pipeline.py --validate-only
+python -B -m unittest discover -s .\generated-data -p "test_*.py" -v
+python -B .\generated-data\city_pipeline.py --validate-only
+python -B .\generated-data\apply_facades.py --check-only
 ```
 
 Dependencies: existing NumPy, SciPy, Shapely 2.1+ with GEOS 3.10+, and pyproj.
@@ -25,6 +26,47 @@ the script, not a username or working-directory assumption. Acquisition has a
 timeout, at most three sequential attempts per query, and delayed retries.
 `--refresh` explicitly requests a new OSM snapshot; ordinary reruns verify and
 reuse cached source SHA-256 values.
+
+## Windows environment and exact source bytes
+
+Use an isolated environment if the machine's Python packages are missing or
+broken; do not replace unrelated global packages. From the workspace root:
+
+```powershell
+python -m venv .\generated-data\.venv
+$Python = (Resolve-Path .\generated-data\.venv\Scripts\python.exe).Path
+& $Python -B -m unittest discover -s .\generated-data -p "test_*.py" -v
+```
+
+If imports report missing dependencies, install the tested Python 3.13 package
+set below, then rerun the checks above with `& $Python` instead of `python`.
+Do not treat other test failures as a reason to install or refresh source data.
+
+```powershell
+& $Python -m pip install "numpy==2.5.3" "scipy==1.18.1" "shapely==2.1.2" `
+    "pyproj==3.8.0" "requests==2.34.2" "Pillow==12.3.0" "tifffile==2026.9.9"
+```
+
+Source SHA-256 values bind the original bytes, including line endings.
+`.gitattributes` disables text conversion for the raw hydrology response and
+the four original orthophoto TFW files. Existing LFS rules preserve the other
+binary/large inputs. The separately hashed generated facade provenance uses
+LF, while the orthophoto georeference and partial-import contract use their
+original CRLF endings. A blanket JSON newline rule would break these contracts.
+
+`test_checkout_bytes.py` exercises actual Git checkouts in temporary repositories
+with `core.autocrlf=true`, `false`, and `input`, and verifies the current raw
+source hashes. Updating attributes does not necessarily rewrite an existing
+working file. For an old checkout with newline drift, first verify the indexed
+Git blob against the retained source SHA-256 and establish that the working
+copy differs only by newline conversion. Export that exact path to a temporary
+checkout, verify its hash, then replace only the verified stale copy. Preserve
+unrelated local edits; never weaken a digest, normalize arbitrary downloads at
+read time, or use `--refresh` to hide a cache mismatch.
+
+The read-only checks do not regenerate the city or historical handoffs.
+For missing original imagery ZIP caches, use the report-preserving `restore`
+command documented in `imagery\README.txt`, not the acquisition/rebuild workflow.
 
 ## Geometry and coordinate contract
 
